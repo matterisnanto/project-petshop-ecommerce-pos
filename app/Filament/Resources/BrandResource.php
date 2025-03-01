@@ -20,9 +20,7 @@ class BrandResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static ?string $navigationLabel = 'Brand';
-
     protected static ?string $modelLabel = 'Brand';
-
     protected static ?string $pluralModelLabel = 'Brand';
 
     public static function form(Form $form): Form
