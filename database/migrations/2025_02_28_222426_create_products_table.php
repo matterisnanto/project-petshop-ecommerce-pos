@@ -22,6 +22,7 @@ return new class extends Migration
             $table->boolean('is_active')->default(true);
             $table->boolean('is_popular');
             
+            
             $table->integer('stock')->default();
             $table->foreignId('category_id')->constrained()->cascadeOnDelete(); 
             $table->foreignId('brand_id')->nullable()->constrained()->cascadeOnDelete();
