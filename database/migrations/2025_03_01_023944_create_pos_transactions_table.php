@@ -10,7 +10,7 @@ return new class () extends Migration {
      */
     public function up(): void
     {
-        Schema::create('p_o_s_transactions', function (Blueprint $table) {
+        Schema::create('pos_transactions', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
