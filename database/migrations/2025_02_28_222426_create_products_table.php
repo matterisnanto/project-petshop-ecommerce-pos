@@ -24,9 +24,9 @@ return new class extends Migration
             
             
             $table->integer('stock')->default();
-            $table->foreignId('category_id')->constrained()->cascadeOnDelete(); 
-            $table->foreignId('brand_id')->nullable()->constrained()->cascadeOnDelete();
-            $table->foreignId('supplier_id')->nullable()->constrained()->cascadeOnDelete();
+            $table->foreignId('category_id')->constrained()->nullOnDelete(); 
+            $table->foreignId('brand_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignId('supplier_id')->nullable()->constrained()->nullOnDelete();
             $table->timestamps();
             $table->softDeletes();
         });
