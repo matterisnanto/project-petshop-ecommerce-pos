@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class () extends Migration {
     /**
      * Run the migrations.
      */
@@ -21,10 +20,11 @@ return new class extends Migration
             $table->foreignId('payment_method_id')
                 ->nullable()
                 ->constrained('payment_methods')
-                ->nullOnDelete();   
+                ->nullOnDelete();
             $table->integer('paid_amount')->nullable();
             $table->integer('change_amount')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
