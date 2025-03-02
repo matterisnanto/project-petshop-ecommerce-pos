@@ -26,7 +26,6 @@ class ExpenseResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-banknotes';
 
     protected static ?string $navigationGroup = 'Offers & Payments';
-    
     protected static ?int $navigationSort = 8;
 
     public static function form(Form $form): Form
@@ -72,6 +71,7 @@ class ExpenseResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+
             ->filters([
                 //
             ])
@@ -98,6 +98,6 @@ class ExpenseResource extends Resource
             'index' => Pages\ListExpenses::route('/'),
             'create' => Pages\CreateExpense::route('/create'),
             'edit' => Pages\EditExpense::route('/{record}/edit'),
-        ];
-    }
+            ];
+        }
 }
