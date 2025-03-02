@@ -90,8 +90,8 @@ class OlshoptransactionResource extends Resource
                                         ->numeric(),
                                     Forms\Components\TextInput::make('grand_total_amount')
                                         ->required()
+                                        ->readOnly()
                                         ->numeric(),
-
                                 ]),
                         ]),
                     Forms\Components\Wizard\Step::make('Customer Information')
