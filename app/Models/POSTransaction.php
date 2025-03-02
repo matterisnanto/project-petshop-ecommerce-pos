@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class PosTransaction extends Model
 {
-    protected $table = 'postransactions';
+    protected $table = 'pos_transactions';
     //
     protected $fillable = [
         'name', 

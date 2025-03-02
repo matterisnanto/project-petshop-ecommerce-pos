@@ -40,17 +40,24 @@ class PostransactionResource extends Resource
                     ->email()
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('gender')
-                    ->required(),
+                Forms\Components\Select::make('gender')
+                ->options([
+                    'male' => 'Laki-laki',
+                    'female' => 'Perempuan',
+                ])
+                ->required(),
                 Forms\Components\TextInput::make('total_price')
                     ->required()
                     ->numeric(),
                 Forms\Components\Textarea::make('note')
                     ->required()
                     ->columnSpanFull(),
-                Forms\Components\TextInput::make('payment_method_id')
-                    ->numeric()
-                    ->default(null),
+                Forms\Components\Select::make('payment_method_id')
+                ->label('Payment Method')
+                ->relationship('paymentMethod', 'name')
+                ->searchable()
+                ->preload(),
+            
                 Forms\Components\TextInput::make('paid_amount')
                     ->numeric()
                     ->default(null),
