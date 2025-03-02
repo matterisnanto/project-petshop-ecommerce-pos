@@ -44,9 +44,9 @@ class PaymentmethodResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\ImageColumn::make('image'),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
-                Tables\Columns\ImageColumn::make('image'),
                 Tables\Columns\IconColumn::make('is_cash')
                     ->boolean(),
                 Tables\Columns\TextColumn::make('created_at')
