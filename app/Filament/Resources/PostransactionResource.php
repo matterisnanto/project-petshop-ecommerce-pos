@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\SupplierResource\Pages;
-use App\Filament\Resources\SupplierResource\RelationManagers;
-use App\Models\Supplier;
+use App\Filament\Resources\PostransactionResource\Pages;
+use App\Filament\Resources\PostransactionResource\RelationManagers;
+use App\Models\Postransaction;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -13,49 +13,50 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class SupplierResource extends Resource
+class PostransactionResource extends Resource
 {
-    protected static ?string $model = Supplier::class;
+    protected static ?string $model = Postransaction::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-truck';
+    protected static ?string $navigationLabel = 'POS Transaction';
 
-    protected static ?string $navigationLabel = 'Supplier';
+    protected static ?string $modelLabel = 'POS Transaction';
 
-    protected static ?string $modelLabel = 'Supplier';
+    protected static ?string $pluralModelLabel = 'POS Transaction';
 
-    protected static ?string $navigationGroup = 'Product Resource';
+    protected static ?string $navigationGroup = 'Transactions';
 
-    protected static ?int $navigationSort = 4;
+    protected static ?int $navigationSort = 0;
 
-    protected static ?string $pluralModelLabel = 'Supplier';
+    protected static ?string $navigationIcon = 'heroicon-o-building-storefront';
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
-                    ->label('Supplier Name')
                     ->required()
                     ->maxLength(255),
-
                 Forms\Components\TextInput::make('email')
-                    ->label('Email')
                     ->email()
-                    ->unique()
                     ->required()
                     ->maxLength(255),
-
-                Forms\Components\TextInput::make('phone')
-                    ->label('Phone Number')
-                    ->tel()
-                    ->mask('999-9999-9999') // Format input
-                    ->prefix('+62') // Tambahkan prefix
+                Forms\Components\TextInput::make('gender')
+                    ->required(),
+                Forms\Components\TextInput::make('total_price')
                     ->required()
-                    ->maxLength(255),
-
-                Forms\Components\TextInput::make('address')
-                    ->label('Address')
+                    ->numeric(),
+                Forms\Components\Textarea::make('note')
                     ->required()
-                    ->maxLength(255),
+                    ->columnSpanFull(),
+                Forms\Components\TextInput::make('payment_method_id')
+                    ->numeric()
+                    ->default(null),
+                Forms\Components\TextInput::make('paid_amount')
+                    ->numeric()
+                    ->default(null),
+                Forms\Components\TextInput::make('change_amount')
+                    ->numeric()
+                    ->default(null),
             ]);
     }
 
@@ -67,11 +68,19 @@ class SupplierResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('email')
                     ->searchable(),
-                    Tables\Columns\TextColumn::make('phone')
-                    ->label('Phone')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('address')
-                    ->searchable(),
+                Tables\Columns\TextColumn::make('gender'),
+                Tables\Columns\TextColumn::make('total_price')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('payment_method_id')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('paid_amount')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('change_amount')
+                    ->numeric()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -108,9 +117,9 @@ class SupplierResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListSuppliers::route('/'),
-            'create' => Pages\CreateSupplier::route('/create'),
-            // 'edit' => Pages\EditSupplier::route('/{record}/edit'),
+            'index' => Pages\ListPostransactions::route('/'),
+            'create' => Pages\CreatePostransaction::route('/create'),
+            'edit' => Pages\EditPostransaction::route('/{record}/edit'),
         ];
     }
 }

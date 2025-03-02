@@ -25,6 +25,11 @@ class PaymentmethodResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-credit-card';
 
+    protected static ?string $navigationGroup = 'Offers & Payments';
+
+    protected static ?int $navigationSort = 7;
+
+
     public static function form(Form $form): Form
     {
         return $form
@@ -44,9 +49,9 @@ class PaymentmethodResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\ImageColumn::make('image'),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
-                Tables\Columns\ImageColumn::make('image'),
                 Tables\Columns\IconColumn::make('is_cash')
                     ->boolean(),
                 Tables\Columns\TextColumn::make('created_at')

@@ -22,9 +22,12 @@ return new class extends Migration
             $table->unsignedBigInteger('sub_total_amount');
             $table->unsignedBigInteger('grand_total_amount');
             $table->unsignedBigInteger('discount_amount');
-            $table->string('address');
+            $table->string('province');
+            $table->string('city_regency');
+            $table->string('district');
+            $table->string('vilage_subdistrict');
             $table->string('post_code');
-            $table->string('city');
+            $table->string('address');
             $table->boolean('is_paid');
             $table->string('booking_trx');
             $table->string('proof');

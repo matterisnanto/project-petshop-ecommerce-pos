@@ -7,7 +7,6 @@ use Filament\Tables;
 use App\Models\Brand;
 use Filament\Forms\Set;
 use Filament\Forms\Form;
-
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use Illuminate\Database\Eloquent\Builder;
@@ -19,10 +18,17 @@ class BrandResource extends Resource
 {
     protected static ?string $model = Brand::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
+    protected static ?string $navigationIcon = 'heroicon-o-tag';
+
     protected static ?string $navigationLabel = 'Brand';
+
     protected static ?string $modelLabel = 'Brand';
+
     protected static ?string $pluralModelLabel = 'Brand';
+
+    protected static ?int $navigationSort = 2;
+
+    protected static ?string $navigationGroup = 'Product Resource';
 
     public static function form(Form $form): Form
     {
@@ -41,6 +47,7 @@ class BrandResource extends Resource
                     ->maxLength(255),
                 Forms\Components\FileUpload::make('logo')
                     ->image()
+                    ->columnSpan('full')
                     ->required(),
             ]);
     }
@@ -49,11 +56,9 @@ class BrandResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\ImageColumn::make('logo'),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('slug')
-                    ->searchable(),
-                Tables\Columns\ImageColumn::make('logo'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -92,7 +97,7 @@ class BrandResource extends Resource
         return [
             'index' => Pages\ListBrands::route('/'),
             'create' => Pages\CreateBrand::route('/create'),
-            'edit' => Pages\EditBrand::route('/{record}/edit'),
+            // 'edit' => Pages\EditBrand::route('/{record}/edit'),
         ];
     }
 }
