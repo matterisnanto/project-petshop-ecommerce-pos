@@ -25,6 +25,10 @@ class PromocodeResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-percent-badge';
 
+    protected static ?string $navigationGroup = 'Offers & Payments';
+
+    protected static ?int $navigationSort = 6;
+
     public static function form(Form $form): Form
     {
         return $form

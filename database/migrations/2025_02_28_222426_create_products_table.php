@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class () extends Migration {
+return new class() extends Migration {
     /**
      * Run the migrations.
      */
@@ -17,7 +17,8 @@ return new class () extends Migration {
             $table->string('barcode')->nullable();
             $table->string('thumbnail');
             $table->longText('about')->nullable();
-            $table->unsignedBigInteger('price');
+            $table->unsignedBigInteger('purchase_price');
+            $table->unsignedBigInteger('selling_price');
             $table->boolean('is_active')->default(true);
             $table->boolean('is_popular');
             $table->integer('stock')->default();
