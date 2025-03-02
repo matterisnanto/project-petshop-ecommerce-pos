@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use Filament\Forms;
 use Filament\Tables;
 use App\Models\Brand;
+use Filament\Forms\Set;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
@@ -27,6 +28,11 @@ class BrandResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
+                    ->afterStateUpdated(function (Set $set, $state) {
+                        $set('slug', Brand::generateUniqueSlug($state));
+                    })
+                    ->required()
+                    ->live(onBlur: true)
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('slug')
