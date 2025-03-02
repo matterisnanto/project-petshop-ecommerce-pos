@@ -23,7 +23,7 @@ class ExpenseResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Expense';
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-banknotes';
 
     protected static ?string $navigationGroup = 'Offers & Payments';
     
@@ -41,7 +41,8 @@ class ExpenseResource extends Resource
                     ->columnSpanFull(),
                 Forms\Components\TextInput::make('amount')
                     ->required()
-                    ->numeric(),
+                    ->numeric()
+                    ->prefix('Rp'),
             ]);
     }
 
@@ -53,7 +54,11 @@ class ExpenseResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('amount')
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->formatStateUsing(function ($state) {
+                        // Format nilai sebagai Rupiah
+                        return 'Rp ' . number_format($state, 0, ',', '.');
+                    }),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
