@@ -34,6 +34,7 @@ class Brand extends Model
 
         while (self::where('slug', $slug)->exists()) {
             $slug = $originalSlug . '-' . $counter++;
+            $counter++;
         }
 
         return $slug;
