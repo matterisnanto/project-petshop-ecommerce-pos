@@ -5,9 +5,10 @@ namespace App\Filament\Resources;
 use Filament\Forms;
 use Filament\Tables;
 use App\Models\Brand;
+use Filament\Forms\Set;
 use Filament\Forms\Form;
-use Filament\Tables\Table;
 
+use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\BrandResource\Pages;
@@ -18,7 +19,7 @@ class BrandResource extends Resource
 {
     protected static ?string $model = Brand::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
     protected static ?string $navigationLabel = 'Brand';
     protected static ?string $modelLabel = 'Brand';
     protected static ?string $pluralModelLabel = 'Brand';
@@ -28,6 +29,11 @@ class BrandResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
+                    ->afterStateUpdated(function (Set $set, $state) {
+                        $set('slug', Brand::generateUniqueSlug($state));
+                    })
+                    ->required()
+                    ->live(onBlur: true)
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('slug')
