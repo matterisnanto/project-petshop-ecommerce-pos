@@ -12,7 +12,7 @@ return new class () extends Migration {
     {
         Schema::create('order_products', function (Blueprint $table) {
             $table->id();
-
+            $table->foreignId('payment_method_id')->constrained('payment_methods')->cascadeOnDelete();
             $table->foreignId('product_id')->constrained('products')->cascadeOnDelete();
             $table->integer('quantity');
             $table->integer('unit_price');
