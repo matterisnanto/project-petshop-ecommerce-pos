@@ -41,6 +41,7 @@ class OlshoptransactionResource extends Resource
                             Forms\Components\Grid::make()
                                 ->schema([
                                     Forms\Components\Select::make('product_id')
+                                        ->label('Product')
                                         ->relationship('products', 'name')
                                         ->required()
                                         ->searchable()
@@ -60,6 +61,7 @@ class OlshoptransactionResource extends Resource
                                             $set('grand_total_amount', $grandTotalAmount);
                                         }),
                                     Forms\Components\TextInput::make('quantity')
+                                        ->label('Quantity')
                                         ->required()
                                         ->numeric()
                                         ->prefix('Qty')
@@ -81,14 +83,17 @@ class OlshoptransactionResource extends Resource
                                         ->relationship('promocode', 'code')
                                         ->default(null),
                                     Forms\Components\TextInput::make('discount_amount')
+                                        ->label('Discount Amount')
                                         ->required()
                                         ->default(0)
                                         ->readOnly()
                                         ->numeric(),
                                     Forms\Components\TextInput::make('sub_total_amount')
+                                        ->label('Sub Total Amount')
                                         ->required()
                                         ->numeric(),
                                     Forms\Components\TextInput::make('grand_total_amount')
+                                        ->label('Grand Total Amount')
                                         ->required()
                                         ->readOnly()
                                         ->numeric(),
@@ -100,18 +105,22 @@ class OlshoptransactionResource extends Resource
                             Forms\Components\Grid::make()
                                 ->schema([
                                     Forms\Components\TextInput::make('name')
+                                        ->label('Customer Name')
                                         ->required()
                                         ->maxLength(255)
                                         ->columnSpanFull(),
                                     Forms\Components\TextInput::make('phone')
+                                        ->label('Phone Number')
                                         ->tel()
                                         ->required()
                                         ->maxLength(255),
                                     Forms\Components\TextInput::make('email')
+                                        ->label('Email Address')
                                         ->email()
                                         ->required()
                                         ->maxLength(255),
                                     Forms\Components\Select::make('province')
+                                        ->label('Province')
                                         ->required()
                                         ->options(function () {
                                             // Fetch data Provinsi dari API
@@ -130,6 +139,7 @@ class OlshoptransactionResource extends Resource
                                         ->reactive()
                                         ->columnSpanFull(),
                                     Forms\Components\Select::make('city_regency')
+                                        ->label('City/Regency')
                                         ->required()
                                         ->options(function (callable $get) {
                                             // Ambil province_id yang dipilih
@@ -156,6 +166,7 @@ class OlshoptransactionResource extends Resource
                                         ->reactive()
                                         ->columnSpanFull(),
                                     Forms\Components\Select::make('district')
+                                        ->label('District')
                                         ->required()
                                         ->options(function (callable $get) {
                                             // Ambil regency_id yang dipilih
@@ -182,6 +193,7 @@ class OlshoptransactionResource extends Resource
                                         ->reactive()
                                         ->columnSpanFull(),
                                     Forms\Components\Select::make('vilage_subdistrict')
+                                        ->label('Village/Subdistrict')
                                         ->required()
                                         ->options(function (callable $get) {
                                             // Ambil district_id yang dipilih
@@ -208,9 +220,11 @@ class OlshoptransactionResource extends Resource
                                         ->reactive()
                                         ->columnSpanFull(),
                                     Forms\Components\TextInput::make('post_code')
+                                        ->label('Post Code')
                                         ->required()
                                         ->numeric(),
                                     Forms\Components\TextInput::make('address')
+                                        ->label('Address')
                                         ->required()
                                         ->maxLength(255)
                                         ->placeholder('Enter RT/RW, street/alley name, and landmarks'),
@@ -221,12 +235,15 @@ class OlshoptransactionResource extends Resource
                         ->description('')
                         ->schema([
                             Forms\Components\TextInput::make('booking_trx')
+                                ->label('Booking Trx Number')
                                 ->required()
                                 ->maxLength(255),
                             Forms\Components\FileUpload::make('proof')
+                                ->label('Proof of Payment')
                                 ->image()
                                 ->required(),
                             Forms\Components\Toggle::make('is_paid')
+                                ->label('Already Paid?')
                                 ->required(),
                         ]),
                 ])
