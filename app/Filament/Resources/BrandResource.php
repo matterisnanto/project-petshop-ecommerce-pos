@@ -40,6 +40,7 @@ class BrandResource extends Resource
                     ->maxLength(255),
                 Forms\Components\FileUpload::make('logo')
                     ->image()
+                    ->columnSpan('full')
                     ->required(),
             ]);
     }
@@ -91,7 +92,7 @@ class BrandResource extends Resource
         return [
             'index' => Pages\ListBrands::route('/'),
             'create' => Pages\CreateBrand::route('/create'),
-            'edit' => Pages\EditBrand::route('/{record}/edit'),
+            // 'edit' => Pages\EditBrand::route('/{record}/edit'),
         ];
     }
 }
