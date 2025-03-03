@@ -52,4 +52,14 @@ class Product extends Model
         }
         return $slug;
     }
+
+    public function getImageUrlAttribute()
+{
+    return $this->thumbnail ? asset('storage/' . $this->thumbnail) : null;
+}
+
+    public function scopeSearch($query, $value)
+    {
+       $query->where("name", "like", "%{$value}%"); 
+    }
 }
