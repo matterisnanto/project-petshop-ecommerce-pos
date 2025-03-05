@@ -6,21 +6,21 @@ use Illuminate\Database\Eloquent\Model;
 
 class PosTransaction extends Model
 {
-    protected $table = 'postransactions';
+    protected $table = 'pos_transactions';
     //
     protected $fillable = [
-        'name', 
-        'email', 
-        'gender', 
-        'total_price', 
-        'note', 
-        'payment_method_id', 
-        'paid_amount', 
+        'name',
+        'email',
+        'gender',
+        'total_price',
+        'note',
+        'payment_method_id',
+        'paid_amount',
         'change_amount'
     ];
-    
-    public function paymentmethod() {
+
+    public function paymentmethod()
+    {
         return $this->belongsTo(PaymentMethod::class, 'payment_method_id');
     }
-
 }
