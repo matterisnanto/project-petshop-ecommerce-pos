@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use Filament\Forms;
 use Filament\Tables;
 use App\Models\Product;
+
 use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Filament\Forms\Form;
@@ -18,6 +19,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Textarea;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use App\Filament\Resources\PostransactionResource\Pages;
@@ -142,29 +144,42 @@ class PostransactionResource extends Resource
         return Repeater::make('orderProducts')
             ->relationship('orderProducts')
             ->live()
-            ->columns(12)
-            ->afterStateUpdated(fn(Get $get, Set $set) => self::updateTotalPrice($get, $set))
-            ->afterStateHydrated(fn(Get $get, Set $set) => self::updateTotalPrice($get, $set))
+            ->columns([
+                'md' => 10,
+            ])
+            ->afterStateUpdated(function(Get $get, Set $set){
+                self::updateTotalPrice($get, $set);
+            })
             ->schema([
                 Select::make('product_id') 
                     ->label('Produk')
                     ->required()
                     ->options(Product::query()->where('stock', '>', 1)->pluck('name', 'id'))
-                    ->columnSpan(4)
+                    ->columnSpan([
+                        'md' => 5,
+            ])
+            ->afterStateHydrated(function(Set $set, Get $get, $state){
+                    $product = Product::find($state);
+                    $set('unit_price', $product->selling_price?? 0);
+                    $set('stock', $product->stock?? 0);
+            })
                     ->afterStateUpdated(function ($state, Set $set, Get $get) {
                         $product = Product::find($state);
                         $set('unit_price', $product->selling_price ?? 0);
                         $set('stock', $product->stock ?? 0);
+                        $quantity = $get('quantity')?? 1;
+                        $stock = $get('stock');
                         self::updateTotalPrice($get, $set);
-                    })
+            })
                     ->disableOptionsWhenSelectedInSiblingRepeaterItems(),
-
                 TextInput::make('quantity')
                     ->required()
                     ->numeric()
                     ->default(1)
                     ->minValue(1)
-                    ->columnSpan(2)
+                    ->columnSpan([
+                        'md' => 1
+                    ])
                     ->afterStateUpdated(function ($state, Set $set, Get $get) {
                         $stock = $get('stock');
                         if ($state > $stock) {
@@ -181,13 +196,17 @@ class PostransactionResource extends Resource
                     ->required()
                     ->numeric()
                     ->readOnly()
-                    ->columnSpan(2),
+                    ->columnSpan([
+                        'md' => 1
+                    ]),
 
                 TextInput::make('unit_price')
                     ->required()
                     ->numeric()
                     ->readOnly()
-                    ->columnSpan(4),
+                    ->columnSpan([
+                        'md' => 3
+                ]),
             ]);
     }
 

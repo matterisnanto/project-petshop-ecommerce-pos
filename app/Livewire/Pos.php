@@ -4,7 +4,7 @@ namespace App\Livewire;
 
 use session;
 use Filament\Forms;
-use App\Models\Order;
+
 use App\Models\Product;
 use Filament\Forms\Set;
 
@@ -104,7 +104,7 @@ class Pos extends Component implements HasForms
                 $this->order_items[] = [
                     'product_id' => $product->id,
                     'name' => $product->name,
-                    'price' => $product->price,
+                    'selling_price' => $product->selling_price,
                     'thumbnail' => $product->thumbnail,
                     'image_url' => $product->image_url,
                     'quantity' => 1,
@@ -112,6 +112,7 @@ class Pos extends Component implements HasForms
             }
 
             session()->put('orderItems', $this->order_items);
+            $this->calculateTotal();
             Notification::make()
                     ->title('Produk ditambahkan ke keranjang')
                     ->success()
@@ -154,6 +155,7 @@ class Pos extends Component implements HasForms
         }
 
         session()->put('orderItems', $this->order_items);
+        $this->calculateTotal();
     }
 
     public function decreaseQuantity($product_id)
@@ -170,13 +172,14 @@ class Pos extends Component implements HasForms
             }
         }
         session()->put('orderItems', $this->order_items);
+        $this->calculateTotal();
     }
 
     public function calculateTotal()
     {
         $total = 0;
         foreach($this->order_items as $item) {
-            $total += $item['quantity'] * $item['price'];
+            $total += $item['quantity'] * $item['selling_price'];
         }
         $this->total_price = $total;
         return $total;
@@ -192,7 +195,7 @@ class Pos extends Component implements HasForms
 
         $payment_method_id_temp = $this->payment_method_id;
 
-        $order = POSTransaction::create([
+        $postransaction = POSTransaction::create([
             'name' => $this->name_customer,
             'gender' => $this->gender,
             'total_price' => $this->calculateTotal(),
@@ -201,10 +204,11 @@ class Pos extends Component implements HasForms
 
         foreach($this->order_items as $item) {
             OrderProduct::create([
-                'order_id' => $order->id,
+                'order_id' => $postransaction->id,
                 'product_id' => $item['product_id'],
                 'quantity' => $item['quantity'],
-                'unit_price' => $item['price']
+                'selling_price' => $item['selling_price']
+                
             ]);
 
             
@@ -214,7 +218,7 @@ class Pos extends Component implements HasForms
         $this->order_items = [];
         session()->forget(['orderItems']);
 
-        return redirect()->to('admin/orders');
+        return redirect()->to('admin/postransaction');
     }
 
     

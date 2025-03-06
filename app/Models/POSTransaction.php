@@ -30,7 +30,7 @@ class PosTransaction extends Model
 
     public function orderProducts(): HasMany
     {
-        return $this->hasMany(OrderProduct::class);
+        return $this->hasMany(OrderProduct::class, 'pos_transaction_id');
     }
 
     public function product(): BelongsTo
