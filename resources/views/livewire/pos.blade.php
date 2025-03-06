@@ -8,8 +8,10 @@
             <div class="grid grid-cols-8 sm:grid-cols-3 md:grid-cols-8 lg:grid-cols- gap-4">
                 @foreach($products as $item)
                     <div wire:click="addToOrder({{$item->id}})" class="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg shadow cursor-pointer">
-                        <img src="{{$item->image_url}}"
-                            alt="Product Image" class="w-full h-16 object-cover rounded-lg mb-2">
+                        <img src="{{ isset($item['thumbnail']) && $item['thumbnail'] ? asset('storage/' . $item['thumbnail']) : asset('images/default.png') }}"
+     alt="Product Image"
+     onerror="this.onerror=null; this.src='{{ asset('images/default.png') }}';">
+
                         <h3 class="text-sm font-semibold">{{$item->name}}</h3>
                         <p class="text-gray-600 dark:text-gray-400 text-xs">Rp. {{number_format($item->price, 0, ',', '.')}}</p>
                         <p class="text-gray-600 dark:text-gray-400 text-xs">Stok: {{$item->stock}}</p>
@@ -34,8 +36,10 @@
             <div class="mb-4">
                 <div class="flex justify-between items-center bg-gray-100 dark:bg-gray-700 p-4 rounded-lg shadow">
                     <div class="flex items-center">
-                        <img src="{{$item['image_url']}}" alt="Product Image"
-                            class="w-10 h-10 object-cover rounded-lg mr-2">
+                        <img src="{{ isset($item['thumbnail']) && $item['thumbnail'] ? asset('storage/' . $item['thumbnail']) : asset('images/default.png') }}"
+     alt="Product Image"
+     onerror="this.onerror=null; this.src='{{ asset('images/default.png') }}';">
+
                         <div class="px-2">
                             <h3 class="text-sm font-semibold">{{$item['name']}}</h3>
                             <p class="text-gray-600 dark:text-gray-400 text-xs">Rp {{number_format($item['price'], 0, ',', '.')}}</p>

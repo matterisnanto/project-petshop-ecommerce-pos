@@ -2,17 +2,18 @@
 
 namespace App\Livewire;
 
+use session;
 use Filament\Forms;
 use App\Models\Order;
 use App\Models\Product;
 use Filament\Forms\Set;
-use Livewire\Component;
 
+use Livewire\Component;
 use Filament\Forms\Form;
 use App\Models\OrderProduct;
 use App\Models\PaymentMethod;
-use App\Models\POSTransaction;
 
+use App\Models\POSTransaction;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
@@ -105,7 +106,7 @@ class Pos extends Component implements HasForms
                     'name' => $product->name,
                     'price' => $product->price,
                     'thumbnail' => $product->thumbnail,
-
+                    'image_url' => $product->image_url,
                     'quantity' => 1,
                 ];
             }
@@ -205,7 +206,10 @@ class Pos extends Component implements HasForms
                 'quantity' => $item['quantity'],
                 'unit_price' => $item['price']
             ]);
+
+            
         }
+        
 
         $this->order_items = [];
         session()->forget(['orderItems']);
@@ -213,5 +217,6 @@ class Pos extends Component implements HasForms
         return redirect()->to('admin/orders');
     }
 
+    
 
 }

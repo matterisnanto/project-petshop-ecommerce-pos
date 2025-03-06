@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Product extends Model
 {
     use HasFactory;
-
+    
     // Table name for this model
     protected $table = 'products';
     //
@@ -55,8 +55,10 @@ class Product extends Model
 
     public function getImageUrlAttribute()
 {
-    return $this->thumbnail ? asset('storage/' . $this->thumbnail) : null;
+    return $this->thumbnail ? asset('storage/' . $this->thumbnail) : asset('images/default.png');
+    
 }
+
 
     public function scopeSearch($query, $value)
     {

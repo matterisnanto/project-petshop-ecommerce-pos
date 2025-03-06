@@ -2,7 +2,10 @@
 
 namespace App\Models;
 
+use App\Models\PaymentMethod;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class PosTransaction extends Model
 {
@@ -19,8 +22,20 @@ class PosTransaction extends Model
         'change_amount'
     ];
     
-    public function paymentmethod() {
+
+    public function paymentmethod()
+     {
         return $this->belongsTo(PaymentMethod::class, 'payment_method_id');
+    }
+
+    public function orderProducts(): HasMany
+    {
+        return $this->hasMany(OrderProduct::class);
+    }
+
+    public function product(): BelongsTo
+    {
+        return $this->belongsTo(Product::class);
     }
 
 }

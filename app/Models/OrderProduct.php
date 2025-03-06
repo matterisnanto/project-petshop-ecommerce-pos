@@ -11,13 +11,14 @@ class OrderProduct extends Model
     
     protected $table = 'order_products';
 
-    protected $fillable = ['payment_method_id', 'product_id', 'quantity', 'unit_price'];
+    protected $fillable = ['pos_transaction_id', 'product_id', 'quantity', 'unit_price'];
 
-    public function paymentMethod()
+
+    public function posTransaction()
     {
-        return $this->belongsTo(PaymentMethod::class, 'payment_method_id');
+        return $this->belongsTo(PosTransaction::class, 'pos_transaction_id');
     }
-
+        
     public function product()
     {
         return $this->belongsTo(Product::class, 'product_id');

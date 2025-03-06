@@ -13,10 +13,10 @@ return new class () extends Migration {
         Schema::create('pos_transactions', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('email')->unique();
+            $table->string('email')->nullable();
             $table->enum('gender', ['male', 'female']);
             $table->integer('total_price');
-            $table->longText('note');
+            $table->text('note')->nullable();
             $table->foreignId('payment_method_id')
                 ->nullable()
                 ->constrained('payment_methods')
