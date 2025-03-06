@@ -31,4 +31,7 @@ class DeleteEmptyDirectories extends Command
     }
 }
 
+// upload ke github terlebih dahulu untuk keamanan
 // php artisan delete:empty-dirs
+// jalankan terlebih dahulu
+// kembalikan folder yang penting
