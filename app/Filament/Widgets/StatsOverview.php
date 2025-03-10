@@ -14,10 +14,12 @@ class StatsOverview extends BaseWidget
     protected function getStats(): array
     {
         $product_count = Product::count();
+        $order_count = PosTransaction::count();
         $omset = PosTransaction::sum('total_price');
         $expense = Expense::sum('amount');
         return [
             Stat::make('Product', $product_count),
+            Stat::make('Postransaction', $product_count),
             Stat::make('Omset', number_format($omset,0,",",".")),
             Stat::make('Expense', number_format($expense,0,",",".")),
         ];

@@ -3,7 +3,6 @@
 namespace App\Filament\Widgets;
 
 use Carbon\Carbon;
-use App\Models\Order;
 use App\Models\PosTransaction;
 use Flowframe\Trend\Trend;
 use Flowframe\Trend\TrendValue;

@@ -204,10 +204,10 @@ class Pos extends Component implements HasForms
 
         foreach($this->order_items as $item) {
             OrderProduct::create([
-                'order_id' => $postransaction->id,
+                'pos_transaction_id' => $postransaction->id,
                 'product_id' => $item['product_id'],
                 'quantity' => $item['quantity'],
-                'selling_price' => $item['selling_price']
+                'unit_price' => $item['selling_price']
                 
             ]);
 
@@ -218,9 +218,11 @@ class Pos extends Component implements HasForms
         $this->order_items = [];
         session()->forget(['orderItems']);
 
-        return redirect()->to('admin/postransaction');
+        Notification::make()
+        ->title('Checkout berhasil!')
+        ->success()
+        ->send();
+
+    return redirect()->route('postransaction');
     }
-
-    
-
 }

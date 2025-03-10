@@ -10,6 +10,7 @@ return new class () extends Migration {
      */
     public function up(): void
     {
+        
         Schema::create('pos_transactions', function (Blueprint $table) {
             $table->id();
             $table->string('name');
@@ -27,6 +28,7 @@ return new class () extends Migration {
             $table->softDeletes();
         });
     }
+    
 
     /**
      * Reverse the migrations.

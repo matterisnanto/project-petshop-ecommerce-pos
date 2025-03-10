@@ -90,6 +90,7 @@ class ProductResource extends Resource
                         Forms\Components\Select::make('category_id')
                             ->relationship('category', 'name')
                             ->label('Category')
+                            ->default(null)
                             ->createOptionForm([
                                 Forms\Components\TextInput::make('name')
                                     ->afterStateUpdated(function (Set $set, $state) {

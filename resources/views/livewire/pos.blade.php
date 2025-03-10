@@ -31,7 +31,7 @@
     <div class="md:col-span-1 bg-white dark:bg-gray-800 shadow-md rounded-lg p-6">
         @if(count($order_items) > 0)
             <div class="py-4">
-                <h3 class="text-lg font-semibold text-center">Total: Rp. {{number_format($item->selling_price, 0, ',', '.')}}</h3>
+                <h3 class="text-lg font-semibold text-center">Total: Rp. {{ number_format($total_price, 0, ',', '.') }}</h3>
             </div>
         @endif
         @foreach($order_items as $item)

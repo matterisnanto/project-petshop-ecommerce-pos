@@ -20,11 +20,14 @@ class OrderProduct extends Model
 
     public function posTransaction(): BelongsTo
     {
-        return $this->belongsTo(PosTransaction::class, 'pos_transaction_id');
+        return $this->belongsTo(PosTransaction::class, 'pos_transaction_id'); 
     }
+    
         
     public function product():BelongsTo 
     {
         return $this->belongsTo(Product::class, 'product_id');
     }
+
+    
 }

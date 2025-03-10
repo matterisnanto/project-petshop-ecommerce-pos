@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->longText('note');
-            $table->date('date_expense');
+            $table->date('date_expense')->nullable();
             $table->integer('amount');
             $table->timestamps();
             $table->softDeletes();
