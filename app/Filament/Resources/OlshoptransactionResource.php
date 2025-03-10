@@ -112,6 +112,8 @@ class OlshoptransactionResource extends Resource
                                     Forms\Components\TextInput::make('phone')
                                         ->label('Phone Number')
                                         ->tel()
+                                        ->mask('999-9999-9999') // Format input
+                                        ->prefix('+62') // Tambahkan prefix
                                         ->required()
                                         ->maxLength(255),
                                     Forms\Components\TextInput::make('email')
@@ -234,7 +236,7 @@ class OlshoptransactionResource extends Resource
                     Forms\Components\Wizard\Step::make('Transaction Details')
                         ->description('')
                         ->schema([
-                            Forms\Components\TextInput::make('booking_trx')
+                            Forms\Components\TextInput::make('trx_id')
                                 ->label('Booking Trx Number')
                                 ->required()
                                 ->maxLength(255),

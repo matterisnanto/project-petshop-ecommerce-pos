@@ -52,4 +52,9 @@ class Product extends Model
         }
         return $slug;
     }
+
+    public function getImageUrlAttribute()
+    {
+        return $this->thumbnail ? url('storage/', $this->thumbnail) : null;
+    }
 }
