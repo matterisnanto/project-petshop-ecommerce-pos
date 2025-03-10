@@ -17,11 +17,14 @@ class ProductAlert extends BaseWidget
         return $table
             ->query(
                 Product::query()
-                    ->where('stock', '<=', 10)
+                    ->where('stock', '<=', 27)
                     ->orderBy('stock', 'asc')
             )
             ->columns([
-                Tables\Columns\ImageColumn::make('photos'),
+                Tables\Columns\ImageColumn::make('photo')
+                ->disk('public') // Menggunakan disk 'public'
+                ->square() // Biar tampil rapi
+                ->getStateUsing(fn ($record) => 'uploads/thumbnails/' . $record->photo)    ,
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('stock')

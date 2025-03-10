@@ -64,4 +64,6 @@ public function scopeSearch($query, $value)
     {
         return $this->hasMany(OrderProduct::class);
     }
+
+
 }

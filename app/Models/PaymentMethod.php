@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class PaymentMethod extends Model
 {
@@ -12,5 +13,10 @@ class PaymentMethod extends Model
     protected $table = 'payment_methods';
 
     protected $fillable = ['name', 'image', 'is_cash'];
-}
 
+    public function postransaction(): HasMany
+    {
+        return $this->hasMany(PosTransaction::class);
+    }
+   
+}

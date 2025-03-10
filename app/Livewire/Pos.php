@@ -13,7 +13,7 @@ use Filament\Forms\Form;
 use App\Models\OrderProduct;
 use App\Models\PaymentMethod;
 
-use App\Models\POSTransaction;
+use App\Models\PosTransaction;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
@@ -42,34 +42,36 @@ class Pos extends Component implements HasForms
     }
 
     public function form(Form $form): Form
-    {
-        return $form
+{
+    return $form
+        ->schema([
+            Forms\Components\Section::make('Form Checkout')
                 ->schema([
-                    Forms\Components\Section::make('Form Checkout')
-                        ->schema([
-                            Forms\Components\TextInput::make('name_customer')
-                                ->required()
-                                ->maxLength(255)
-                                ->default(fn () => $this->name_customer),
-                            Forms\Components\Select::make('gender')
-                                ->options([
-                                    'male' => 'Male',
-                                    'female' => 'Female'
-                                ])
-                                ->required(),
-                            Forms\Components\TextInput::make('total_price')
-                                ->readOnly()
-                                ->numeric()
-                                ->default(fn () => $this->total_price),
-                            Forms\Components\Select::make('payment_method_id') 
-                                ->required()
-                                ->label('Payment Method')
-                                ->options($this->payment_methods->pluck('name', 'id'))
+                    Forms\Components\TextInput::make('name_customer')
+                        ->required()
+                        ->maxLength(255)
+                        ->default(fn () => $this->name_customer),
+                    Forms\Components\Select::make('gender')
+                        ->options([
+                            'male' => 'Male',
+                            'female' => 'Female'
                         ])
-                ]);
-    }
+                        ->required(),
+                    Forms\Components\TextInput::make('total_price')
+                        ->readOnly()
+                        ->numeric()
+                        ->default(fn () => $this->total_price),
+                        Forms\Components\Select::make('payment_method_id') 
+                        ->required()
+                        ->label('Payment Method')
+                        ->options(PaymentMethod::pluck('name', 'id')->toArray()) // Ambil nama sebagai label, id sebagai value
+                        ->default($this->payment_method_id)
+                ])
+        ]);
+}
 
-    public function mount()
+
+public function mount()
     {
         if (session()->has('orderItems')) {
             $this->order_items = session('orderItems');
@@ -186,43 +188,40 @@ class Pos extends Component implements HasForms
     }
 
     public function checkout()
-    {
-        $this->validate([
-            'name_customer' => 'required|string|max:255',
-            'gender' => 'required|in:male,female',
-            'payment_method_id' => 'required'
+{
+    $this->validate([
+        'name_customer' => 'required|string|max:255',
+        'gender' => 'required|in:male,female',
+        'payment_method_id' => 'required'
+    ]);
+
+    $postransaction = PosTransaction::create([
+        'name' => $this->name_customer,
+        'gender' => $this->gender,
+        'total_price' => $this->calculateTotal(),
+        'payment_method_id' => $this->payment_method_id
+    ]);
+
+    // Simpan detail order ke OrderProduct
+    foreach ($this->order_items as $item) {
+        OrderProduct::create([
+            'pos_transaction_id' => $postransaction->id,
+            'product_id' => $item['product_id'],
+            'quantity' => $item['quantity'],
+            'unit_price' => $item['selling_price']
         ]);
+    }
 
-        $payment_method_id_temp = $this->payment_method_id;
+    // Reset order setelah checkout
+    $this->order_items = [];
+    session()->forget('orderItems');
+    $this->name_customer = '';
+    $this->gender = '';
+    $this->payment_method_id = 0;
 
-        $postransaction = POSTransaction::create([
-            'name' => $this->name_customer,
-            'gender' => $this->gender,
-            'total_price' => $this->calculateTotal(),
-            'payment_method_id' => $payment_method_id_temp
-        ]);
-
-        foreach($this->order_items as $item) {
-            OrderProduct::create([
-                'pos_transaction_id' => $postransaction->id,
-                'product_id' => $item['product_id'],
-                'quantity' => $item['quantity'],
-                'unit_price' => $item['selling_price']
-                
-            ]);
-
-            
-        }
-        
-
-        $this->order_items = [];
-        session()->forget(['orderItems']);
-
-        Notification::make()
+    // Kirim notifikasi sukses
+    Notification::make()
         ->title('Checkout berhasil!')
         ->success()
         ->send();
-
-    return redirect()->route('postransaction');
-    }
-}
+}}

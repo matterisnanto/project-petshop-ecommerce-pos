@@ -26,10 +26,10 @@ use App\Filament\Resources\PostransactionResource\Pages;
 
 class PostransactionResource extends Resource
 {
-    protected static ?string $model = Postransaction::class;
-    protected static ?string $navigationLabel = 'POS Transaction';
-    protected static ?string $modelLabel = 'POS Transaction';
-    protected static ?string $pluralModelLabel = 'POS Transaction';
+    protected static ?string $model = PosTransaction::class;
+    protected static ?string $navigationLabel = 'PosTransaction';
+    protected static ?string $modelLabel = 'PosTransaction';
+    protected static ?string $pluralModelLabel = 'PosTransaction';
     protected static ?string $navigationGroup = 'Transactions';
     protected static ?int $navigationSort = 0;
     protected static ?string $navigationIcon = 'heroicon-o-building-storefront';
@@ -122,22 +122,27 @@ class PostransactionResource extends Resource
     }
 
     public static function table(Table $table): Table
-    {
-        return $table
-            ->columns([
-                Tables\Columns\TextColumn::make('name')->searchable(),
-                //Tables\Columns\TextColumn::make('email')->searchable(),
-                Tables\Columns\TextColumn::make('gender'),
-                Tables\Columns\TextColumn::make('total_price')->numeric()->sortable(),
-                Tables\Columns\TextColumn::make('payment_method_id')->numeric()->sortable(),
-                Tables\Columns\TextColumn::make('paid_amount')->numeric()->sortable(),
-                Tables\Columns\TextColumn::make('change_amount')->numeric()->sortable(),
-                Tables\Columns\TextColumn::make('created_at')->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true),
-            ])
-            ->actions([Tables\Actions\EditAction::make()])
-            ->bulkActions([Tables\Actions\BulkActionGroup::make([Tables\Actions\DeleteBulkAction::make()])]);
-    }
+{
+    return $table
+        ->columns([
+            Tables\Columns\TextColumn::make('name')->searchable(),
+            Tables\Columns\TextColumn::make('gender'),
+            Tables\Columns\TextColumn::make('total_price')->numeric()->sortable(),
+            
+            // kolom ini untuk menampilkan nama metode pembayaran
+            Tables\Columns\TextColumn::make('paymentMethod.name')
+                ->label('Payment Method')
+                ->sortable()
+                ->searchable(),
+
+            Tables\Columns\TextColumn::make('paid_amount')->numeric()->sortable(),
+            Tables\Columns\TextColumn::make('change_amount')->numeric()->sortable(),
+            Tables\Columns\TextColumn::make('created_at')->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true),
+            Tables\Columns\TextColumn::make('updated_at')->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true),
+        ])
+        ->actions([Tables\Actions\EditAction::make()])
+        ->bulkActions([Tables\Actions\BulkActionGroup::make([Tables\Actions\DeleteBulkAction::make()])]);
+}
 
     public static function getItemsRepeater(): Repeater
     {

@@ -23,9 +23,9 @@ class PosTransaction extends Model
     ];
     
 
-    public function paymentmethod()
+    public function paymentMethod()
      {
-        return $this->belongsTo(PaymentMethod::class, 'payment_method_id');
+        return $this->belongsTo(PaymentMethod::class);
     }
 
     public function orderProducts(): HasMany
@@ -36,6 +36,19 @@ class PosTransaction extends Model
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
+    }
+
+    public function mount()
+    {
+        // Ambil data dengan relasi paymentMethod
+        $this->transactions = PosTransaction::with('paymentMethod')->get();
+    }
+
+    public function render()
+    {
+        return view('livewire.pos-transaction', [
+            'transactions' => $this->transactions
+        ]);
     }
 
 }
