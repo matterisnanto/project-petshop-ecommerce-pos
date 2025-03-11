@@ -191,7 +191,8 @@ class OlshoptransactionResource extends Resource
                                 ->required()
                                 ->readOnly()
                                 ->numeric()
-                                ->default(0),
+                                ->default(0)
+                                ->live(),
                         ]),
                     Forms\Components\Wizard\Step::make('Customer Information')
                         ->description('')
@@ -433,19 +434,15 @@ class OlshoptransactionResource extends Resource
 
     protected static function updateGrandTotalAmount(callable $get, callable $set): void
     {
-        $products = $get('products');
-        $allSubTotalAmount = 0;
+        $products = $get('products') ?? [];
         $discount = $get('discount_amount') ?? 0;
+        $total = 0;
 
-        if (is_array($products)) {
-            foreach ($products as $product) {
-                if (isset($product['sub_total_amount'])) {
-                    $allSubTotalAmount += $product['sub_total_amount'];
-                }
-            }
+        foreach ($products as $product) {
+            $total += $product['sub_total_amount'] ?? 0;
         }
 
-        $grandTotalAmount = $allSubTotalAmount - $discount;
-        $set('grand_total_amount', $grandTotalAmount);
+        $grandTotal = $total - $discount;
+        $set('grand_total_amount', $grandTotal);
     }
 }
