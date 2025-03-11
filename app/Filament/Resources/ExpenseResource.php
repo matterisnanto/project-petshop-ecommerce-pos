@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\PaymentmethodResource\Pages;
-use App\Filament\Resources\PaymentmethodResource\RelationManagers;
-use App\Models\Paymentmethod;
+use App\Filament\Resources\ExpenseResource\Pages;
+use App\Filament\Resources\ExpenseResource\RelationManagers;
+use App\Models\Expense;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -13,22 +13,20 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class PaymentmethodResource extends Resource
+class ExpenseResource extends Resource
 {
-    protected static ?string $model = Paymentmethod::class;
+    protected static ?string $model = Expense::class;
 
-    protected static ?string $navigationLabel = 'Payment Method';
+    protected static ?string $navigationLabel = 'Expense';
 
-    protected static ?string $modelLabel = 'Payment Method';
+    protected static ?string $modelLabel = 'Expense';
 
-    protected static ?string $pluralModelLabel = 'Payment Method';
+    protected static ?string $pluralModelLabel = 'Expense';
 
-    protected static ?string $navigationIcon = 'heroicon-o-credit-card';
+    protected static ?string $navigationIcon = 'heroicon-o-banknotes';
 
     protected static ?string $navigationGroup = 'Offers & Payments';
-
-    protected static ?int $navigationSort = 7;
-
+    protected static ?int $navigationSort = 8;
 
     public static function form(Form $form): Form
     {
@@ -37,11 +35,13 @@ class PaymentmethodResource extends Resource
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\FileUpload::make('image')
-                    ->image()
-                    ->required(),
-                Forms\Components\Toggle::make('is_cash')
-                    ->required(),
+                Forms\Components\Textarea::make('note')
+                    ->required()
+                    ->columnSpanFull(),
+                Forms\Components\TextInput::make('amount')
+                    ->required()
+                    ->numeric()
+                    ->prefix('Rp'),
             ]);
     }
 
@@ -49,11 +49,15 @@ class PaymentmethodResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\ImageColumn::make('image'),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
-                Tables\Columns\IconColumn::make('is_cash')
-                    ->boolean(),
+                Tables\Columns\TextColumn::make('amount')
+                    ->numeric()
+                    ->sortable()
+                    ->formatStateUsing(function ($state) {
+                        // Format nilai sebagai Rupiah
+                        return 'Rp ' . number_format($state, 0, ',', '.');
+                    }),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -67,12 +71,12 @@ class PaymentmethodResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+
             ->filters([
                 //
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -91,9 +95,9 @@ class PaymentmethodResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListPaymentmethods::route('/'),
-            'create' => Pages\CreatePaymentmethod::route('/create'),
-            // 'edit' => Pages\EditPaymentmethod::route('/{record}/edit'),
-        ];
-    }
+            'index' => Pages\ListExpenses::route('/'),
+            'create' => Pages\CreateExpense::route('/create'),
+            'edit' => Pages\EditExpense::route('/{record}/edit'),
+            ];
+        }
 }

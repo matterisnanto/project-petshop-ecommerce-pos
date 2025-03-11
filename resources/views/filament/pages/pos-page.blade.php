@@ -1,5 +1,6 @@
 <x-filament-panels::page>
 
-@livewire('pos')
+    @livewire('pos')
+
 
 </x-filament-panels::page>

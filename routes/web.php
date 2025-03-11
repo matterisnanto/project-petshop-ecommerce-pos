@@ -6,10 +6,6 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ContactUsController;
 
-Route::get('/', function () {
-    return view('pages.productdetail');
-});
-
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::get('/product', [ProductController::class, 'index'])->name('product');
@@ -19,3 +15,10 @@ Route::get('/trx-check', [TrxController::class, 'index'])->name('trx');
 Route::post('/trx-check', [TrxController::class, 'searchTransaction'])->name('transaction.search');
 
 Route::get('contact-us', [ContactUsController::class, 'index'])->name('contactus');
+
+use App\Livewire\Pos;
+
+Route::get('/', function () {
+    return view('welcome');
+
+});
