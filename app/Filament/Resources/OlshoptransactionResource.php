@@ -35,10 +35,74 @@ class OlshoptransactionResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Wizard::make([
-                    Forms\Components\Wizard\Step::make('Product and price')
-                        ->description('')
+                    // Forms\Components\Wizard\Step::make('Product and price')
+                    //     ->description('')
+                    //     ->schema([
+                    //         Forms\Components\Grid::make()
+                    //             ->schema([
+                    //                 Forms\Components\Select::make('product_id')
+                    //                     ->label('Product')
+                    //                     ->relationship('products', 'name')
+                    //                     ->required()
+                    //                     ->searchable()
+                    //                     ->live()
+                    //                     ->preload()
+                    //                     ->afterStateUpdated(function ($state, callable $get, callable $set) {
+                    //                         $product = Product::find($state);
+                    //                         $price = $product ? $product->selling_price : 0;
+                    //                         $quantity = $get('quantity') ?? 1;
+                    //                         $subTotalAmount = $price * $quantity;
+                    //                         $discount = $get('discount_amount') ?? 0;
+                    //                         $grandTotalAmount = $subTotalAmount - $discount;
+
+                    //                         $set('quantity', $quantity);
+                    //                         $set('price', $price);
+                    //                         $set('sub_total_amount', $subTotalAmount);
+                    //                         $set('grand_total_amount', $grandTotalAmount);
+                    //                     }),
+                    //                 Forms\Components\TextInput::make('quantity')
+                    //                     ->label('Quantity')
+                    //                     ->required()
+                    //                     ->numeric()
+                    //                     ->prefix('Qty')
+                    //                     ->live()
+                    //                     // ->default(1)
+                    //                     ->afterStateUpdated(function ($state, callable $get, callable $set) {
+                    //                         $price = $get('price') ?? 0;
+                    //                         $quantity = $state;
+                    //                         $subTotalAmount = $price * $quantity;
+
+                    //                         $set('sub_total_amount', $subTotalAmount);
+
+                    //                         $discount = $get('discount_amount') ?? 0;
+                    //                         $grandTotalAmount = $subTotalAmount - $discount;
+                    //                         $set('grand_total_amount', $grandTotalAmount);
+                    //                     }),
+                    //                 Forms\Components\Select::make('promo_code_id')
+                    //                     ->label('Promo Code')
+                    //                     ->relationship('promocode', 'code')
+                    //                     ->default(null),
+                    //                 Forms\Components\TextInput::make('discount_amount')
+                    //                     ->label('Discount Amount')
+                    //                     ->required()
+                    //                     ->default(0)
+                    //                     ->readOnly()
+                    //                     ->numeric(),
+                    //                 Forms\Components\TextInput::make('sub_total_amount')
+                    //                     ->label('Sub Total Amount')
+                    //                     ->required()
+                    //                     ->numeric(),
+                    //                 Forms\Components\TextInput::make('grand_total_amount')
+                    //                     ->label('Grand Total Amount')
+                    //                     ->required()
+                    //                     ->readOnly()
+                    //                     ->numeric(),
+                    //             ]),
+                    //     ]),
+                    Forms\Components\Wizard\Step::make('Products and Prices')
+                        ->description('Select products and their quantities')
                         ->schema([
-                            Forms\Components\Grid::make()
+                            Forms\Components\Repeater::make('products')
                                 ->schema([
                                     Forms\Components\Select::make('product_id')
                                         ->label('Product')
@@ -52,13 +116,13 @@ class OlshoptransactionResource extends Resource
                                             $price = $product ? $product->selling_price : 0;
                                             $quantity = $get('quantity') ?? 1;
                                             $subTotalAmount = $price * $quantity;
-                                            $discount = $get('discount_amount') ?? 0;
-                                            $grandTotalAmount = $subTotalAmount - $discount;
 
                                             $set('quantity', $quantity);
                                             $set('price', $price);
                                             $set('sub_total_amount', $subTotalAmount);
-                                            $set('grand_total_amount', $grandTotalAmount);
+
+                                            // Hapus pengaturan grand_total_amount di sini
+                                            static::updateGrandTotalAmount($get, $set);
                                         }),
                                     Forms\Components\TextInput::make('quantity')
                                         ->label('Quantity')
@@ -66,38 +130,69 @@ class OlshoptransactionResource extends Resource
                                         ->numeric()
                                         ->prefix('Qty')
                                         ->live()
-                                        // ->default(1)
                                         ->afterStateUpdated(function ($state, callable $get, callable $set) {
                                             $price = $get('price') ?? 0;
-                                            $quantity = $state;
-                                            $subTotalAmount = $price * $quantity;
+                                            $subTotalAmount = $price * $state;
 
                                             $set('sub_total_amount', $subTotalAmount);
 
-                                            $discount = $get('discount_amount') ?? 0;
-                                            $grandTotalAmount = $subTotalAmount - $discount;
-                                            $set('grand_total_amount', $grandTotalAmount);
+                                            // Hapus pengaturan grand_total_amount di sini
+                                            static::updateGrandTotalAmount($get, $set);
                                         }),
-                                    Forms\Components\Select::make('promo_code_id')
-                                        ->label('Promo Code')
-                                        ->relationship('promocode', 'code')
-                                        ->default(null),
-                                    Forms\Components\TextInput::make('discount_amount')
-                                        ->label('Discount Amount')
+                                    Forms\Components\TextInput::make('price')
+                                        ->label('Price')
                                         ->required()
-                                        ->default(0)
+                                        ->numeric()
+                                        ->prefix('Rp')
                                         ->readOnly()
-                                        ->numeric(),
+                                        ->afterStateUpdated(function ($state, callable $get, callable $set) {
+                                            $quantity = $get('quantity') ?? 1;
+                                            $subTotalAmount = $state * $quantity;
+                                            $set('sub_total_amount', $subTotalAmount);
+
+                                            static::updateGrandTotalAmount($get, $set);
+                                        }),
                                     Forms\Components\TextInput::make('sub_total_amount')
                                         ->label('Sub Total Amount')
                                         ->required()
-                                        ->numeric(),
-                                    Forms\Components\TextInput::make('grand_total_amount')
-                                        ->label('Grand Total Amount')
-                                        ->required()
+                                        ->numeric()
+                                        ->prefix('Rp')
                                         ->readOnly()
-                                        ->numeric(),
-                                ]),
+                                        ->afterStateUpdated(function ($state, callable $get, callable $set) {
+                                            static::updateGrandTotalAmount($get, $set);
+                                        }),
+                                ])
+                                ->columns(4)
+                                ->orderable('product_id')
+                                ->defaultItems(1)
+                                ->addActionLabel('Add Another Product')
+                                ->live()
+                                ->afterStateUpdated(function ($state, callable $get, callable $set) {
+                                    static::updateGrandTotalAmount($get, $set);
+                                }),
+                            Forms\Components\Select::make('promo_code_id')
+                                ->label('Promo Code')
+                                ->relationship('promocode', 'code')
+                                ->default(null)
+                                ->afterStateUpdated(function ($state, callable $get, callable $set) {
+                                    // Logika untuk menghitung diskon berdasarkan promo code
+                                    $discount = 0; // Ganti dengan logika perhitungan diskon
+                                    $set('discount_amount', $discount);
+                                    static::updateGrandTotalAmount($get, $set);
+                                }),
+                            Forms\Components\TextInput::make('discount_amount')
+                                ->label('Discount Amount')
+                                ->required()
+                                ->default(0)
+                                ->readOnly()
+                                ->numeric(),
+                            Forms\Components\TextInput::make('grand_total_amount')
+                                ->label('Grand Total Amount')
+                                ->required()
+                                ->readOnly()
+                                ->numeric()
+                                ->default(0)
+                                ->live(),
                         ]),
                     Forms\Components\Wizard\Step::make('Customer Information')
                         ->description('')
@@ -112,6 +207,8 @@ class OlshoptransactionResource extends Resource
                                     Forms\Components\TextInput::make('phone')
                                         ->label('Phone Number')
                                         ->tel()
+                                        ->mask('999-9999-9999') // Format input
+                                        ->prefix('+62') // Tambahkan prefix
                                         ->required()
                                         ->maxLength(255),
                                     Forms\Components\TextInput::make('email')
@@ -234,7 +331,7 @@ class OlshoptransactionResource extends Resource
                     Forms\Components\Wizard\Step::make('Transaction Details')
                         ->description('')
                         ->schema([
-                            Forms\Components\TextInput::make('booking_trx')
+                            Forms\Components\TextInput::make('trx_id')
                                 ->label('Booking Trx Number')
                                 ->required()
                                 ->maxLength(255),
@@ -333,5 +430,20 @@ class OlshoptransactionResource extends Resource
             'create' => Pages\CreateOlshoptransaction::route('/create'),
             'edit' => Pages\EditOlshoptransaction::route('/{record}/edit'),
         ];
+    }
+
+
+    protected static function updateGrandTotalAmount(callable $get, callable $set): void
+    {
+        $products = $get('products') ?? [];
+        $discount = $get('discount_amount') ?? 0;
+        $total = 0;
+
+        foreach ($products as $product) {
+            $total += $product['sub_total_amount'] ?? 0;
+        }
+
+        $grandTotal = $total - $discount;
+        $set('grand_total_amount', $grandTotal);
     }
 }

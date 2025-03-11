@@ -49,10 +49,9 @@ class Product extends Model
     }
 
     public function getImageUrlAttribute()
-{
-    return $this->thumbnail ? url('storage/' . $this->thumbnail) : null;
-}
-
+    {
+        return $this->thumbnail ? url('storage/', $this->thumbnail) : null;
+    }
 
 public function scopeSearch($query, $value)
 {
