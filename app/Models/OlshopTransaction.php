@@ -30,6 +30,8 @@ class OlshopTransaction extends Model
             set: fn($value) => ltrim($value, '+62 ') // Menghindari duplikasi +62
         );
     }
+
+
     // public function subtotalamount() {
     //     return $this->belongsTo(SubTotalAmount::class);
     // }
