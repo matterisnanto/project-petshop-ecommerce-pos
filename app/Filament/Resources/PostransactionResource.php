@@ -29,7 +29,7 @@ class PostransactionResource extends Resource
     protected static ?string $model = PosTransaction::class;
     protected static ?string $navigationLabel = 'POS Transaction';
     protected static ?string $modelLabel = 'POS Transaction';
-    protected static ?string $pluralModelLabel = 'POS Transaction';
+    protected static ?string $pluralModelLabel = 'POS Transactions';
     protected static ?string $navigationGroup = 'Transactions';
     protected static ?int $navigationSort = 0;
     protected static ?string $navigationIcon = 'heroicon-o-building-storefront';
@@ -41,19 +41,19 @@ class PostransactionResource extends Resource
                 Forms\Components\Group::make()
                     ->columnSpanFull() // Tambahkan ini
                     ->schema([
-                        Forms\Components\Section::make('Info Utama')
+                        Forms\Components\Section::make('Main Information')
                             ->schema([
                                 Forms\Components\TextInput::make('name')->required()->maxLength(255),
                                 Forms\Components\TextInput::make('email')->email()->maxLength(255)->default(null),
                                 Forms\Components\Select::make('gender')
                                     ->options([
-                                        'male' => 'Laki-laki',
-                                        'female' => 'Perempuan',
+                                        'male' => 'Male',
+                                        'female' => 'Female',
                                     ])
                                     ->required(),
                             ])
                             ->columnSpanFull(),
-                        Forms\Components\Section::make('Produk Dipesan')
+                        Forms\Components\Section::make('Ordered Products')
                             ->schema([
                                 self::getItemsRepeater(),
                             ]),
@@ -62,7 +62,7 @@ class PostransactionResource extends Resource
                             ->columns(2) // Membuat layout 2 kolom
                             ->schema([
                                 // Kolom pertama: Total Price & Note
-                                Forms\Components\Section::make('Total & Catatan')
+                                Forms\Components\Section::make('Total & Notes')
                                     ->schema([
                                         Forms\Components\TextInput::make('total_price')
                                             ->required()
@@ -74,7 +74,7 @@ class PostransactionResource extends Resource
                                     ->columnSpan(1), // Ambil 1 kolom dari 2 kolom total
 
                                 // Kolom kedua: Pembayaran
-                                Forms\Components\Section::make('Pembayaran')
+                                Forms\Components\Section::make('Payment')
                                     ->schema([
                                         Forms\Components\Select::make('payment_method_id')
                                             ->relationship('paymentMethod', 'name')
@@ -102,16 +102,15 @@ class PostransactionResource extends Resource
                                         Forms\Components\TextInput::make('paid_amount')
                                             ->numeric()
                                             ->reactive()
-                                            ->label('Nominal Bayar')
+                                            ->label('Amount Paid')
                                             ->readOnly(fn(Get $get) => $get('is_cash') == false)
                                             ->afterStateUpdated(function (Set $set, Get $get, $state) {
-                                                //function untuk menghitung uang kembalian
-
-                                                self::updateExcangePaid($get, $set);
+                                                // Function untuk menghitung uang kembalian
+                                                self::updateExchangePaid($get, $set);
                                             }),
                                         Forms\Components\TextInput::make('change_amount')
                                             ->numeric()
-                                            ->label('Kembalian')
+                                            ->label('Change')
                                             ->readOnly(),
                                     ])
                                     ->columnSpan(1), // Ambil 1 kolom dari 2 kolom total
@@ -129,7 +128,7 @@ class PostransactionResource extends Resource
                 Tables\Columns\TextColumn::make('gender'),
                 Tables\Columns\TextColumn::make('total_price')->numeric()->sortable(),
 
-                // kolom ini untuk menampilkan nama metode pembayaran
+                // Kolom ini untuk menampilkan nama metode pembayaran
                 Tables\Columns\TextColumn::make('paymentMethod.name')
                     ->label('Payment Method')
                     ->sortable()
@@ -140,8 +139,16 @@ class PostransactionResource extends Resource
                 Tables\Columns\TextColumn::make('created_at')->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true),
             ])
-            ->actions([Tables\Actions\EditAction::make()])
-            ->bulkActions([Tables\Actions\BulkActionGroup::make([Tables\Actions\DeleteBulkAction::make()])]);
+            ->actions([
+                Tables\Actions\ViewAction::make(),
+                Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
+            ])
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
+            ]);
     }
 
     public static function getItemsRepeater(): Repeater
@@ -157,7 +164,7 @@ class PostransactionResource extends Resource
             })
             ->schema([
                 Select::make('product_id')
-                    ->label('Produk')
+                    ->label('Product')
                     ->required()
                     ->options(Product::query()->where('stock', '>', 1)->pluck('name', 'id'))
                     ->columnSpan([
@@ -190,7 +197,7 @@ class PostransactionResource extends Resource
                         if ($state > $stock) {
                             $set('quantity', $stock);
                             Notification::make()
-                                ->title('Stock tidak mencukupi')
+                                ->title('Insufficient stock')
                                 ->warning()
                                 ->send();
                         }
@@ -230,7 +237,7 @@ class PostransactionResource extends Resource
         $set('total_price', $total);
     }
 
-    protected static function updateExcangePaid(Get $get, Set $set): void
+    protected static function updateExchangePaid(Get $get, Set $set): void
     {
         $paidAmount = (int) $get('paid_amount') ?? 0;
         $totalPrice = (int) $get('total_price') ?? 0;
@@ -243,7 +250,7 @@ class PostransactionResource extends Resource
         return [
             'index' => Pages\ListPostransactions::route('/'),
             'create' => Pages\CreatePostransaction::route('/create'),
-            'edit' => Pages\EditPostransaction::route('/{record}/edit'),
+            // 'edit' => Pages\EditPostransaction::route('/{record}/edit'),
         ];
     }
 }

@@ -37,11 +37,6 @@ class PosTransaction extends Model
     {
         return $this->belongsTo(PaymentMethod::class);
     }
-    public function mount()
-    {
-        // Ambil data dengan relasi paymentMethod
-        $this->transactions = PosTransaction::with('paymentMethod')->get();
-    }
 
     public function render()
     {

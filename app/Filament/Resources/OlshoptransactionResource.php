@@ -40,159 +40,189 @@ class OlshoptransactionResource extends Resource
             ->schema([
                 Forms\Components\Wizard::make([
                     Forms\Components\Wizard\Step::make('Product and Price')
-                        ->label('Product Items')
+                        ->columns(2)
+                        ->label('Product and Pricing')
                         ->schema([
-                            Forms\Components\Section::make('Produk Dipesan')
+                            Forms\Components\Section::make('Products Ordered')
                                 ->schema([
                                     self::getItemsRepeater(),
                                 ]),
-                            Forms\Components\TextInput::make('sub_total_amount')
-                                ->required()
-                                ->numeric(),
-                            Forms\Components\TextInput::make('promo_code_id')
-                                ->numeric()
-                                ->default(null),
-                            Forms\Components\TextInput::make('discount_amount')
-                                ->required()
-                                ->numeric(),
-                            Forms\Components\TextInput::make('grand_total_amount')
-                                ->required()
-                                ->numeric(),
-
+                            Forms\Components\Section::make('Price to pay')
+                                ->schema([
+                                    Forms\Components\TextInput::make('sub_total_amount')
+                                        ->required()
+                                        ->numeric()
+                                        ->columnSpanFull(),
+                                    Forms\Components\Select::make('promo_code_id')
+                                        ->label('Promo Code')
+                                        ->relationship('promocode', 'code')
+                                        ->default(null)
+                                        ->afterStateUpdated(function ($state, callable $get, callable $set) {
+                                            // Logika untuk menghitung diskon berdasarkan promo code
+                                            $discount = 0; // Ganti dengan logika perhitungan diskon
+                                            $set('discount_amount', $discount);
+                                        }),
+                                    Forms\Components\TextInput::make('discount_amount')
+                                        ->label('Discount Amount')
+                                        ->required()
+                                        ->default(0)
+                                        ->readOnly()
+                                        ->numeric(), // Menempati 1 kolom
+                                    Forms\Components\TextInput::make('grand_total_amount')
+                                        ->required()
+                                        ->numeric()
+                                        ->columnSpanFull(),
+                                ]),
+                            // Menempati semua kolom (full width)
                         ]),
                     Forms\Components\Wizard\Step::make('Customer Information')
+                        ->columns(2)
                         ->label('Customer Information')
                         ->schema([
-                            Forms\Components\TextInput::make('name')
-                                ->label('Customer Name')
-                                ->required()
-                                ->maxLength(255)
-                                ->columnSpanFull(),
-                            Forms\Components\TextInput::make('phone')
-                                ->label('Phone Number')
-                                ->tel()
-                                ->mask('999-9999-9999')
-                                ->prefix('+62')
-                                ->required()
-                                ->maxLength(255)
-                                ->dehydrateStateUsing(function ($state) {
-                                    // Menambahkan prefix +62 ke data sebelum disimpan ke database
-                                    return '+62' . str_replace('-', '', $state);
-                                }),
-                            Forms\Components\TextInput::make('email')
-                                ->label('Email Address')
-                                ->email()
-                                ->required()
-                                ->maxLength(255),
-                            Forms\Components\Select::make('province')
-                                ->label('Province')
-                                ->required()
-                                ->options(function () {
-                                    // Fetch data Provinsi dari API
-                                    $response = file_get_contents('https://matterisnanto.github.io/api-wilayah-indonesia/api/provinces.json');
-                                    $provinces = json_decode($response, true);
+                            Forms\Components\Section::make('Customer Information')
+                                ->description('')
+                                ->schema([
+                                    Forms\Components\TextInput::make('name')
+                                        ->label('Customer Name')
+                                        ->required()
+                                        ->maxLength(255)
+                                        ->columnSpanFull(),
+                                    Forms\Components\TextInput::make('phone')
+                                        ->label('Phone Number')
+                                        ->tel()
+                                        ->mask('999-9999-9999')
+                                        ->prefix('+62')
+                                        ->required()
+                                        ->maxLength(255)
+                                        ->dehydrateStateUsing(function ($state) {
+                                            // Menambahkan prefix +62 ke data sebelum disimpan ke database
+                                            return '+62' . str_replace('-', '', $state);
+                                        })
+                                        ->columns(1),
+                                    Forms\Components\TextInput::make('email')
+                                        ->label('Email Address')
+                                        ->email()
+                                        ->required()
+                                        ->maxLength(255)
+                                        ->columns(1),
+                                ])
+                                ->columns(2),
+                            Forms\Components\Section::make('Address Information')
+                                ->description('')
+                                ->schema([
+                                    Forms\Components\Select::make('province')
+                                        ->label('Province')
+                                        ->required()
+                                        ->options(function () {
+                                            // Fetch data Provinsi dari API
+                                            $response = file_get_contents('https://matterisnanto.github.io/api-wilayah-indonesia/api/provinces.json');
+                                            $provinces = json_decode($response, true);
 
-                                    // Format data untuk options
-                                    $options = [];
-                                    foreach ($provinces as $province) {
-                                        $options[$province['id']] = $province['name'];
-                                    }
+                                            // Format data untuk options
+                                            $options = [];
+                                            foreach ($provinces as $province) {
+                                                $options[$province['id']] = $province['name'];
+                                            }
 
-                                    return $options;
-                                })
-                                ->searchable()
-                                ->reactive()
-                                ->columnSpanFull(),
-                            Forms\Components\Select::make('city_regency')
-                                ->label('City/Regency')
-                                ->required()
-                                ->options(function (callable $get) {
-                                    // Ambil province_id yang dipilih
-                                    $province = $get('province');
+                                            return $options;
+                                        })
+                                        ->searchable()
+                                        ->reactive()
+                                        ->columnSpanFull(),
+                                    Forms\Components\Select::make('city_regency')
+                                        ->label('City/Regency')
+                                        ->required()
+                                        ->options(function (callable $get) {
+                                            // Ambil province_id yang dipilih
+                                            $province = $get('province');
 
-                                    // Jika province_id belum dipilih, kembalikan array kosong
-                                    if (!$province) {
-                                        return [];
-                                    }
+                                            // Jika province_id belum dipilih, kembalikan array kosong
+                                            if (!$province) {
+                                                return [];
+                                            }
 
-                                    // Fetch data Kabupaten/Kota berdasarkan province_id
-                                    $response = file_get_contents("https://matterisnanto.github.io/api-wilayah-indonesia/api/regencies/{$province}.json");
-                                    $regencies = json_decode($response, true);
+                                            // Fetch data Kabupaten/Kota berdasarkan province_id
+                                            $response = file_get_contents("https://matterisnanto.github.io/api-wilayah-indonesia/api/regencies/{$province}.json");
+                                            $regencies = json_decode($response, true);
 
-                                    // Format data untuk options
-                                    $options = [];
-                                    foreach ($regencies as $regency) {
-                                        $options[$regency['id']] = $regency['name'];
-                                    }
+                                            // Format data untuk options
+                                            $options = [];
+                                            foreach ($regencies as $regency) {
+                                                $options[$regency['id']] = $regency['name'];
+                                            }
 
-                                    return $options;
-                                })
-                                ->searchable()
-                                ->reactive()
-                                ->columnSpanFull(),
-                            Forms\Components\Select::make('district')
-                                ->label('District')
-                                ->required()
-                                ->options(function (callable $get) {
-                                    // Ambil regency_id yang dipilih
-                                    $regency = $get('city_regency');
+                                            return $options;
+                                        })
+                                        ->searchable()
+                                        ->reactive()
+                                        ->columnSpanFull(),
+                                    Forms\Components\Select::make('district')
+                                        ->label('District')
+                                        ->required()
+                                        ->options(function (callable $get) {
+                                            // Ambil regency_id yang dipilih
+                                            $regency = $get('city_regency');
 
-                                    // Jika regency_id belum dipilih, kembalikan array kosong
-                                    if (!$regency) {
-                                        return [];
-                                    }
+                                            // Jika regency_id belum dipilih, kembalikan array kosong
+                                            if (!$regency) {
+                                                return [];
+                                            }
 
-                                    // Fetch data Kecamatan berdasarkan regency_id
-                                    $response = file_get_contents("https://matterisnanto.github.io/api-wilayah-indonesia/api/districts/{$regency}.json");
-                                    $districts = json_decode($response, true);
+                                            // Fetch data Kecamatan berdasarkan regency_id
+                                            $response = file_get_contents("https://matterisnanto.github.io/api-wilayah-indonesia/api/districts/{$regency}.json");
+                                            $districts = json_decode($response, true);
 
-                                    // Format data untuk options
-                                    $options = [];
-                                    foreach ($districts as $district) {
-                                        $options[$district['id']] = $district['name'];
-                                    }
+                                            // Format data untuk options
+                                            $options = [];
+                                            foreach ($districts as $district) {
+                                                $options[$district['id']] = $district['name'];
+                                            }
 
-                                    return $options;
-                                })
-                                ->searchable()
-                                ->reactive()
-                                ->columnSpanFull(),
-                            Forms\Components\Select::make('vilage_subdistrict')
-                                ->label('Village/Subdistrict')
-                                ->required()
-                                ->options(function (callable $get) {
-                                    // Ambil district_id yang dipilih
-                                    $district = $get('district');
+                                            return $options;
+                                        })
+                                        ->searchable()
+                                        ->reactive()
+                                        ->columnSpanFull(),
+                                    Forms\Components\Select::make('vilage_subdistrict')
+                                        ->label('Village/Subdistrict')
+                                        ->required()
+                                        ->options(function (callable $get) {
+                                            // Ambil district_id yang dipilih
+                                            $district = $get('district');
 
-                                    // Jika district_id belum dipilih, kembalikan array kosong
-                                    if (!$district) {
-                                        return [];
-                                    }
+                                            // Jika district_id belum dipilih, kembalikan array kosong
+                                            if (!$district) {
+                                                return [];
+                                            }
 
-                                    // Fetch data Kelurahan/Desa berdasarkan district_id
-                                    $response = file_get_contents("https://matterisnanto.github.io/api-wilayah-indonesia/api/villages/{$district}.json");
-                                    $villages = json_decode($response, true);
+                                            // Fetch data Kelurahan/Desa berdasarkan district_id
+                                            $response = file_get_contents("https://matterisnanto.github.io/api-wilayah-indonesia/api/villages/{$district}.json");
+                                            $villages = json_decode($response, true);
 
-                                    // Format data untuk options
-                                    $options = [];
-                                    foreach ($villages as $village) {
-                                        $options[$village['id']] = $village['name'];
-                                    }
+                                            // Format data untuk options
+                                            $options = [];
+                                            foreach ($villages as $village) {
+                                                $options[$village['id']] = $village['name'];
+                                            }
 
-                                    return $options;
-                                })
-                                ->searchable()
-                                ->reactive()
-                                ->columnSpanFull(),
-                            Forms\Components\TextInput::make('post_code')
-                                ->label('Post Code')
-                                ->required()
-                                ->numeric(),
-                            Forms\Components\TextInput::make('address')
-                                ->label('Address')
-                                ->required()
-                                ->maxLength(255)
-                                ->placeholder('Enter RT/RW, street/alley name, and landmarks'),
+                                            return $options;
+                                        })
+                                        ->searchable()
+                                        ->reactive()
+                                        ->columnSpanFull(),
+                                    Forms\Components\TextInput::make('post_code')
+                                        ->label('Post Code')
+                                        ->required()
+                                        ->numeric()
+                                        ->columnSpanFull(),
+                                    Forms\Components\TextInput::make('address')
+                                        ->label('Address')
+                                        ->required()
+                                        ->maxLength(255)
+                                        ->placeholder('Enter RT/RW, street/alley name, and landmarks')
+                                        ->columnSpanFull(),
+                                ])
+                                ->columns(2),
                         ]),
                     Forms\Components\Wizard\Step::make('Transaction Details')
                         ->description('')
@@ -221,39 +251,19 @@ class OlshoptransactionResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('trx_id')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('phone')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('email')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('promo_code_id')
-                    ->numeric()
-                    ->sortable(),
                 Tables\Columns\TextColumn::make('grand_total_amount')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('discount_amount')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('province')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('city_regency')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('district')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('vilage_subdistrict')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('post_code')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('address')
-                    ->searchable(),
                 Tables\Columns\IconColumn::make('is_paid')
                     ->boolean(),
-                Tables\Columns\TextColumn::make('trx_id')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('proof')
-                    ->searchable(),
                 Tables\Columns\TextColumn::make('deleted_at')
                     ->dateTime()
                     ->sortable()
@@ -271,7 +281,9 @@ class OlshoptransactionResource extends Resource
                 //
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -377,7 +389,7 @@ class OlshoptransactionResource extends Resource
         return [
             'index' => Pages\ListOlshoptransactions::route('/'),
             'create' => Pages\CreateOlshoptransaction::route('/create'),
-            'edit' => Pages\EditOlshoptransaction::route('/{record}/edit'),
+            // 'edit' => Pages\EditOlshoptransaction::route('/{record}/edit'),
         ];
     }
 }
