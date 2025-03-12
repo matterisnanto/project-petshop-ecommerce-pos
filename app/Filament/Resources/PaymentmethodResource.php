@@ -34,14 +34,19 @@ class PaymentmethodResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\FileUpload::make('image')
-                    ->image()
-                    ->required(),
-                Forms\Components\Toggle::make('is_cash')
-                    ->required(),
+                Forms\Components\Section::make('Expense')
+                    ->description('')
+                    ->schema([
+                        Forms\Components\TextInput::make('name')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\FileUpload::make('image')
+                            ->image()
+                            ->required(),
+                        Forms\Components\Toggle::make('is_cash')
+                            ->required(),
+                    ])
+                    ->columnSpanFull(),
             ]);
     }
 

@@ -21,11 +21,11 @@ class PosTransaction extends Model
         'paid_amount',
         'change_amount'
     ];
-  
 
-    public function orderProducts(): HasMany
+
+    public function order(): HasMany
     {
-        return $this->hasMany(OrderProduct::class, 'pos_transaction_id');
+        return $this->hasMany(Order::class);
     }
 
     public function product(): BelongsTo
@@ -33,10 +33,9 @@ class PosTransaction extends Model
         return $this->belongsTo(Product::class);
     }
 
-    public function mount()
+    public function paymentMethod(): BelongsTo
     {
-        // Ambil data dengan relasi paymentMethod
-        $this->transactions = PosTransaction::with('paymentMethod')->get();
+        return $this->belongsTo(PaymentMethod::class);
     }
 
     public function render()
@@ -45,5 +44,4 @@ class PosTransaction extends Model
             'transactions' => $this->transactions
         ]);
     }
-
 }

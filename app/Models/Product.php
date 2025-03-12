@@ -14,7 +14,7 @@ class Product extends Model
     protected $table = 'products';
     //
     protected $fillable = ['name', 'slug', 'barcode', 'thumbnail', 'about', 'purchase_price', 'selling_price', 'is_active', 'is_popular', 'stock', 'category_id', 'brand_id', 'supplier_id'];
-    
+
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class, 'category_id');
@@ -42,7 +42,7 @@ class Product extends Model
         $counter = 1;
 
         while (self::where('slug', $slug)->exists()) {
-            $slug = $originalSlug. '-'. $counter++;
+            $slug = $originalSlug . '-' . $counter++;
             $counter++;
         }
         return $slug;
@@ -53,16 +53,14 @@ class Product extends Model
         return $this->thumbnail ? url('storage/', $this->thumbnail) : null;
     }
 
-public function scopeSearch($query, $value)
-{
-    return $query->where("name", "like", "%{$value}%");
-}
-
-
-    public function orderProducts(): HasMany
+    public function scopeSearch($query, $value)
     {
-        return $this->hasMany(OrderProduct::class);
+        return $query->where("name", "like", "%{$value}%");
     }
 
 
+    public function order(): HasMany
+    {
+        return $this->hasMany(Order::class);
+    }
 }

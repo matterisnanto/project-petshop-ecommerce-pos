@@ -3,15 +3,21 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class OlshopTransaction extends Model
 {
     protected $table = 'olshop_transactions';
     //
-    protected $fillable = ['name', 'phone', 'email', 'product_id', 'promo_code_id', 'quantity', 'sub_total_amount', 'grand_total_amount', 'discount_amount', 'province', 'city_regency', 'district', 'vilage_subdistrict', 'post_code', 'address', 'city', 'is_paid', 'trx_id', 'proof'];
+    protected $fillable = ['name', 'phone', 'email', 'promo_code_id', 'sub_total_amount', 'grand_total_amount', 'discount_amount', 'province', 'city_regency', 'district', 'vilage_subdistrict', 'post_code', 'address', 'city', 'is_paid', 'trx_id', 'proof'];
 
+
+    public function order(): HasMany
+    {
+        return $this->hasMany(order::class, 'olshop_transaction_id');
+    }
     public function products(): BelongsTo
     {
         return $this->belongsTo(Product::class, 'product_id');

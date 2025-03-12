@@ -67,7 +67,7 @@ class SupplierResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('email')
                     ->searchable(),
-                    Tables\Columns\TextColumn::make('phone')
+                Tables\Columns\TextColumn::make('phone')
                     ->label('Phone')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('address')
@@ -89,7 +89,9 @@ class SupplierResource extends Resource
                 //
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
