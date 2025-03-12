@@ -11,7 +11,7 @@ use Filament\Forms\Set;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use App\Models\PaymentMethod;
-use App\Models\Postransaction;
+use App\Models\PosTransaction;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\Group;
 use Filament\Forms\Components\Hidden;
@@ -27,9 +27,9 @@ use App\Filament\Resources\PostransactionResource\Pages;
 class PostransactionResource extends Resource
 {
     protected static ?string $model = PosTransaction::class;
-    protected static ?string $navigationLabel = 'PosTransaction';
-    protected static ?string $modelLabel = 'PosTransaction';
-    protected static ?string $pluralModelLabel = 'PosTransaction';
+    protected static ?string $navigationLabel = 'POS Transaction';
+    protected static ?string $modelLabel = 'POS Transaction';
+    protected static ?string $pluralModelLabel = 'POS Transaction';
     protected static ?string $navigationGroup = 'Transactions';
     protected static ?int $navigationSort = 0;
     protected static ?string $navigationIcon = 'heroicon-o-building-storefront';
@@ -38,54 +38,54 @@ class PostransactionResource extends Resource
     {
         return $form
             ->schema([
-                Group::make()
+                Forms\Components\Group::make()
                     ->columnSpanFull() // Tambahkan ini
                     ->schema([
-        Section::make('Info Utama')
-            ->schema([
-                TextInput::make('name')->required()->maxLength(255),
-                TextInput::make('email')->email()->maxLength(255)->default(null),
-                Select::make('gender')
-                    ->options([
-                        'male' => 'Laki-laki',
-                        'female' => 'Perempuan',
-                    ])
-                    ->required(),
-            ])
-            ->columnSpanFull(), 
-                        Section::make('Produk Dipesan')
+                        Forms\Components\Section::make('Info Utama')
+                            ->schema([
+                                Forms\Components\TextInput::make('name')->required()->maxLength(255),
+                                Forms\Components\TextInput::make('email')->email()->maxLength(255)->default(null),
+                                Forms\Components\Select::make('gender')
+                                    ->options([
+                                        'male' => 'Laki-laki',
+                                        'female' => 'Perempuan',
+                                    ])
+                                    ->required(),
+                            ])
+                            ->columnSpanFull(),
+                        Forms\Components\Section::make('Produk Dipesan')
                             ->schema([
                                 self::getItemsRepeater(),
                             ]),
 
-                            Group::make()
+                        Forms\Components\Group::make()
                             ->columns(2) // Membuat layout 2 kolom
                             ->schema([
                                 // Kolom pertama: Total Price & Note
-                                Section::make('Total & Catatan') 
+                                Forms\Components\Section::make('Total & Catatan')
                                     ->schema([
-                                        TextInput::make('total_price')
+                                        Forms\Components\TextInput::make('total_price')
                                             ->required()
                                             ->numeric()
                                             ->readOnly(),
-                                        Textarea::make('note')
+                                        Forms\Components\Textarea::make('note')
                                             ->columnSpanFull(),
                                     ])
                                     ->columnSpan(1), // Ambil 1 kolom dari 2 kolom total
-                        
+
                                 // Kolom kedua: Pembayaran
-                                Section::make('Pembayaran')
+                                Forms\Components\Section::make('Pembayaran')
                                     ->schema([
-                                        Select::make('payment_method_id')
+                                        Forms\Components\Select::make('payment_method_id')
                                             ->relationship('paymentMethod', 'name')
                                             ->reactive()
-                                            ->afterStateUpdated(function ($state,Set $set, Get $get) {
+                                            ->afterStateUpdated(function ($state, Set $set, Get $get) {
                                                 $paymentMethod = PaymentMethod::find($state);
-                                                $set('is_cash',$paymentMethod->is_cash ?? false );
-                                                
-                                                if(!$paymentMethod->is_cash) {
-                                                $set('change_amount', 0);
-                                                $set('paid_amount', $get('total_price'));
+                                                $set('is_cash', $paymentMethod->is_cash ?? false);
+
+                                                if (!$paymentMethod->is_cash) {
+                                                    $set('change_amount', 0);
+                                                    $set('paid_amount', $get('total_price'));
                                                 }
                                             })
                                             ->afterStateHydrated(function (Set $set, Get $get, $state) {
@@ -94,88 +94,88 @@ class PostransactionResource extends Resource
                                                     $set('paid_amount', $get('total_price'));
                                                     $set('change_amount', 0);
                                                 }
-                                                
+
                                                 $set('is_cash', $paymentMethod->is_cash ?? false);
                                             }),
-                                        Hidden::make('is_cash')
+                                        Forms\Components\Hidden::make('is_cash')
                                             ->dehydrated(),
-                                        TextInput::make('paid_amount')
+                                        Forms\Components\TextInput::make('paid_amount')
                                             ->numeric()
                                             ->reactive()
                                             ->label('Nominal Bayar')
-                                            ->readOnly(fn (Get $get) => $get('is_cash') == false)
+                                            ->readOnly(fn(Get $get) => $get('is_cash') == false)
                                             ->afterStateUpdated(function (Set $set, Get $get, $state) {
                                                 //function untuk menghitung uang kembalian
-            
+
                                                 self::updateExcangePaid($get, $set);
                                             }),
-                                        TextInput::make('change_amount')
+                                        Forms\Components\TextInput::make('change_amount')
                                             ->numeric()
                                             ->label('Kembalian')
                                             ->readOnly(),
                                     ])
                                     ->columnSpan(1), // Ambil 1 kolom dari 2 kolom total
                             ])
-                        
-                            ]),
-                    ]);
+
+                    ]),
+            ]);
     }
 
     public static function table(Table $table): Table
-{
-    return $table
-        ->columns([
-            Tables\Columns\TextColumn::make('name')->searchable(),
-            Tables\Columns\TextColumn::make('gender'),
-            Tables\Columns\TextColumn::make('total_price')->numeric()->sortable(),
-            
-            // kolom ini untuk menampilkan nama metode pembayaran
-            Tables\Columns\TextColumn::make('paymentMethod.name')
-                ->label('Payment Method')
-                ->sortable()
-                ->searchable(),
+    {
+        return $table
+            ->columns([
+                Tables\Columns\TextColumn::make('name')->searchable(),
+                Tables\Columns\TextColumn::make('gender'),
+                Tables\Columns\TextColumn::make('total_price')->numeric()->sortable(),
 
-            Tables\Columns\TextColumn::make('paid_amount')->numeric()->sortable(),
-            Tables\Columns\TextColumn::make('change_amount')->numeric()->sortable(),
-            Tables\Columns\TextColumn::make('created_at')->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true),
-            Tables\Columns\TextColumn::make('updated_at')->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true),
-        ])
-        ->actions([Tables\Actions\EditAction::make()])
-        ->bulkActions([Tables\Actions\BulkActionGroup::make([Tables\Actions\DeleteBulkAction::make()])]);
-}
+                // kolom ini untuk menampilkan nama metode pembayaran
+                Tables\Columns\TextColumn::make('paymentMethod.name')
+                    ->label('Payment Method')
+                    ->sortable()
+                    ->searchable(),
+
+                Tables\Columns\TextColumn::make('paid_amount')->numeric()->sortable(),
+                Tables\Columns\TextColumn::make('change_amount')->numeric()->sortable(),
+                Tables\Columns\TextColumn::make('created_at')->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('updated_at')->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true),
+            ])
+            ->actions([Tables\Actions\EditAction::make()])
+            ->bulkActions([Tables\Actions\BulkActionGroup::make([Tables\Actions\DeleteBulkAction::make()])]);
+    }
 
     public static function getItemsRepeater(): Repeater
     {
-        return Repeater::make('orderProducts')
-            ->relationship('orderProducts')
+        return Forms\Components\Repeater::make('order')
+            ->relationship('order')
             ->live()
             ->columns([
                 'md' => 10,
             ])
-            ->afterStateUpdated(function(Get $get, Set $set){
+            ->afterStateUpdated(function (Get $get, Set $set) {
                 self::updateTotalPrice($get, $set);
             })
             ->schema([
-                Select::make('product_id') 
+                Select::make('product_id')
                     ->label('Produk')
                     ->required()
                     ->options(Product::query()->where('stock', '>', 1)->pluck('name', 'id'))
                     ->columnSpan([
                         'md' => 5,
-            ])
-            ->afterStateHydrated(function(Set $set, Get $get, $state){
-                    $product = Product::find($state);
-                    $set('unit_price', $product->selling_price?? 0);
-                    $set('stock', $product->stock?? 0);
-            })
+                    ])
+                    ->afterStateHydrated(function (Set $set, Get $get, $state) {
+                        $product = Product::find($state);
+                        $set('unit_price', $product->selling_price ?? 0);
+                        $set('stock', $product->stock ?? 0);
+                    })
                     ->afterStateUpdated(function ($state, Set $set, Get $get) {
                         $product = Product::find($state);
                         $set('unit_price', $product->selling_price ?? 0);
                         $set('stock', $product->stock ?? 0);
-                        $quantity = $get('quantity')?? 1;
+                        $quantity = $get('quantity') ?? 1;
                         $stock = $get('stock');
                         self::updateTotalPrice($get, $set);
-            })
+                    })
                     ->disableOptionsWhenSelectedInSiblingRepeaterItems(),
                 TextInput::make('quantity')
                     ->required()
@@ -211,19 +211,19 @@ class PostransactionResource extends Resource
                     ->readOnly()
                     ->columnSpan([
                         'md' => 3
-                ]),
+                    ]),
             ]);
     }
 
     protected static function updateTotalPrice(Get $get, Set $set): void
     {
-        $selectedProducts = collect($get('orderProducts'))
+        $selectedProducts = collect($get('order'))
             ->filter(fn($item) => !empty($item['product_id']) && !empty($item['quantity']));
 
         $prices = Product::find($selectedProducts->pluck('product_id'))
             ->pluck('selling_price', 'id');
 
-        $total = $selectedProducts->reduce(function($total, $product) use ($prices){
+        $total = $selectedProducts->reduce(function ($total, $product) use ($prices) {
             return $total + ($prices[$product['product_id']] * $product['quantity']);
         }, 0);
 

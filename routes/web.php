@@ -17,8 +17,3 @@ Route::post('/trx-check', [TrxController::class, 'searchTransaction'])->name('tr
 Route::get('contact-us', [ContactUsController::class, 'index'])->name('contactus');
 
 use App\Livewire\Pos;
-
-Route::get('/', function () {
-    return view('welcome');
-
-});

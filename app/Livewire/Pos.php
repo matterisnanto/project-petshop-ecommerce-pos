@@ -10,7 +10,7 @@ use Filament\Forms\Set;
 
 use Livewire\Component;
 use Filament\Forms\Form;
-use App\Models\OrderProduct;
+use App\Models\Order;
 use App\Models\PaymentMethod;
 
 use App\Models\PosTransaction;
@@ -36,42 +36,42 @@ class Pos extends Component implements HasForms
     {
         return view('livewire.pos', [
             'products' => Product::where('stock', '>', 0)
-                            ->search($this->search)
-                            ->paginate(12)
+                ->search($this->search)
+                ->paginate(12)
         ]);
     }
 
     public function form(Form $form): Form
-{
-    return $form
-        ->schema([
-            Forms\Components\Section::make('Form Checkout')
-                ->schema([
-                    Forms\Components\TextInput::make('name_customer')
-                        ->required()
-                        ->maxLength(255)
-                        ->default(fn () => $this->name_customer),
-                    Forms\Components\Select::make('gender')
-                        ->options([
-                            'male' => 'Male',
-                            'female' => 'Female'
-                        ])
-                        ->required(),
-                    Forms\Components\TextInput::make('total_price')
-                        ->readOnly()
-                        ->numeric()
-                        ->default(fn () => $this->total_price),
-                        Forms\Components\Select::make('payment_method_id') 
-                        ->required()
-                        ->label('Payment Method')
-                        ->options(PaymentMethod::pluck('name', 'id')->toArray()) // Ambil nama sebagai label, id sebagai value
-                        ->default($this->payment_method_id)
-                ])
-        ]);
-}
+    {
+        return $form
+            ->schema([
+                Forms\Components\Section::make('Form Checkout')
+                    ->schema([
+                        Forms\Components\TextInput::make('name_customer')
+                            ->required()
+                            ->maxLength(255)
+                            ->default(fn() => $this->name_customer),
+                        Forms\Components\Select::make('gender')
+                            ->options([
+                                'male' => 'Male',
+                                'female' => 'Female'
+                            ])
+                            ->required(),
+                        Forms\Components\TextInput::make('total_price')
+                            ->readOnly()
+                            ->numeric()
+                            ->default(fn() => $this->total_price),
+                        Forms\Components\Select::make('payment_method_id')
+                            ->required()
+                            ->label('Payment Method')
+                            ->options(PaymentMethod::pluck('name', 'id')->toArray()) // Ambil nama sebagai label, id sebagai value
+                            ->default($this->payment_method_id)
+                    ])
+            ]);
+    }
 
 
-public function mount()
+    public function mount()
     {
         if (session()->has('orderItems')) {
             $this->order_items = session('orderItems');
@@ -93,7 +93,7 @@ public function mount()
             }
 
             $existingItemKey = null;
-            foreach($this->order_items as $key => $item) {
+            foreach ($this->order_items as $key => $item) {
                 if ($item['product_id'] == $productId) {
                     $existingItemKey = $key;
                     break;
@@ -116,11 +116,9 @@ public function mount()
             session()->put('orderItems', $this->order_items);
             $this->calculateTotal();
             Notification::make()
-                    ->title('Produk ditambahkan ke keranjang')
-                    ->success()
-                    ->send();
-
-
+                ->title('Produk ditambahkan ke keranjang')
+                ->success()
+                ->send();
         }
     }
 
@@ -142,15 +140,15 @@ public function mount()
             return;
         }
 
-        foreach($this->order_items as $key => $item) {
+        foreach ($this->order_items as $key => $item) {
             if ($item['product_id'] == $product_id) {
                 if ($item['quantity'] + 1 <= $product->stock) {
                     $this->order_items[$key]['quantity']++;
                 } else {
                     Notification::make()
-                    ->title('Stok barang tidak mencukupi')
-                    ->danger()
-                    ->send();
+                        ->title('Stok barang tidak mencukupi')
+                        ->danger()
+                        ->send();
                 }
                 break;
             }
@@ -162,7 +160,7 @@ public function mount()
 
     public function decreaseQuantity($product_id)
     {
-        foreach($this->order_items as $key => $item) {
+        foreach ($this->order_items as $key => $item) {
             if ($item['product_id'] == $product_id) {
                 if ($this->order_items[$key]['quantity'] > 1) {
                     $this->order_items[$key]['quantity']--;
@@ -180,7 +178,7 @@ public function mount()
     public function calculateTotal()
     {
         $total = 0;
-        foreach($this->order_items as $item) {
+        foreach ($this->order_items as $item) {
             $total += $item['quantity'] * $item['selling_price'];
         }
         $this->total_price = $total;
@@ -188,40 +186,41 @@ public function mount()
     }
 
     public function checkout()
-{
-    $this->validate([
-        'name_customer' => 'required|string|max:255',
-        'gender' => 'required|in:male,female',
-        'payment_method_id' => 'required'
-    ]);
-
-    $postransaction = PosTransaction::create([
-        'name' => $this->name_customer,
-        'gender' => $this->gender,
-        'total_price' => $this->calculateTotal(),
-        'payment_method_id' => $this->payment_method_id
-    ]);
-
-    // Simpan detail order ke OrderProduct
-    foreach ($this->order_items as $item) {
-        OrderProduct::create([
-            'pos_transaction_id' => $postransaction->id,
-            'product_id' => $item['product_id'],
-            'quantity' => $item['quantity'],
-            'unit_price' => $item['selling_price']
+    {
+        $this->validate([
+            'name_customer' => 'required|string|max:255',
+            'gender' => 'required|in:male,female',
+            'payment_method_id' => 'required'
         ]);
+
+        $postransaction = PosTransaction::create([
+            'name' => $this->name_customer,
+            'gender' => $this->gender,
+            'total_price' => $this->calculateTotal(),
+            'payment_method_id' => $this->payment_method_id
+        ]);
+
+        // Simpan detail order ke Order
+        foreach ($this->order_items as $item) {
+            Order::create([
+                'pos_transaction_id' => $postransaction->id,
+                'product_id' => $item['product_id'],
+                'quantity' => $item['quantity'],
+                'unit_price' => $item['selling_price']
+            ]);
+        }
+
+        // Reset order setelah checkout
+        $this->order_items = [];
+        session()->forget('orderItems');
+        $this->name_customer = '';
+        $this->gender = '';
+        $this->payment_method_id = 0;
+
+        // Kirim notifikasi sukses
+        Notification::make()
+            ->title('Checkout berhasil!')
+            ->success()
+            ->send();
     }
-
-    // Reset order setelah checkout
-    $this->order_items = [];
-    session()->forget('orderItems');
-    $this->name_customer = '';
-    $this->gender = '';
-    $this->payment_method_id = 0;
-
-    // Kirim notifikasi sukses
-    Notification::make()
-        ->title('Checkout berhasil!')
-        ->success()
-        ->send();
-}}
+}

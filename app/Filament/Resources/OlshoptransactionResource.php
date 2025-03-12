@@ -2,17 +2,21 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\OlshoptransactionResource\Pages;
-use App\Filament\Resources\OlshoptransactionResource\RelationManagers;
-use App\Models\Olshoptransaction;
-use App\Models\Product;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use App\Models\Product;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Filament\Resources\Resource;
+use App\Models\Olshoptransaction;
+use Filament\Forms\Components\Repeater;
+use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\OlshoptransactionResource\Pages;
+use App\Filament\Resources\OlshoptransactionResource\RelationManagers;
 
 class OlshoptransactionResource extends Resource
 {
@@ -35,298 +39,160 @@ class OlshoptransactionResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Wizard::make([
-                    // Forms\Components\Wizard\Step::make('Product and price')
-                    //     ->description('')
-                    //     ->schema([
-                    //         Forms\Components\Grid::make()
-                    //             ->schema([
-                    //                 Forms\Components\Select::make('product_id')
-                    //                     ->label('Product')
-                    //                     ->relationship('products', 'name')
-                    //                     ->required()
-                    //                     ->searchable()
-                    //                     ->live()
-                    //                     ->preload()
-                    //                     ->afterStateUpdated(function ($state, callable $get, callable $set) {
-                    //                         $product = Product::find($state);
-                    //                         $price = $product ? $product->selling_price : 0;
-                    //                         $quantity = $get('quantity') ?? 1;
-                    //                         $subTotalAmount = $price * $quantity;
-                    //                         $discount = $get('discount_amount') ?? 0;
-                    //                         $grandTotalAmount = $subTotalAmount - $discount;
-
-                    //                         $set('quantity', $quantity);
-                    //                         $set('price', $price);
-                    //                         $set('sub_total_amount', $subTotalAmount);
-                    //                         $set('grand_total_amount', $grandTotalAmount);
-                    //                     }),
-                    //                 Forms\Components\TextInput::make('quantity')
-                    //                     ->label('Quantity')
-                    //                     ->required()
-                    //                     ->numeric()
-                    //                     ->prefix('Qty')
-                    //                     ->live()
-                    //                     // ->default(1)
-                    //                     ->afterStateUpdated(function ($state, callable $get, callable $set) {
-                    //                         $price = $get('price') ?? 0;
-                    //                         $quantity = $state;
-                    //                         $subTotalAmount = $price * $quantity;
-
-                    //                         $set('sub_total_amount', $subTotalAmount);
-
-                    //                         $discount = $get('discount_amount') ?? 0;
-                    //                         $grandTotalAmount = $subTotalAmount - $discount;
-                    //                         $set('grand_total_amount', $grandTotalAmount);
-                    //                     }),
-                    //                 Forms\Components\Select::make('promo_code_id')
-                    //                     ->label('Promo Code')
-                    //                     ->relationship('promocode', 'code')
-                    //                     ->default(null),
-                    //                 Forms\Components\TextInput::make('discount_amount')
-                    //                     ->label('Discount Amount')
-                    //                     ->required()
-                    //                     ->default(0)
-                    //                     ->readOnly()
-                    //                     ->numeric(),
-                    //                 Forms\Components\TextInput::make('sub_total_amount')
-                    //                     ->label('Sub Total Amount')
-                    //                     ->required()
-                    //                     ->numeric(),
-                    //                 Forms\Components\TextInput::make('grand_total_amount')
-                    //                     ->label('Grand Total Amount')
-                    //                     ->required()
-                    //                     ->readOnly()
-                    //                     ->numeric(),
-                    //             ]),
-                    //     ]),
-                    Forms\Components\Wizard\Step::make('Products and Prices')
-                        ->description('Select products and their quantities')
+                    Forms\Components\Wizard\Step::make('Product and Price')
+                        ->label('Product Items')
                         ->schema([
-                            Forms\Components\Repeater::make('products')
+                            Forms\Components\Section::make('Produk Dipesan')
                                 ->schema([
-                                    Forms\Components\Select::make('product_id')
-                                        ->label('Product')
-                                        ->relationship('products', 'name')
-                                        ->required()
-                                        ->searchable()
-                                        ->live()
-                                        ->preload()
-                                        ->afterStateUpdated(function ($state, callable $get, callable $set) {
-                                            $product = Product::find($state);
-                                            $price = $product ? $product->selling_price : 0;
-                                            $quantity = $get('quantity') ?? 1;
-                                            $subTotalAmount = $price * $quantity;
-
-                                            $set('quantity', $quantity);
-                                            $set('price', $price);
-                                            $set('sub_total_amount', $subTotalAmount);
-
-                                            // Hapus pengaturan grand_total_amount di sini
-                                            static::updateGrandTotalAmount($get, $set);
-                                        }),
-                                    Forms\Components\TextInput::make('quantity')
-                                        ->label('Quantity')
-                                        ->required()
-                                        ->numeric()
-                                        ->prefix('Qty')
-                                        ->live()
-                                        ->afterStateUpdated(function ($state, callable $get, callable $set) {
-                                            $price = $get('price') ?? 0;
-                                            $subTotalAmount = $price * $state;
-
-                                            $set('sub_total_amount', $subTotalAmount);
-
-                                            // Hapus pengaturan grand_total_amount di sini
-                                            static::updateGrandTotalAmount($get, $set);
-                                        }),
-                                    Forms\Components\TextInput::make('price')
-                                        ->label('Price')
-                                        ->required()
-                                        ->numeric()
-                                        ->prefix('Rp')
-                                        ->readOnly()
-                                        ->afterStateUpdated(function ($state, callable $get, callable $set) {
-                                            $quantity = $get('quantity') ?? 1;
-                                            $subTotalAmount = $state * $quantity;
-                                            $set('sub_total_amount', $subTotalAmount);
-
-                                            static::updateGrandTotalAmount($get, $set);
-                                        }),
-                                    Forms\Components\TextInput::make('sub_total_amount')
-                                        ->label('Sub Total Amount')
-                                        ->required()
-                                        ->numeric()
-                                        ->prefix('Rp')
-                                        ->readOnly()
-                                        ->afterStateUpdated(function ($state, callable $get, callable $set) {
-                                            static::updateGrandTotalAmount($get, $set);
-                                        }),
-                                ])
-                                ->columns(4)
-                                ->orderable('product_id')
-                                ->defaultItems(1)
-                                ->addActionLabel('Add Another Product')
-                                ->live()
-                                ->afterStateUpdated(function ($state, callable $get, callable $set) {
-                                    static::updateGrandTotalAmount($get, $set);
-                                }),
-                            Forms\Components\Select::make('promo_code_id')
-                                ->label('Promo Code')
-                                ->relationship('promocode', 'code')
-                                ->default(null)
-                                ->afterStateUpdated(function ($state, callable $get, callable $set) {
-                                    // Logika untuk menghitung diskon berdasarkan promo code
-                                    $discount = 0; // Ganti dengan logika perhitungan diskon
-                                    $set('discount_amount', $discount);
-                                    static::updateGrandTotalAmount($get, $set);
-                                }),
-                            Forms\Components\TextInput::make('discount_amount')
-                                ->label('Discount Amount')
+                                    self::getItemsRepeater(),
+                                ]),
+                            Forms\Components\TextInput::make('sub_total_amount')
                                 ->required()
-                                ->default(0)
-                                ->readOnly()
+                                ->numeric(),
+                            Forms\Components\TextInput::make('promo_code_id')
+                                ->numeric()
+                                ->default(null),
+                            Forms\Components\TextInput::make('discount_amount')
+                                ->required()
                                 ->numeric(),
                             Forms\Components\TextInput::make('grand_total_amount')
-                                ->label('Grand Total Amount')
                                 ->required()
-                                ->readOnly()
-                                ->numeric()
-                                ->default(0)
-                                ->live(),
+                                ->numeric(),
+
                         ]),
                     Forms\Components\Wizard\Step::make('Customer Information')
-                        ->description('')
+                        ->label('Customer Information')
                         ->schema([
-                            Forms\Components\Grid::make()
-                                ->schema([
-                                    Forms\Components\TextInput::make('name')
-                                        ->label('Customer Name')
-                                        ->required()
-                                        ->maxLength(255)
-                                        ->columnSpanFull(),
-                                    Forms\Components\TextInput::make('phone')
-                                        ->label('Phone Number')
-                                        ->tel()
-                                        ->mask('999-9999-9999') // Format input
-                                        ->prefix('+62') // Tambahkan prefix
-                                        ->required()
-                                        ->maxLength(255),
-                                    Forms\Components\TextInput::make('email')
-                                        ->label('Email Address')
-                                        ->email()
-                                        ->required()
-                                        ->maxLength(255),
-                                    Forms\Components\Select::make('province')
-                                        ->label('Province')
-                                        ->required()
-                                        ->options(function () {
-                                            // Fetch data Provinsi dari API
-                                            $response = file_get_contents('https://matterisnanto.github.io/api-wilayah-indonesia/api/provinces.json');
-                                            $provinces = json_decode($response, true);
+                            Forms\Components\TextInput::make('name')
+                                ->label('Customer Name')
+                                ->required()
+                                ->maxLength(255)
+                                ->columnSpanFull(),
+                            Forms\Components\TextInput::make('phone')
+                                ->label('Phone Number')
+                                ->tel()
+                                ->mask('999-9999-9999')
+                                ->prefix('+62')
+                                ->required()
+                                ->maxLength(255)
+                                ->dehydrateStateUsing(function ($state) {
+                                    // Menambahkan prefix +62 ke data sebelum disimpan ke database
+                                    return '+62' . str_replace('-', '', $state);
+                                }),
+                            Forms\Components\TextInput::make('email')
+                                ->label('Email Address')
+                                ->email()
+                                ->required()
+                                ->maxLength(255),
+                            Forms\Components\Select::make('province')
+                                ->label('Province')
+                                ->required()
+                                ->options(function () {
+                                    // Fetch data Provinsi dari API
+                                    $response = file_get_contents('https://matterisnanto.github.io/api-wilayah-indonesia/api/provinces.json');
+                                    $provinces = json_decode($response, true);
 
-                                            // Format data untuk options
-                                            $options = [];
-                                            foreach ($provinces as $province) {
-                                                $options[$province['id']] = $province['name'];
-                                            }
+                                    // Format data untuk options
+                                    $options = [];
+                                    foreach ($provinces as $province) {
+                                        $options[$province['id']] = $province['name'];
+                                    }
 
-                                            return $options;
-                                        })
-                                        ->searchable()
-                                        ->reactive()
-                                        ->columnSpanFull(),
-                                    Forms\Components\Select::make('city_regency')
-                                        ->label('City/Regency')
-                                        ->required()
-                                        ->options(function (callable $get) {
-                                            // Ambil province_id yang dipilih
-                                            $province = $get('province');
+                                    return $options;
+                                })
+                                ->searchable()
+                                ->reactive()
+                                ->columnSpanFull(),
+                            Forms\Components\Select::make('city_regency')
+                                ->label('City/Regency')
+                                ->required()
+                                ->options(function (callable $get) {
+                                    // Ambil province_id yang dipilih
+                                    $province = $get('province');
 
-                                            // Jika province_id belum dipilih, kembalikan array kosong
-                                            if (!$province) {
-                                                return [];
-                                            }
+                                    // Jika province_id belum dipilih, kembalikan array kosong
+                                    if (!$province) {
+                                        return [];
+                                    }
 
-                                            // Fetch data Kabupaten/Kota berdasarkan province_id
-                                            $response = file_get_contents("https://matterisnanto.github.io/api-wilayah-indonesia/api/regencies/{$province}.json");
-                                            $regencies = json_decode($response, true);
+                                    // Fetch data Kabupaten/Kota berdasarkan province_id
+                                    $response = file_get_contents("https://matterisnanto.github.io/api-wilayah-indonesia/api/regencies/{$province}.json");
+                                    $regencies = json_decode($response, true);
 
-                                            // Format data untuk options
-                                            $options = [];
-                                            foreach ($regencies as $regency) {
-                                                $options[$regency['id']] = $regency['name'];
-                                            }
+                                    // Format data untuk options
+                                    $options = [];
+                                    foreach ($regencies as $regency) {
+                                        $options[$regency['id']] = $regency['name'];
+                                    }
 
-                                            return $options;
-                                        })
-                                        ->searchable()
-                                        ->reactive()
-                                        ->columnSpanFull(),
-                                    Forms\Components\Select::make('district')
-                                        ->label('District')
-                                        ->required()
-                                        ->options(function (callable $get) {
-                                            // Ambil regency_id yang dipilih
-                                            $regency = $get('city_regency');
+                                    return $options;
+                                })
+                                ->searchable()
+                                ->reactive()
+                                ->columnSpanFull(),
+                            Forms\Components\Select::make('district')
+                                ->label('District')
+                                ->required()
+                                ->options(function (callable $get) {
+                                    // Ambil regency_id yang dipilih
+                                    $regency = $get('city_regency');
 
-                                            // Jika regency_id belum dipilih, kembalikan array kosong
-                                            if (!$regency) {
-                                                return [];
-                                            }
+                                    // Jika regency_id belum dipilih, kembalikan array kosong
+                                    if (!$regency) {
+                                        return [];
+                                    }
 
-                                            // Fetch data Kecamatan berdasarkan regency_id
-                                            $response = file_get_contents("https://matterisnanto.github.io/api-wilayah-indonesia/api/districts/{$regency}.json");
-                                            $districts = json_decode($response, true);
+                                    // Fetch data Kecamatan berdasarkan regency_id
+                                    $response = file_get_contents("https://matterisnanto.github.io/api-wilayah-indonesia/api/districts/{$regency}.json");
+                                    $districts = json_decode($response, true);
 
-                                            // Format data untuk options
-                                            $options = [];
-                                            foreach ($districts as $district) {
-                                                $options[$district['id']] = $district['name'];
-                                            }
+                                    // Format data untuk options
+                                    $options = [];
+                                    foreach ($districts as $district) {
+                                        $options[$district['id']] = $district['name'];
+                                    }
 
-                                            return $options;
-                                        })
-                                        ->searchable()
-                                        ->reactive()
-                                        ->columnSpanFull(),
-                                    Forms\Components\Select::make('vilage_subdistrict')
-                                        ->label('Village/Subdistrict')
-                                        ->required()
-                                        ->options(function (callable $get) {
-                                            // Ambil district_id yang dipilih
-                                            $district = $get('district');
+                                    return $options;
+                                })
+                                ->searchable()
+                                ->reactive()
+                                ->columnSpanFull(),
+                            Forms\Components\Select::make('vilage_subdistrict')
+                                ->label('Village/Subdistrict')
+                                ->required()
+                                ->options(function (callable $get) {
+                                    // Ambil district_id yang dipilih
+                                    $district = $get('district');
 
-                                            // Jika district_id belum dipilih, kembalikan array kosong
-                                            if (!$district) {
-                                                return [];
-                                            }
+                                    // Jika district_id belum dipilih, kembalikan array kosong
+                                    if (!$district) {
+                                        return [];
+                                    }
 
-                                            // Fetch data Kelurahan/Desa berdasarkan district_id
-                                            $response = file_get_contents("https://matterisnanto.github.io/api-wilayah-indonesia/api/villages/{$district}.json");
-                                            $villages = json_decode($response, true);
+                                    // Fetch data Kelurahan/Desa berdasarkan district_id
+                                    $response = file_get_contents("https://matterisnanto.github.io/api-wilayah-indonesia/api/villages/{$district}.json");
+                                    $villages = json_decode($response, true);
 
-                                            // Format data untuk options
-                                            $options = [];
-                                            foreach ($villages as $village) {
-                                                $options[$village['id']] = $village['name'];
-                                            }
+                                    // Format data untuk options
+                                    $options = [];
+                                    foreach ($villages as $village) {
+                                        $options[$village['id']] = $village['name'];
+                                    }
 
-                                            return $options;
-                                        })
-                                        ->searchable()
-                                        ->reactive()
-                                        ->columnSpanFull(),
-                                    Forms\Components\TextInput::make('post_code')
-                                        ->label('Post Code')
-                                        ->required()
-                                        ->numeric(),
-                                    Forms\Components\TextInput::make('address')
-                                        ->label('Address')
-                                        ->required()
-                                        ->maxLength(255)
-                                        ->placeholder('Enter RT/RW, street/alley name, and landmarks'),
-                                ]),
-
+                                    return $options;
+                                })
+                                ->searchable()
+                                ->reactive()
+                                ->columnSpanFull(),
+                            Forms\Components\TextInput::make('post_code')
+                                ->label('Post Code')
+                                ->required()
+                                ->numeric(),
+                            Forms\Components\TextInput::make('address')
+                                ->label('Address')
+                                ->required()
+                                ->maxLength(255)
+                                ->placeholder('Enter RT/RW, street/alley name, and landmarks'),
                         ]),
                     Forms\Components\Wizard\Step::make('Transaction Details')
                         ->description('')
@@ -346,7 +212,8 @@ class OlshoptransactionResource extends Resource
                 ])
                     ->columnSpan('full')
                     ->columns(1)
-                    ->skippable()
+                    ->skippable(),
+
             ]);
     }
 
@@ -360,16 +227,7 @@ class OlshoptransactionResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('email')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('product_id')
-                    ->numeric()
-                    ->sortable(),
                 Tables\Columns\TextColumn::make('promo_code_id')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('quantity')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('sub_total_amount')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('grand_total_amount')
@@ -378,15 +236,21 @@ class OlshoptransactionResource extends Resource
                 Tables\Columns\TextColumn::make('discount_amount')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('address')
+                Tables\Columns\TextColumn::make('province')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('city_regency')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('district')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('vilage_subdistrict')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('post_code')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('city')
+                Tables\Columns\TextColumn::make('address')
                     ->searchable(),
                 Tables\Columns\IconColumn::make('is_paid')
                     ->boolean(),
-                Tables\Columns\TextColumn::make('booking_trx')
+                Tables\Columns\TextColumn::make('trx_id')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('proof')
                     ->searchable(),
@@ -416,6 +280,91 @@ class OlshoptransactionResource extends Resource
             ]);
     }
 
+    public static function getItemsRepeater(): Repeater
+    {
+        return Forms\Components\Repeater::make('order')
+            ->relationship('order')
+            ->live()
+            ->columns([
+                'md' => 10,
+            ])
+            ->afterStateUpdated(function (Get $get, Set $set) {
+                self::updateSubTotalAmount($get, $set);
+            })
+            ->schema([
+                Forms\Components\Select::make('product_id')
+                    ->label('Produk')
+                    ->required()
+                    ->options(Product::query()->where('stock', '>', 1)->pluck('name', 'id'))
+                    ->columnSpan([
+                        'md' => 5,
+                    ])
+                    ->afterStateHydrated(function (Set $set, Get $get, $state) {
+                        $product = Product::find($state);
+                        $set('unit_price', $product->selling_price ?? 0);
+                        $set('stock', $product->stock ?? 0);
+                    })
+                    ->afterStateUpdated(function ($state, Set $set, Get $get) {
+                        $product = Product::find($state);
+                        $set('unit_price', $product->selling_price ?? 0);
+                        $set('stock', $product->stock ?? 0);
+                        $quantity = $get('quantity') ?? 1;
+                        $stock = $get('stock');
+                        self::updateSubTotalAmount($get, $set);
+                    })
+                    ->disableOptionsWhenSelectedInSiblingRepeaterItems(),
+                Forms\Components\TextInput::make('quantity')
+                    ->required()
+                    ->numeric()
+                    ->default(1)
+                    ->minValue(1)
+                    ->columnSpan([
+                        'md' => 1
+                    ])
+                    ->afterStateUpdated(function ($state, Set $set, Get $get) {
+                        $stock = $get('stock');
+                        if ($state > $stock) {
+                            $set('quantity', $stock);
+                            Notification::make()
+                                ->title('Stock tidak mencukupi')
+                                ->warning()
+                                ->send();
+                        }
+                        self::updateSubTotalAmount($get, $set);
+                    }),
+
+                Forms\Components\TextInput::make('stock')
+                    ->required()
+                    ->numeric()
+                    ->readOnly()
+                    ->columnSpan([
+                        'md' => 1
+                    ]),
+
+                Forms\Components\TextInput::make('unit_price')
+                    ->required()
+                    ->numeric()
+                    ->readOnly()
+                    ->columnSpan([
+                        'md' => 3
+                    ]),
+            ]);
+    }
+
+    protected static function updateSubTotalAmount(Get $get, Set $set): void
+    {
+        $selectedProducts = collect($get('order'))
+            ->filter(fn($item) => !empty($item['product_id']) && !empty($item['quantity']));
+
+        $prices = Product::find($selectedProducts->pluck('product_id'))
+            ->pluck('selling_price', 'id');
+
+        $total = $selectedProducts->reduce(function ($total, $product) use ($prices) {
+            return $total + ($prices[$product['product_id']] * $product['quantity']);
+        }, 0);
+
+        $set('sub_total_amount', $total);
+    }
     public static function getRelations(): array
     {
         return [
@@ -430,20 +379,5 @@ class OlshoptransactionResource extends Resource
             'create' => Pages\CreateOlshoptransaction::route('/create'),
             'edit' => Pages\EditOlshoptransaction::route('/{record}/edit'),
         ];
-    }
-
-
-    protected static function updateGrandTotalAmount(callable $get, callable $set): void
-    {
-        $products = $get('products') ?? [];
-        $discount = $get('discount_amount') ?? 0;
-        $total = 0;
-
-        foreach ($products as $product) {
-            $total += $product['sub_total_amount'] ?? 0;
-        }
-
-        $grandTotal = $total - $discount;
-        $set('grand_total_amount', $grandTotal);
     }
 }

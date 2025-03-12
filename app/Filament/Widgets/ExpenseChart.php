@@ -20,7 +20,7 @@ class ExpenseChart extends ChartWidget
     {
         $activeFilter = $this->filter;
 
-        $dateRange = match ($activeFilter){
+        $dateRange = match ($activeFilter) {
             'today' => [
                 'start' => now()->startOfDay(),
                 'end' => now()->endOfDay(),
@@ -42,55 +42,54 @@ class ExpenseChart extends ChartWidget
                 'period' => 'perMonth'
             ],
         };
-        
-        
+
+
         $query = Trend::model(Expense::class)
-        ->between(
-            start: $dateRange['start'],
-            end: $dateRange['end'],
-        );
-       
-        if ($dateRange['period']=== 'perHour')
-        {
-           $data  = $query->perHour();
-        } elseif ($dateRange['period']=== 'perDay') {
+            ->between(
+                start: $dateRange['start'],
+                end: $dateRange['end'],
+            );
+
+        if ($dateRange['period'] === 'perHour') {
+            $data  = $query->perHour();
+        } elseif ($dateRange['period'] === 'perDay') {
             $data = $query->perDay();
-        }else {
+        } else {
             $data = $query->perMonth();
         }
 
         $data = $data->sum('amount');
-        
+
         $labels = $data->map(function (TrendValue $value) use ($dateRange) {
             $date = Carbon::parse($value->date);
-            
-            if ($dateRange['period']=== 'perHour') {
+
+            if ($dateRange['period'] === 'perHour') {
                 return $date->format('H:i');
-            } elseif ($dateRange['period']=== 'perDay') {
+            } elseif ($dateRange['period'] === 'perDay') {
                 return $date->format('d M');
-            } 
+            }
             return $date->format('M Y');
         });
-        
-    return [
-        'datasets' => [
-            [
-                'label' => 'Expense' .$this->getFilters()[$activeFilter],
-                'data' => $data->map(fn (TrendValue $value) => $value->aggregate),
+
+        return [
+            'datasets' => [
+                [
+                    'label' => 'Expense' . $this->getFilters()[$activeFilter],
+                    'data' => $data->map(fn(TrendValue $value) => $value->aggregate),
+                ],
             ],
-        ],
-        'labels' => $labels,
-    ];
+            'labels' => $labels,
+        ];
     }
     protected function getFilters(): ?array
-{
-    return [
-        'today' => 'Today',
-        'week' => 'Last week',
-        'month' => 'Last month',
-        'year' => 'This year',
-    ];
-}
+    {
+        return [
+            'today' => 'Today',
+            'week' => 'Last week',
+            'month' => 'Last month',
+            'year' => 'This year',
+        ];
+    }
 
     protected function getType(): string
     {
