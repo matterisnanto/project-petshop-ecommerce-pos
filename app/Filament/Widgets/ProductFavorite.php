@@ -14,9 +14,9 @@ class ProductFavorite extends BaseWidget
     public function table(Table $table): Table
     {
         $productQuery = Product::query()
-             ->withCount('orderProducts')
-             ->orderBy('order_products_count')
-             ->take(10);
+            ->withCount('order')
+            ->orderBy('order_count')
+            ->take(10);
         return $table
             ->query($productQuery)
             ->columns([
@@ -25,10 +25,10 @@ class ProductFavorite extends BaseWidget
                 ->square(),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('order_products_count')
+                Tables\Columns\TextColumn::make('order_count')
                     ->label('Dipesan')
                     ->searchable(),
-                    
+
             ])
             ->defaultPaginationPageOption(5);
     }

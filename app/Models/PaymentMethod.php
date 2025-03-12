@@ -14,9 +14,8 @@ class PaymentMethod extends Model
 
     protected $fillable = ['name', 'image', 'is_cash'];
 
-    public function postransaction(): HasMany
+    public function posTransaction(): HasMany
     {
         return $this->hasMany(PosTransaction::class);
     }
-   
 }
