@@ -21,10 +21,8 @@ class ProductAlert extends BaseWidget
                     ->orderBy('stock', 'asc')
             )
             ->columns([
-                Tables\Columns\ImageColumn::make('photo')
-                ->disk('public') // Menggunakan disk 'public'
-                ->square() // Biar tampil rapi
-                ->getStateUsing(fn ($record) => 'uploads/thumbnails/' . $record->photo)    ,
+                Tables\Columns\ImageColumn::make('thumbnail')
+                    ->square(), // Biar tampil rapi
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('stock')
