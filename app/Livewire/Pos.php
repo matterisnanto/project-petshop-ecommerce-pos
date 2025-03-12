@@ -33,6 +33,7 @@ class Pos extends Component implements HasForms
     public $total_price;
     public $paid_amount;
     public $change_amount;
+    public $is_cash = 1;
 
 
 
@@ -87,8 +88,10 @@ class Pos extends Component implements HasForms
                                     $set('change_amount', 0);
                                 }
                             }),
-                        Forms\Components\Hidden::make('is_cash')
-                            ->dehydrated(),
+                            Forms\Components\Hidden::make('is_cash')
+                            ->dehydrated()
+                            ->default(fn() => $this->is_cash),
+                        
                         Forms\Components\TextInput::make('paid_amount')
                             ->numeric()
                             ->reactive()
@@ -243,7 +246,8 @@ class Pos extends Component implements HasForms
             'gender' => 'required|in:male,female',
             'payment_method_id' => 'required',
             'paid_amount' => 'required|numeric',
-            'change_amount' => 'required|numeric'
+            'change_amount' => 'required|numeric',
+            'is_cash' => 'required|boolean', // Tambah ini
         ]);
 
         // Ambil nilai dari form state
@@ -256,7 +260,8 @@ class Pos extends Component implements HasForms
             'total_price' => $this->calculateTotal(),
             'payment_method_id' => $this->payment_method_id,
             'paid_amount' => $formState['paid_amount'], // Ambil nilai paid_amount dari form
-            'change_amount' => $formState['change_amount'] // Ambil nilai change_amount dari form
+            'change_amount' => $formState['change_amount'], // Ambil nilai change_amount dari form
+            'is_cash' => $this->is_cash,//Tambah ini
         ]);
 
         // Simpan detail order ke Order
