@@ -51,10 +51,8 @@
                 if (data.success) {
                     // Update quantity input
                     const quantityInput = document.querySelector(`input[name="quantity-${productId}"]`);
-                    quantityInput.value = quantity;
-
-                    // Update total keseluruhan
                     updateCartTotal(data.total);
+                    if (quantityInput) quantityInput.value = quantity;
                 } else {
                     alert('Gagal memperbarui kuantitas!');
                 }
@@ -65,21 +63,19 @@
         const input = document.querySelector(`input[name="quantity-${productId}"]`);
         let quantity = parseInt(input.value);
 
-        // Jika quantity kurang dari 1, hapus produk dari keranjang
         if (quantity < 1) {
             removeFromCart(productId);
             return;
         }
 
-        // Kirim permintaan update ke server
         updateQuantity(productId, quantity);
     }
 
     function increaseQuantity(productId) {
         const input = document.querySelector(`input[name="quantity-${productId}"]`);
         let quantity = parseInt(input.value) + 1;
-        input.value = quantity;
-        updateQuantity(productId, quantity);
+        input.value = quantity; // Langsung update nilai input
+        updateQuantity(productId, quantity); // Kirim permintaan ke server
     }
 
     function decreaseQuantity(productId) {
@@ -92,8 +88,8 @@
             return;
         }
 
-        input.value = quantity;
-        updateQuantity(productId, quantity);
+        input.value = quantity; // Langsung update nilai input
+        updateQuantity(productId, quantity); // Kirim permintaan ke server
     }
 
     function removeFromCart(productId) {
