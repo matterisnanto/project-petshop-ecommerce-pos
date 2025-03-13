@@ -3,61 +3,94 @@
 @section('title', 'Product Details')
 
 @section('content')
-    <section class="py-8 bg-white md:py-16 dark:bg-gray-900 antialiased">
+    <section class="py-2 bg-white md:py-16 dark:bg-gray-900 antialiased">
+
         <div class="max-w-screen-xl px-4 mx-auto 2xl:px-0">
+            <div class="items-end justify-between space-y-4 sm:flex sm:space-y-0 md:mb-8">
+                <div class="mb-4 sm:mb-0"> <!-- Tambahkan margin-bottom untuk mobile -->
+                    <nav class="flex" aria-label="Breadcrumb">
+                        <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
+                            <li class="inline-flex items-center">
+                                <a href="{{ route('product') }}"
+                                    class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-primary-600 dark:text-gray-400 dark:hover:text-white">
+                                    <svg class="me-2.5 h-3 w-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                        fill="currentColor" viewBox="0 0 20 20">
+                                        <path
+                                            d="m19.707 9.293-2-2-7-7a1 1 0 0 0-1.414 0l-7 7-2 2a1 1 0 0 0 1.414 1.414L2 10.414V18a2 2 0 0 0 2 2h3a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h3a2 2 0 0 0 2-2v-7.586l.293.293a1 1 0 0 0 1.414-1.414Z" />
+                                    </svg>
+                                    Home
+                                </a>
+                            </li>
+                            <li>
+                                <div class="flex items-center">
+                                    <svg class="h-5 w-5 text-gray-400 rtl:rotate-180" aria-hidden="true"
+                                        xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
+                                        viewBox="0 0 24 24">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                            stroke-width="2" d="m9 5 7 7-7 7" />
+                                    </svg>
+                                    <a href="{{ route('product') }}"
+                                        class="ms-1 text-sm font-medium text-gray-700 hover:text-primary-600 dark:text-gray-400 dark:hover:text-white md:ms-2 truncate max-w-[150px] md:max-w-none">
+                                        {{ $product->category->name }}
+                                    </a>
+                                </div>
+                            </li>
+                            <li aria-current="page">
+                                <div class="flex items-center">
+                                    <svg class="h-5 w-5 text-gray-400 rtl:rotate-180" aria-hidden="true"
+                                        xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
+                                        viewBox="0 0 24 24">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                            stroke-width="2" d="m9 5 7 7-7 7" />
+                                    </svg>
+                                    <span
+                                        class="ms-1 text-sm font-medium text-gray-500 dark:text-gray-400 md:ms-2 truncate max-w-[100px] md:max-w-none">
+                                        {{ $product->name }}
+                                    </span>
+                                </div>
+                            </li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+
             <div class="lg:grid lg:grid-cols-2 lg:gap-8 xl:gap-16">
-                <div class="shrink-0 max-w-md lg:max-w-lg mx-auto">
-                    <!-- Foto utama -->
-                    <img id="mainImage" class="w-full dark:hidden"
-                        src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/imac-front.svg" alt="Main Product Image" />
-                    <img id="mainImageDark" class="w-full hidden dark:block"
-                        src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/imac-front-dark.svg"
-                        alt="Main Product Image Dark" />
+                <div class="shrink-0 max-w-md lg:max-w-lg mx-auto mt-6 sm:mt-0">
+                    <!-- Container untuk foto utama -->
+                    <div class="w-full aspect-[4/3] overflow-hidden flex items-center justify-center">
+                        <!-- Foto utama -->
+                        <img id="mainImage" class="w-full h-full object-contain dark:hidden" src="{{ $product->image_url }}"
+                            alt="Main Product Image" />
+                        <img id="mainImageDark" class="w-full h-full object-contain hidden dark:block"
+                            src="{{ $product->image_url }}" alt="Main Product Image Dark" />
+                    </div>
 
                     <!-- Daftar foto kecil -->
                     <div class="flex mt-4 space-x-4">
-                        <img class="w-20 h-20 cursor-pointer border-2 border-transparent hover:border-gray-300"
-                            src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/imac-front.svg"
-                            onclick="changeImage('https://flowbite.s3.amazonaws.com/blocks/e-commerce/imac-front.svg', 'https://flowbite.s3.amazonaws.com/blocks/e-commerce/imac-front-dark.svg')"
+                        <img class="w-20 h-20 cursor-pointer border-2  border-gray-200 sm:border-gray-200 sm:hover:border-primary-300 "
+                            src="{{ $product->image_url }}"
+                            onclick="changeImage('{{ $product->image_url }}', '{{ $product->image_url }}')"
                             alt="Thumbnail 1" />
-                        <img class="w-20 h-20 cursor-pointer border-2 border-transparent hover:border-gray-300"
-                            src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/imac-side.svg"
-                            onclick="changeImage('https://flowbite.s3.amazonaws.com/blocks/e-commerce/imac-side.svg', 'https://flowbite.s3.amazonaws.com/blocks/e-commerce/imac-side-dark.svg')"
-                            alt="Thumbnail 2" />
-                        <img class="w-20 h-20 cursor-pointer border-2 border-transparent hover:border-gray-300"
-                            src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/imac-back.svg"
-                            onclick="changeImage('https://flowbite.s3.amazonaws.com/blocks/e-commerce/imac-back.svg', 'https://flowbite.s3.amazonaws.com/blocks/e-commerce/imac-back-dark.svg')"
-                            alt="Thumbnail 3" />
+                        @foreach ($product->photos as $photo)
+                            <img class="w-20 h-20 cursor-pointer border-2  border-gray-200 sm:border-gray-200 sm:hover:border-primary-300 "
+                                src="{{ asset('storage/' . $photo->photo) }}"
+                                onclick="changeImage('{{ asset('storage/' . $photo->photo) }}', '{{ asset('storage/' . $photo->photo) }}')"
+                                alt="Thumbnail {{ $loop->iteration + 1 }}" />
+                        @endforeach
                     </div>
                 </div>
 
                 <div class="mt-6 sm:mt-8 lg:mt-0">
                     <!-- Konten deskripsi produk -->
-                    <h1 class="text-xl font-semibold text-gray-900 sm:text-2xl dark:text-white">
-                        Apple iMac 24" All-In-One Computer, Apple M1, 8GB RAM, 256GB SSD, Mac OS, Pink
+                    <h1 class="text-xl font-bold text-gray-900 sm:text-2xl dark:text-white">
+                        {{ $product->name }}
                     </h1>
+                    <p class="font-semibold text-gray-500 dark:text-gray-400">{{ $product->barcode }}</p>
+                    <p class="text-gray-500 dark:text-gray-400">Brand : {{ $product->brand->name }}</p>
                     <div class="mt-4 sm:items-center sm:gap-4 sm:flex">
                         <p class="text-2xl font-extrabold text-gray-900 sm:text-3xl dark:text-white">
-                            $1,249.99
+                            Rp. {{ number_format($product->selling_price, 0, ',', '.') }}
                         </p>
-                        {{-- <div class="flex items-center gap-2 mt-2 sm:mt-0">
-                            <div class="flex items-center gap-1">
-                                <!-- Ikon bintang -->
-                                <svg class="w-4 h-4 text-yellow-300" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                                    width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-                                    <path
-                                        d="M13.849 4.22c-.684-1.626-3.014-1.626-3.698 0L8.397 8.387l-4.552.361c-1.775.14-2.495 2.331-1.142 3.477l3.468 2.937-1.06 4.392c-.413 1.713 1.472 3.067 2.992 2.149L12 19.35l3.897 2.354c1.52.918 3.405-.436 2.992-2.15l-1.06-4.39 3.468-2.938c1.353-1.146.633-3.336-1.142-3.477l-4.552-.36-1.754-4.17Z" />
-                                </svg>
-                                <!-- Ulangi ikon bintang untuk rating -->
-                            </div>
-                            <p class="text-sm font-medium leading-none text-gray-500 dark:text-gray-400">
-                                (5.0)
-                            </p>
-                            <a href="#"
-                                class="text-sm font-medium leading-none text-gray-900 underline hover:no-underline dark:text-white">
-                                345 Reviews
-                            </a>
-                        </div> --}}
                     </div>
 
                     <div class="mt-6 sm:gap-4 sm:items-center sm:flex sm:mt-0">
@@ -104,17 +137,10 @@
                         </div>
                     </div>
 
-                    <hr class="my-6 md:my-8 border-gray-200 dark:border-gray-800" />
-
-                    <p class="mb-6 text-gray-500 dark:text-gray-400">
-                        Studio quality three mic array for crystal clear calls and voice recordings. Six-speaker sound
-                        system for a remarkably robust and high-quality audio experience. Up to 256GB of ultrafast SSD
-                        storage.
-                    </p>
+                    <hr class="my-6 md:my-8 border-gray-500 dark:border-gray-800" />
 
                     <p class="text-gray-500 dark:text-gray-400">
-                        Two Thunderbolt USB 4 ports and up to two USB 3 ports. Ultrafast Wi-Fi 6 and Bluetooth 5.0 wireless.
-                        Color matched Magic Mouse with Magic Keyboard or Magic Keyboard with Touch ID.
+                        {{ $product->about }}
                     </p>
                 </div>
             </div>

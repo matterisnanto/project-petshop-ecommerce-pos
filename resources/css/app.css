@@ -1,5 +1,6 @@
 @import "flowbite/src/themes/default";
 @import 'tailwindcss';
+@import "toastr";
 @config "../../tailwind.config.js";
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
