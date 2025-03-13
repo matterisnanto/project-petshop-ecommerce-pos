@@ -113,7 +113,7 @@
                     // Update total keseluruhan
                     updateCartTotal(data.total);
 
-                    // Jika keranjang kosong, tampilkan pesan
+                    // Jika keranjang kosong, tampilkan pesan dan sembunyikan total
                     const cartItems = document.querySelectorAll('[id^="cart-item-"]');
                     if (cartItems.length === 0) {
                         const emptyCartMessage = document.createElement('div');
@@ -124,6 +124,12 @@
 
                         const cartDropdown = document.querySelector('#myCartDropdown1');
                         cartDropdown.insertBefore(emptyCartMessage, cartDropdown.firstChild);
+
+                        // Sembunyikan atau hapus elemen total
+                        const totalContainer = document.querySelector('#cart-total-container');
+                        if (totalContainer) {
+                            totalContainer.remove(); // atau totalContainer.style.display = 'none';
+                        }
                     }
                 } else {
                     alert('Gagal menghapus produk!');

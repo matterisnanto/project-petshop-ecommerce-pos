@@ -128,7 +128,7 @@
                         @endforeach
 
                         <!-- Total Keseluruhan -->
-                        <div class="mt-4 text-right">
+                        <div id="cart-total-container" class="mt-4 text-right">
                             <p class="text-lg font-bold text-gray-900 dark:text-white">
                                 Total: Rp. <span
                                     id="cart-total">{{ number_format(array_sum(array_map(fn($item) => $item['price'] * $item['quantity'], session('cart'))), 0, ',', '.') }}</span>
