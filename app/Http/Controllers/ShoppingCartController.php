@@ -18,11 +18,13 @@ class ShoppingCartController extends Controller
         if (isset($cart[$id])) {
             $cart[$id]['quantity'] += $quantity;
         } else {
+            $thumbnail = $product->thumbnail ? 'storage/' . $product->thumbnail : 'images/default.png';
             $cart[$id] = [
                 "name" => $product->name,
+                "barcode" => $product->barcode,
                 "quantity" => $quantity,
                 "price" => $product->selling_price,
-                "image" => $product->thumbnail,
+                "thumbnail" => $product->thumbnail ?? 'https://flowbite.s3.amazonaws.com/blocks/e-commerce/imac-front-dark.svg',
             ];
         }
 

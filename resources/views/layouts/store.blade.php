@@ -65,13 +65,11 @@
         const input = document.querySelector(`input[name="quantity-${productId}"]`);
         let quantity = parseInt(input.value);
 
-        // Jika quantity kurang dari 1, hapus produk dari keranjang
         if (quantity < 1) {
             removeFromCart(productId);
             return;
         }
 
-        // Kirim permintaan update ke server
         updateQuantity(productId, quantity);
     }
 
