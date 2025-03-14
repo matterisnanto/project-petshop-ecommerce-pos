@@ -30,8 +30,10 @@
 {{-- carousel brand --}}
 <script>
     function addToCart(productId) {
-        const quantity = document.getElementById('quantity')?.value || 1; // Ambil quantity jika ada, default 1
+        // Ambil nilai quantity dari input
+        const quantity = document.getElementById('quantity').value;
 
+        // Kirim permintaan AJAX ke server
         fetch(`/cart/add/${productId}`, {
                 method: 'POST',
                 headers: {
@@ -269,6 +271,21 @@
         const totalElement = document.querySelector('#cart-total');
         if (totalElement) {
             totalElement.textContent = total.toLocaleString();
+        }
+    }
+
+    // productdetail
+    function increaseQuantity() {
+        const quantityInput = document.getElementById('quantity');
+        let currentValue = parseInt(quantityInput.value);
+        quantityInput.value = currentValue + 1; // Tambah nilai quantity
+    }
+
+    function decreaseQuantity() {
+        const quantityInput = document.getElementById('quantity');
+        let currentValue = parseInt(quantityInput.value);
+        if (currentValue > 1) { // Pastikan quantity tidak kurang dari 1
+            quantityInput.value = currentValue - 1; // Kurangi nilai quantity
         }
     }
 </script>
