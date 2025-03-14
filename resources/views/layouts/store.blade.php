@@ -30,6 +30,8 @@
 {{-- carousel brand --}}
 <script>
     function addToCart(productId) {
+        const quantity = document.getElementById('quantity')?.value || 1; // Ambil quantity jika ada, default 1
+
         fetch(`/cart/add/${productId}`, {
                 method: 'POST',
                 headers: {
@@ -37,7 +39,7 @@
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                 },
                 body: JSON.stringify({
-                    quantity: 1
+                    quantity: quantity
                 })
             })
             .then(response => {
@@ -48,7 +50,8 @@
             })
             .then(data => {
                 if (data.success) {
-                    // Perbarui dropdown keranjang dengan data terbaru dari server
+                    alert('Produk berhasil ditambahkan ke keranjang');
+                    // Perbarui tampilan keranjang jika diperlukan
                     updateCartDropdown(data.cart, data.total);
                 } else {
                     alert('Gagal menambahkan produk ke keranjang: ' + (data.message || ''));
