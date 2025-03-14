@@ -43,12 +43,10 @@
             </div>
 
             <div class="flex items-center lg:space-x-2">
-
+                <!-- Tombol Cart -->
                 <button id="myCartDropdownButton1" data-dropdown-toggle="myCartDropdown1" type="button"
-                    class="inline-flex items-center rounded-lg justify-center p-2 {{ request()->is('shopping-cart') ? 'text-primary-500' : 'text-gray-900 dark:text-white' }} hover:bg-gray-100 dark:hover:bg-gray-700 text-sm font-medium leading-none ">
-                    <span class="sr-only">
-                        Cart
-                    </span>
+                    class="inline-flex items-center rounded-lg justify-center p-2 {{ request()->is('shopping-cart') ? 'text-primary-500' : 'text-gray-900 dark:text-white' }} hover:bg-gray-100 dark:hover:bg-gray-700 text-sm font-medium leading-none">
+                    <span class="sr-only">Cart</span>
                     <svg class="w-5 h-5 lg:me-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
                         height="24" fill="none" viewBox="0 0 24 24">
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -63,22 +61,23 @@
                     </svg>
                 </button>
 
+                <!-- Dropdown Cart -->
                 <div id="myCartDropdown1"
-                    class="hidden z-10 mx-auto max-w-sm space-y-4 overflow-hidden rounded-lg bg-white border-2 border-gray-200 p-4 antialiased shadow-lg dark:bg-gray-800  w-80">
+                    class="absolute right-0 mt-2 w-96 bg-white rounded-lg shadow-lg dark:bg-gray-800 hidden">
                     @if (count(session('cart', [])) > 0)
                         @foreach (session('cart') as $id => $item)
                             <!-- Produk -->
-                            <div id="cart-item-{{ $id }}" class="grid grid-cols-2">
-                                <div class="max-w-[200px]"> <!-- Atur lebar maksimum -->
+                            <div id="cart-item-{{ $id }}"
+                                class="grid grid-cols-2 p-4 border-b border-gray-200 dark:border-gray-700">
+                                <div class="max-w-[200px]">
                                     <a href="#"
                                         class="block truncate text-sm font-semibold leading-none text-gray-900 dark:text-white hover:underline">
-                                        {{ $item['name'] }} <!-- Nama produk -->
+                                        {{ $item['name'] }}
                                     </a>
-                                    <p class="mt-0.5 truncate text-sm font-normal text-gray-500 dark:text-gray-400">Rp.
-                                        {{ number_format($item['price'], 0, ',', '.') }}
+                                    <p class="mt-0.5 truncate text-sm font-normal text-gray-500 dark:text-gray-400">
+                                        Rp. {{ number_format($item['price'], 0, ',', '.') }}
                                     </p>
                                 </div>
-
                                 <div class="flex items-center justify-end gap-4">
                                     <div class="flex items-center gap-2">
                                         <!-- Tombol Minus -->
@@ -90,13 +89,11 @@
                                                     stroke-linejoin="round" stroke-width="2" d="M5 12h14" />
                                             </svg>
                                         </button>
-
                                         <!-- Input Kuantitas -->
                                         <input id="quantity-{{ $id }}" name="quantity-{{ $id }}"
                                             min="1" value="{{ $item['quantity'] }}"
                                             onchange="updateQuantityManual({{ $id }})"
                                             class="w-12 px-2 py-1.5 text-sm text-center text-gray-900 border border-gray-200 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" />
-
                                         <!-- Tombol Plus -->
                                         <button onclick="increaseQuantity({{ $id }})"
                                             class="p-1.5 text-gray-900 bg-white border border-gray-200 rounded-lg hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-700">
@@ -107,10 +104,11 @@
                                             </svg>
                                         </button>
                                     </div>
+                                    <!-- Tombol Hapus -->
                                     <button onclick="removeFromCart({{ $id }})"
                                         data-tooltip-target="tooltipRemoveItem1a" type="button"
                                         class="text-red-600 hover:text-red-700 dark:text-red-500 dark:hover:text-red-600">
-                                        <span class="sr-only"> Remove </span>
+                                        <span class="sr-only">Remove</span>
                                         <svg class="h-4 w-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                                             fill="currentColor" viewBox="0 0 24 24">
                                             <path fill-rule="evenodd"
@@ -118,33 +116,30 @@
                                                 clip-rule="evenodd" />
                                         </svg>
                                     </button>
-                                    <div id="tooltipRemoveItem1a" role="tooltip"
-                                        class="tooltip invisible absolute z-10 inline-block rounded-lg bg-gray-900 px-3 py-2 text-sm font-medium text-white opacity-0 shadow-sm transition-opacity duration-300 dark:bg-gray-700">
-                                        Remove item
-                                        <div class="tooltip-arrow" data-popper-arrow></div>
-                                    </div>
                                 </div>
                             </div>
                         @endforeach
 
                         <!-- Total Keseluruhan -->
-                        <div id="cart-total-container" class="mt-4 text-right">
-                            <p class="text-lg font-bold text-gray-900 dark:text-white">
+                        <div id="cart-total-container" class="p-2 border-t border-gray-200 dark:border-gray-700">
+                            <p class="text-lg font-bold text-gray-900 dark:text-white text-right">
                                 Total: Rp. <span
                                     id="cart-total">{{ number_format(array_sum(array_map(fn($item) => $item['price'] * $item['quantity'], session('cart'))), 0, ',', '.') }}</span>
                             </p>
                         </div>
                     @else
                         <!-- Jika Keranjang Kosong -->
-                        <div id="empty-cart-message" class="flex items-center justify-center h-10">
+                        <div id="empty-cart-message" class="flex items-center justify-center h-20">
                             <p class="text-gray-500 dark:text-gray-400">Keranjang kosong</p>
                         </div>
                     @endif
 
-                    <!-- Tombol "Keranjang Belanja" -->
-                    <a href="{{ route('cart.view') }}" title=""
-                        class="mb-2 me-2 inline-flex w-full items-center justify-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
-                        role="button">Lihat Keranjang</a>
+                    <!-- Tombol Lihat Keranjang -->
+                    <div id="view-cart-button-container" class="p-4">
+                        <a href="{{ route('cart.view') }}" title=""
+                            class="w-full inline-flex items-center justify-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+                            role="button">Lihat Keranjang</a>
+                    </div>
                 </div>
 
                 {{-- <button id="userDropdownButton1" data-dropdown-toggle="userDropdown1" type="button"

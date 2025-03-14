@@ -10,27 +10,57 @@ class ShoppingCartController extends Controller
     //
     public function addToCart(Request $request, $id)
     {
-        $product = Product::findOrFail($id);
+        // Validasi input quantity
+        $request->validate([
+            'quantity' => 'required|integer|min:1',
+        ]);
+
         $quantity = $request->input('quantity', 1);
 
+        // Cari produk berdasarkan ID
+        $product = Product::find($id);
+
+        // Jika produk tidak ditemukan, kembalikan respons error
+        if (!$product) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Produk tidak ditemukan',
+            ], 404);
+        }
+
+        // Ambil data keranjang dari session
         $cart = session()->get('cart', []);
 
+        // Jika produk sudah ada di keranjang, tambahkan quantity
         if (isset($cart[$id])) {
             $cart[$id]['quantity'] += $quantity;
         } else {
-            $thumbnail = $product->thumbnail ? 'storage/' . $product->thumbnail : 'images/default.png';
+            // Jika produk belum ada di keranjang, tambahkan produk baru
             $cart[$id] = [
                 "name" => $product->name,
                 "barcode" => $product->barcode,
                 "quantity" => $quantity,
                 "price" => $product->selling_price,
-                "thumbnail" => $product->thumbnail ?? 'https://flowbite.s3.amazonaws.com/blocks/e-commerce/imac-front-dark.svg',
+                "thumbnail" => $product->thumbnail ? 'storage/' . $product->thumbnail : 'https://flowbite.s3.amazonaws.com/blocks/e-commerce/imac-front-dark.svg',
             ];
         }
 
+        // Simpan keranjang ke session
         session()->put('cart', $cart);
 
-        return redirect()->back()->with('success', 'Produk berhasil ditambahkan ke keranjang!');
+        // Hitung total harga keranjang
+        $total = 0;
+        foreach ($cart as $item) {
+            $total += $item['price'] * $item['quantity'];
+        }
+
+        // Kembalikan respons sukses dengan data produk dan total
+        return response()->json([
+            'success' => true,
+            'product' => $cart[$id],
+            'total' => $total,
+            'cart' => $cart, // Sertakan seluruh data keranjang untuk keperluan frontend
+        ]);
     }
 
     public function viewCart()

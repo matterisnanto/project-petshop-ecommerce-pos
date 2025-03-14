@@ -242,7 +242,7 @@
                                 <form action="{{ route('cart.add', $product->id) }}" method="POST">
                                     @csrf
                                     <input type="hidden" name="quantity" value="1"> <!-- Default quantity 1 -->
-                                    <button type="submit"
+                                    <button type="button" onclick="addToCart({{ $product->id }})"
                                         class="inline-flex items-center rounded-lg bg-primary-700 px-3 py-1.5 sm:px-5 sm:py-2.5 text-xs sm:text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
                                         <svg class="-ms-2 me-2 h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true"
                                             xmlns="http://www.w3.org/2000/svg" width="24" height="24"

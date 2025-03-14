@@ -28,8 +28,8 @@
                                     <div class="space-y-4 md:flex md:items-center md:justify-between md:gap-6 md:space-y-0">
                                         <!-- Gambar Produk -->
                                         <a href="#" class="shrink-0 md:order-1">
-                                            <img class="h-20 w-20 dark:hidden"
-                                                src="{{ asset('storage/' . $item['thumbnail']) }}" alt="imac image" />
+                                            <img class="h-20 w-20 dark:hidden" src="{{ asset($item['thumbnail']) }}"
+                                                alt="imac image" />
                                             <img class="hidden h-20 w-20 dark:block"
                                                 src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/imac-front-dark.svg"
                                                 alt="imac image" />
@@ -259,7 +259,7 @@
                 <div class="mx-auto mt-6 max-w-4xl flex-1 space-y-6 lg:mt-0 lg:w-full">
                     <div
                         class="space-y-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 sm:p-6">
-                        <p class="text-xl font-semibold text-gray-900 dark:text-white">Order summary</p>
+                        <p class="text-xl font-semibold text-gray-900 dark:text-white">Ringkasan pesanan</p>
 
                         <div class="space-y-4">
                             <div class="space-y-2">
