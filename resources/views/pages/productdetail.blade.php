@@ -98,7 +98,7 @@
                             <!-- Quantity Controls -->
                             <div class="flex items-center gap-2">
                                 <!-- Tombol Minus -->
-                                <button onclick="decreaseQuantity()"
+                                <button onclick="decreaseQuantityProductDetail()"
                                     class="p-2 text-gray-900 bg-white border border-gray-200 rounded-lg hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-700">
                                     <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                                         width="24" height="24" fill="none" viewBox="0 0 24 24">
@@ -108,11 +108,12 @@
                                 </button>
 
                                 <!-- Input Kuantitas -->
-                                <input id="quantity" name="quantity" min="1" value="1"
+                                <input id="product-detail-quantity" name="product-detail-quantity" min="1"
+                                    value="1"
                                     class="w-16 px-3 py-2 text-sm text-center text-gray-900 border border-gray-200 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" />
 
                                 <!-- Tombol Plus -->
-                                <button onclick="increaseQuantity()"
+                                <button onclick="increaseQuantityProductDetail()"
                                     class="p-2 text-gray-900 bg-white border border-gray-200 rounded-lg hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-700">
                                     <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                                         width="24" height="24" fill="none" viewBox="0 0 24 24">
@@ -146,27 +147,6 @@
             </div>
         </div>
     </section>
-
-    <script>
-        function changeImage(mainImageSrc, mainImageDarkSrc) {
-            document.getElementById('mainImage').src = mainImageSrc;
-            document.getElementById('mainImageDark').src = mainImageDarkSrc;
-        }
-
-        function increaseQuantity() {
-            const quantityInput = document.getElementById('quantity');
-            let currentValue = parseInt(quantityInput.value);
-            quantityInput.value = currentValue + 1;
-        }
-
-        function decreaseQuantity() {
-            const quantityInput = document.getElementById('quantity');
-            let currentValue = parseInt(quantityInput.value);
-            if (currentValue > 1) {
-                quantityInput.value = currentValue - 1;
-            }
-        }
-    </script>
 
     <script>
         function changeImage(mainImageSrc, mainImageDarkSrc) {

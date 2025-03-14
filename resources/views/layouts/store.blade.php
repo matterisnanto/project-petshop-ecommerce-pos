@@ -31,7 +31,8 @@
 <script>
     function addToCart(productId) {
         // Ambil nilai quantity dari input
-        const quantity = document.getElementById('quantity').value;
+        // const quantity = document.getElementById('quantity').value;
+        const quantity = document.getElementById('product-detail-quantity')?.value || 1;
 
         // Kirim permintaan AJAX ke server
         fetch(`/cart/add/${productId}`, {
@@ -96,13 +97,13 @@
                 </div>
                 <div class="flex items-center justify-end gap-4">
                     <div class="flex items-center gap-2">
-                        <button onclick="decreaseQuantity(${id})" class="p-1.5 text-gray-900 bg-white border border-gray-200 rounded-lg hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-700">
+                        <button onclick="decreaseQuantityCart(${id})" class="p-1.5 text-gray-900 bg-white border border-gray-200 rounded-lg hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-700">
                             <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14" />
                             </svg>
                         </button>
-                        <input id="quantity-${id}" name="quantity-${id}" min="1" value="${item.quantity}" onchange="updateQuantityManual(${id})" class="w-12 px-2 py-1.5 text-sm text-center text-gray-900 border border-gray-200 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" />
-                        <button onclick="increaseQuantity(${id})" class="p-1.5 text-gray-900 bg-white border border-gray-200 rounded-lg hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-700">
+                        <input id="cart-quantity-${id}" name="cart-quantity-${id}" min="1" value="${item.quantity}" onchange="updateQuantityManual(${id})" class="w-12 px-2 py-1.5 text-sm text-center text-gray-900 border border-gray-200 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" />
+                        <button onclick="increaseQuantityCart(${id})" class="p-1.5 text-gray-900 bg-white border border-gray-200 rounded-lg hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-700">
                             <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-7 7V5" />
                             </svg>
@@ -166,7 +167,7 @@
             .then(data => {
                 if (data.success) {
                     // Update quantity input
-                    const quantityInput = document.querySelector(`input[name="quantity-${productId}"]`);
+                    const quantityInput = document.querySelector(`input[name="cart-quantity-${productId}"]`);
                     if (quantityInput) quantityInput.value = quantity;
 
                     // Update total keseluruhan
@@ -182,7 +183,7 @@
     }
 
     function updateQuantityManual(productId) {
-        const input = document.querySelector(`input[name="quantity-${productId}"]`);
+        const input = document.querySelector(`input[name="cart-quantity-${productId}"]`);
         if (input) {
             let quantity = parseInt(input.value);
 
@@ -197,8 +198,8 @@
         }
     }
 
-    function increaseQuantity(productId) {
-        const input = document.querySelector(`input[name="quantity-${productId}"]`);
+    function increaseQuantityCart(productId) {
+        const input = document.querySelector(`input[name="cart-quantity-${productId}"]`);
         if (input) {
             let quantity = parseInt(input.value) + 1;
             input.value = quantity; // Langsung update nilai input
@@ -206,8 +207,8 @@
         }
     }
 
-    function decreaseQuantity(productId) {
-        const input = document.querySelector(`input[name="quantity-${productId}"]`);
+    function decreaseQuantityCart(productId) {
+        const input = document.querySelector(`input[name="cart-quantity-${productId}"]`);
         if (input) {
             let quantity = parseInt(input.value) - 1;
 
@@ -275,14 +276,14 @@
     }
 
     // productdetail
-    function increaseQuantity() {
-        const quantityInput = document.getElementById('quantity');
+    function increaseQuantityProductDetail() {
+        const quantityInput = document.getElementById('product-detail-quantity');
         let currentValue = parseInt(quantityInput.value);
         quantityInput.value = currentValue + 1; // Tambah nilai quantity
     }
 
-    function decreaseQuantity() {
-        const quantityInput = document.getElementById('quantity');
+    function decreaseQuantityProductDetail() {
+        const quantityInput = document.getElementById('product-detail-quantity');
         let currentValue = parseInt(quantityInput.value);
         if (currentValue > 1) { // Pastikan quantity tidak kurang dari 1
             quantityInput.value = currentValue - 1; // Kurangi nilai quantity
