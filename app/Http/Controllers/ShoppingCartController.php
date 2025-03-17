@@ -109,18 +109,23 @@ class ShoppingCartController extends Controller
         if (isset($cart[$id])) {
             unset($cart[$id]);
             session()->put('cart', $cart);
-
-            $total = 0;
-            foreach ($cart as $item) {
-                $total += $item['price'] * $item['quantity'];
-            }
-
-            return response()->json([
-                'success' => true,
-                'total' => $total
-            ]);
         }
 
-        return response()->json(['success' => false]);
+        $total = $this->calculateTotal($cart);
+
+        return response()->json([
+            'success' => true,
+            'total' => $total,
+            'cart_count' => count($cart)
+        ]);
+    }
+
+    private function calculateTotal($cart)
+    {
+        $total = 0;
+        foreach ($cart as $item) {
+            $total += $item['price'] * $item['quantity'];
+        }
+        return $total;
     }
 }

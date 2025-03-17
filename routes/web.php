@@ -18,6 +18,7 @@ Route::get('/product/{slug}', [ProductController::class, 'show'])->name('product
 Route::post('/cart/add/{id}', [ShoppingCartController::class, 'addToCart'])->name('cart.add');
 Route::post('/cart/update/{id}', [ShoppingCartController::class, 'updateCart'])->name('cart.update');
 Route::get('/cart/remove/{id}', [ShoppingCartController::class, 'removeFromCart'])->name('cart.remove');
+Route::post('/remove-from-cart/{id}', [ShoppingCartController::class, 'removeFromCart'])->name('remove.from.cart');
 Route::get('/shopping-cart', [ShoppingCartController::class, 'viewCart'])->name('cart.view');
 
 Route::get('/trx-check', [TrxController::class, 'index'])->name('trx');

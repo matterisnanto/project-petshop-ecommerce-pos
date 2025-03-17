@@ -16,7 +16,8 @@
                                 <div id="cart-item-{{ $id }}"
                                     class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 md:p-6 relative">
                                     <!-- Tombol Remove -->
-                                    <button onclick="removeFromCart({{ $id }})"
+                                    <!-- Tombol Remove -->
+                                    <button onclick="removeFromShoppingCart({{ $id }})"
                                         class="absolute top-2 right-2 text-gray-500 hover:text-red-600 dark:hover:text-red-500">
                                         <svg class="h-5 w-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                                             width="24" height="24" fill="none" viewBox="0 0 24 24">
@@ -329,4 +330,87 @@
             </div>
         </div>
     </section>
+    <script>
+        function updateQuantity(productId, quantity) {
+            $.ajax({
+                url: '/update-cart/' + productId,
+                method: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    quantity: quantity
+                },
+                success: function(response) {
+                    if (response.success) {
+                        // Update subtotal
+                        $('#subtotal-' + productId).text(formatRupiah(response.subtotal));
+                        // Update total
+                        // $('#total').text(formatRupiah(response.total));
+                    }
+                }
+            });
+        }
+
+        function increaseQuantity(productId) {
+            var input = $('#quantity-' + productId);
+            var newQuantity = parseInt(input.val()) + 1;
+            input.val(newQuantity);
+            updateQuantity(productId, newQuantity);
+        }
+
+        function decreaseQuantity(productId) {
+            var input = $('#quantity-' + productId);
+            var newQuantity = parseInt(input.val()) - 1;
+            if (newQuantity < 1) newQuantity = 1;
+            input.val(newQuantity);
+            updateQuantity(productId, newQuantity);
+        }
+
+        function updateQuantityManual(productId) {
+            var input = $('#quantity-' + productId);
+            var newQuantity = parseInt(input.val());
+            if (newQuantity < 1) newQuantity = 1;
+            input.val(newQuantity);
+            updateQuantity(productId, newQuantity);
+        }
+
+
+
+        function removeFromShoppingCart(productId) {
+            console.log("Tombol X diklik untuk product ID:", productId); // Debugging
+            if (confirm('Apakah Anda yakin ingin menghapus produk ini dari keranjang?')) {
+                $.ajax({
+                    url: '/remove-from-cart/' + productId,
+                    method: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        console.log("Response dari server:", response); // Debugging
+                        if (response.success) {
+                            // Hapus elemen produk dari DOM
+                            $('#cart-item-' + productId).remove();
+
+                            // Perbarui total harga
+                            $('#total').text(formatRupiah(response.total));
+
+                            // Jika keranjang kosong, tampilkan pesan keranjang kosong
+                            if (response.cart_count === 0) {
+                                $('#empty-cart-message').show();
+                            }
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Error saat menghapus produk:", error); // Debugging
+                    }
+                });
+            }
+        }
+
+        function formatRupiah(angka) {
+            var reverse = angka.toString().split('').reverse().join(''),
+                ribuan = reverse.match(/\d{1,3}/g);
+            ribuan = ribuan.join('.').split('').reverse().join('');
+            return 'Rp. ' + ribuan;
+        }
+    </script>
 @endsection
