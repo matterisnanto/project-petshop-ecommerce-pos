@@ -63,7 +63,7 @@
 
                 <!-- Dropdown Cart -->
                 <div id="myCartDropdown1"
-                    class="absolute right-0 mt-2 w-96 bg-white rounded-lg shadow-lg dark:bg-gray-800 hidden">
+                    class="absolute z-1000 right-10 mt-2 w-96 bg-white border rounded-lg shadow-lg border-gray-200 dark:bg-gray-800 hidden">
                     @if (count(session('cart', [])) > 0)
                         @foreach (session('cart') as $id => $item)
                             <!-- Produk -->

@@ -142,6 +142,55 @@
         cartDropdown.appendChild(viewCartButton);
     }
 
+    function updateShoppingCartDropdown(cart, total) {
+        const shoppingCartDropdown = document.querySelector('#myShoppingCartDropdown1');
+        const emptyShoppingCartMessage = document.querySelector('#empty-cart-message');
+        const ShoppingcartTotalContainer = document.querySelector('#cart-total-container');
+        const viewCartButtonContainer = document.querySelector('#view-cart-button-container');
+
+        // Kosongkan dropdown keranjang
+        cartDropdown.innerHTML = '';
+
+        // Jika keranjang kosong, tampilkan pesan
+        if (Object.keys(cart).length === 0) {
+            const emptyCartMessage = document.createElement('div');
+            emptyCartMessage.id = 'empty-cart-message';
+            emptyCartMessage.className = 'flex items-center justify-center h-20';
+            emptyCartMessage.innerHTML = '<p class="text-gray-500 dark:text-gray-400">Keranjang kosong</p>';
+            cartDropdown.appendChild(emptyCartMessage);
+        } else {
+            // Tambahkan produk ke dropdown
+            for (const [id, item] of Object.entries(cart)) {
+                const productElement = document.createElement('div');
+                productElement.id = `cart-item-${id}`;
+                productElement.className = 'grid grid-cols-2 p-4 border-b border-gray-200 dark:border-gray-700';
+                productElement.innerHTML = `
+
+            `;
+                cartDropdown.appendChild(productElement);
+            }
+
+            // Tambahkan total keseluruhan
+            const totalContainer = document.createElement('div');
+            totalContainer.id = 'cart-total-container';
+            totalContainer.className = 'p-2 border-t border-gray-200 dark:border-gray-700';
+            totalContainer.innerHTML = `
+            <p class="text-lg font-bold text-gray-900 dark:text-white text-right">
+                Total: Rp. <span id="cart-total">${total.toLocaleString()}</span>
+            </p>
+        `;
+            cartDropdown.appendChild(totalContainer);
+        }
+
+        // Tambahkan tombol "Lihat Keranjang"
+        const viewCartButton = document.createElement('div');
+        viewCartButton.className = 'p-4';
+        viewCartButton.innerHTML = `
+        <a href="{{ route('cart.view') }}" title="" class="w-full inline-flex items-center justify-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800" role="button">Lihat Keranjang</a>
+    `;
+        cartDropdown.appendChild(viewCartButton);
+    }
+
     function updateQuantity(productId, quantity) {
         // Jika quantity kurang dari 1, hapus produk dari keranjang
         if (quantity < 1) {

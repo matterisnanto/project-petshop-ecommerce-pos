@@ -213,7 +213,7 @@
                                 class="text-sm sm:text-lg font-semibold leading-tight text-gray-900 hover:underline dark:text-white">
                                 {{ $product->name }}
                             </a>
-                            <ul class="mt-2 flex items-center gap-2 sm:gap-4">
+                            <ul class="sm:mt-2 flex items-center gap-2 sm:gap-4">
                                 <li class="flex items-center gap-1 sm:gap-2">
                                     <svg class="h-3 w-3 sm:h-4 sm:w-4 text-gray-500 dark:text-gray-400" aria-hidden="true"
                                         xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -222,7 +222,9 @@
                                             d="M13 7h6l2 4m-8-4v8m0-8V6a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v9h2m8 0H9m4 0h2m4 0h2v-4m0 0h-5m3.5 5.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0Zm-10 0a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0Z" />
                                     </svg>
                                     <p class="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Fast
-                                        Delivery</p>
+                                    </p>
+                                    <p class="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400"> Delivery
+                                    </p>
                                 </li>
                                 <li class="flex items-center gap-1 sm:gap-2">
                                     <svg class="h-3 w-3 sm:h-4 sm:w-4 text-gray-500 dark:text-gray-400" aria-hidden="true"
@@ -230,25 +232,28 @@
                                         <path stroke="currentColor" stroke-linecap="round" stroke-width="2"
                                             d="M8 7V6c0-.6.4-1 1-1h11c.6 0 1 .4 1 1v7c0 .6-.4 1-1 1h-1M3 18v-7c0-.6.4-1 1-1h11c.6 0 1 .4 1 1v7c0 .6-.4 1-1 1H4a1 1 0 0 1-1-1Zm8-3.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z" />
                                     </svg>
-                                    <p class="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Best Price
+                                    <p class="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Best
                                     </p>
+                                    <p class="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Price</p>
                                 </li>
                             </ul>
-                            <div class="mt-4 flex items-center justify-between gap-2 sm:gap-4">
-                                <p class="text-lg sm:text-2xl font-extrabold leading-tight text-gray-900 dark:text-white">
+                            <div class="sm:mt-4 mt-2 flex items-center justify-between gap-2 sm:gap-4">
+                                <!-- Harga -->
+                                <p class="text-sm sm:text-2xl font-extrabold leading-tight text-gray-900 dark:text-white">
                                     Rp. {{ number_format($product->selling_price, 0, ',', '.') }}
                                 </p>
                                 <!-- Tombol Add to Cart -->
                                 <button type="button" onclick="addToCart({{ $product->id }})"
                                     class="inline-flex items-center rounded-lg bg-primary-700 px-3 py-1.5 sm:px-5 sm:py-2.5 text-xs sm:text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
-                                    <svg class="-ms-2 me-2 h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true"
+                                    <!-- Ikon keranjang -->
+                                    <svg class="h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true"
                                         xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
                                         viewBox="0 0 24 24">
                                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
                                             stroke-width="2"
                                             d="M4 4h1.5L8 16m0 0h8m-8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm.75-3H7.5M11 7H6.312M17 4v6m-3-3h6" />
                                     </svg>
-                                    Add to cart
+                                    <span class="hidden sm:flex ml-2">Add to cart</span>
                                 </button>
                             </div>
                         </div>
