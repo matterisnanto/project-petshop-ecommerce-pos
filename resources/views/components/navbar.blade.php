@@ -214,7 +214,7 @@
                 </li>
                 <li>
                     <a href="{{ route('product') }}"
-                        class="hover:text-primary-700 dark:hover:text-primary-500 {{ request()->is('product') ? 'text-primary-500' : 'text-gray-900 dark:text-white' }}">Product</a>
+                        class="hover:text-primary-700 dark:hover:text-primary-500 {{ request()->is('product*') ? 'text-primary-500' : 'text-gray-900 dark:text-white' }}">Product</a>
                 </li>
                 <li>
                     <a href="{{ route('trx') }}"

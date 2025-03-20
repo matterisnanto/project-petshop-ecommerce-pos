@@ -7,19 +7,15 @@ use Illuminate\Http\Request;
 
 class ShoppingCartController extends Controller
 {
-    //
     public function addToCart(Request $request, $id)
     {
-        // Validasi input quantity
         $request->validate([
             'quantity' => 'required|integer|min:1',
         ]);
         $quantity = $request->input('quantity', 1);
 
-        // Cari produk berdasarkan ID
         $product = Product::find($id);
 
-        // Jika produk tidak ditemukan, kembalikan respons error
         if (!$product) {
             return response()->json([
                 'success' => false,
@@ -27,14 +23,11 @@ class ShoppingCartController extends Controller
             ], 404);
         }
 
-        // Ambil data keranjang dari session
         $cart = session()->get('cart', []);
 
-        // Jika produk sudah ada di keranjang, tambahkan quantity
         if (isset($cart[$id])) {
             $cart[$id]['quantity'] += $quantity;
         } else {
-            // Jika produk belum ada di keranjang, tambahkan produk baru
             $cart[$id] = [
                 "name" => $product->name,
                 "barcode" => $product->barcode,
@@ -44,32 +37,22 @@ class ShoppingCartController extends Controller
             ];
         }
 
-        // Simpan keranjang ke session
         session()->put('cart', $cart);
 
-        // Hitung total harga keranjang
-        $total = 0;
-        foreach ($cart as $item) {
-            $total += $item['price'] * $item['quantity'];
-        }
+        $total = $this->calculateTotal($cart);
 
-        // Kembalikan respons sukses dengan data produk dan total
         return response()->json([
             'success' => true,
             'product' => $cart[$id],
             'total' => $total,
-            'cart' => $cart, // Sertakan seluruh data keranjang untuk keperluan frontend
+            'cart' => $cart,
         ]);
     }
 
     public function viewCart()
     {
         $cart = session()->get('cart', []);
-        $total = 0;
-
-        foreach ($cart as $item) {
-            $total += $item['price'] * $item['quantity'];
-        }
+        $total = $this->calculateTotal($cart);
 
         return view('pages.shoppingcart', compact('cart', 'total'));
     }
@@ -86,11 +69,8 @@ class ShoppingCartController extends Controller
             }
 
             session()->put('cart', $cart);
-
-            $total = 0;
-            foreach ($cart as $item) {
-                $total += $item['price'] * $item['quantity'];
-            }
+            // Hitung subtotal untuk item tertentu
+            $total = $this->calculateTotal($cart);
 
             return response()->json([
                 'success' => true,
