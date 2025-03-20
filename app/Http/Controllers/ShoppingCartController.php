@@ -14,7 +14,6 @@ class ShoppingCartController extends Controller
         $request->validate([
             'quantity' => 'required|integer|min:1',
         ]);
-
         $quantity = $request->input('quantity', 1);
 
         // Cari produk berdasarkan ID

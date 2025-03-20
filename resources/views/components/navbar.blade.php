@@ -128,6 +128,13 @@
                                     id="cart-total">{{ number_format(array_sum(array_map(fn($item) => $item['price'] * $item['quantity'], session('cart'))), 0, ',', '.') }}</span>
                             </p>
                         </div>
+
+                        <!-- Tombol Lihat Keranjang -->
+                        <div id="view-cart-button-container" class="p-4">
+                            <a href="{{ route('cart.view') }}" title=""
+                                class="w-full inline-flex items-center justify-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+                                role="button">Lihat Keranjang</a>
+                        </div>
                     @else
                         <!-- Jika Keranjang Kosong -->
                         <div id="empty-cart-message" class="flex items-center justify-center h-20">
@@ -135,12 +142,7 @@
                         </div>
                     @endif
 
-                    <!-- Tombol Lihat Keranjang -->
-                    <div id="view-cart-button-container" class="p-4">
-                        <a href="{{ route('cart.view') }}" title=""
-                            class="w-full inline-flex items-center justify-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
-                            role="button">Lihat Keranjang</a>
-                    </div>
+
                 </div>
 
                 {{-- <button id="userDropdownButton1" data-dropdown-toggle="userDropdown1" type="button"

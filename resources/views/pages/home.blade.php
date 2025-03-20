@@ -20,7 +20,7 @@
                 <p class="mb-4 max-w-2xl text-gray-500 dark:text-gray-400 md:mb-12 md:text-lg lg:mb-5 lg:text-xl">
                     Berikan makanan dan fasilitas yang baik
                 </p>
-                <a href="#"
+                <a href="{{ route('product') }}"
                     class="inline-block rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
                     Shop Now
                 </a>
