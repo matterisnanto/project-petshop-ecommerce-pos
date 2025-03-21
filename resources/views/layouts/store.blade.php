@@ -143,6 +143,110 @@
         }
     }
 
+    function updateShoppingCart(cart, total) {
+        const shoppingCart = document.querySelector('#shoppingCart');
+        const emptyShoppingCartMessage = document.querySelector('#empty-shopping-cart-message');
+        const backShoppingButton = document.querySelector('#back-shopping');
+        const totalShoppingCartContainer = document.querySelector('#shopping-cart-total-container');
+
+
+
+        shoppingCart.innerHTML = '';
+
+        if (Object.keys(cart).length === 0) {
+            const emptyShoppingCartMessage = document.createElement('div');
+            emptyShoppingCartMessage.id = 'empty-shopping-cart-message';
+            emptyShoppingCartMessage.className = 'flex flex-col items-center justify-center';
+            emptyShoppingCartMessage.innerHTML =
+                '<img src="${window.imageUrl}" alt="Kucing Cape" class="w-100 mb-4"> <div class = "flex items-center justify-center h-10"><p class = "text-4xl text-gray-500 dark:text-gray-400">Keranjang kosong</p></div >';
+            shoppingCart.appendChild(emptyShoppingCartMessage);
+
+            const backShoppingButton = document.createElement('div');
+            backShoppingButton.id = 'back-shopping';
+            backShoppingButton.className = 'space-y-6';
+            backShoppingButton.innerHTML = `
+            <a href="{{ route('product') }}" class="flex w-full items-center justify-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Kembali Belanja</a>
+        `;
+            shoppingCart.appendChild(backShoppingButton);
+        } else {
+            for (const [id, item] of Object.entries(cart)) {
+                const productShoppingCartElement = document.createElement('div');
+                productElement.id = `shoppingcart-item-${id}`;
+                productElement.className =
+                    'rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 md:p-6 relative';
+                productElement.innerHTML = `
+                <button onclick="removeFromCart(${id})" class="absolute top-2 right-2 text-gray-500 hover:text-red-600 dark:hover:text-red-500">
+                    <svg class="h-5 w-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18 17.94 6M18 18 6.06 6" />
+                    </svg>
+                </button>
+                <div class="space-y-4 md:flex md:items-center md:justify-between md:gap-6 md:space-y-0">
+                    <a href="#" class="shrink-0 md:order-1">
+                        <img class="h-20 w-20 dark:hidden" src="${item.thumbnail}" alt="imac image" />
+                        <img class="hidden h-20 w-20 dark:block" src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/imac-front-dark.svg" alt="imac image" />
+                    </a>
+                    <div class="flex items-center justify-between md:order-3 md:justify-end">
+                        <div class="flex items-center">
+                            <button onclick="decreaseShoppingCartQuantity(${id})"
+                                class="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-gray-300 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700">
+                                <svg class="h-2.5 w-2.5 text-gray-900 dark:text-white"
+                                    aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                    viewBox="0 0 18 2">
+                                    <path stroke="currentColor" stroke-linecap="round"
+                                        stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
+                                </svg>
+                            </button>
+                            <input id="quantity-${id}" name="quantity-${id}"
+                                min="1" value="${item.quantity}"
+                                onchange="updateShoppingCartQuantityManual(${id})"
+                                class="w-10 shrink-0 border-0 bg-transparent text-center text-sm font-medium text-gray-900 focus:outline-none focus:ring-0 dark:text-white" />
+                            <button onclick="increaseShoppingCartQuantity(${id})"
+                                class="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-gray-300 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700">
+                                <svg class="h-2.5 w-2.5 text-gray-900 dark:text-white"
+                                    aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                    viewBox="0 0 18 18">
+                                    <path stroke="currentColor" stroke-linecap="round"
+                                        stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="text-end md:order-4 md:w-32">
+                            <p class="text-base font-bold text-gray-900 dark:text-white">Rp. <span id="subtotal-${id}">${(item.price * item.quantity).toLocaleString()}</span></p>
+                        </div>
+                    </div>
+                    <div class="w-full min-w-0 flex-1 space-y-2 md:order-2 md:max-w-md md:ml-4">
+                        <a href="#" class="text-base font-semibold text-gray-900 hover:underline dark:text-white">${item.name}</a>
+                        <p class="text-gray-900 dark:text-white">${item.barcode}</p>
+                        <p>Rp. ${item.price.toLocaleString()}</p>
+                    </div>
+                </div>
+            `;
+                shoppingCart.appendChild(productShoppingCartElement);
+            }
+
+            const totalShoppingCartContainer = document.createElement('div');
+            totalContainer.id = 'shopping-cart-total-container';
+            totalContainer.className = 'space-y-6';
+            totalContainer.innerHTML = `
+            <dl class="flex items-center justify-between gap-4 border-t border-gray-200 pt-2 dark:border-gray-700">
+                <dt class="text-base font-bold text-gray-900 dark:text-white">Total</dt>
+                <dd class="text-base font-bold text-gray-900 dark:text-white" id="shopping-cart-total">Rp. <span>${total.toLocaleString()}</span></dd>
+            </dl>
+            <a href="#" class="flex w-full items-center justify-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Proses ke Checkout</a>
+        `;
+            shoppingCart.appendChild(totalShoppingCartContainer);
+
+            const checkoutButton = document.createElement('div');
+            checkoutButton.id = 'checkout-button';
+            checkoutButton.className = 'space-y-6';
+            checkoutButton.innerHTML = ` <a href="#"
+                                        class="flex w-full items-center justify-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Proses
+                                        ke Checkout</a>`;
+            shoppingCart.appendChild(checkoutButton);
+
+        }
+    }
+
     function updateCartQuantity(productId, quantity) {
         if (quantity < 1) {
             removeFromCart(productId);
@@ -218,7 +322,7 @@
 
             // Jika quantity kurang dari 1, hapus produk dari keranjang
             if (quantity < 1) {
-                removeFromCart(productId);
+                removeProduct(productId);
                 return;
             }
 
@@ -226,6 +330,14 @@
             updateCartQuantity(productId, quantity);
             updateShoppingCartQuantity(productId, quantity); // Kirim permintaan ke server
         }
+    }
+
+    function removeProduct(productId) {
+        // Panggil fungsi removeFromCart
+        removeFromCart(productId);
+
+        // Panggil fungsi removeFromShoppingCart
+        removeFromShoppingCart(productId);
     }
 
     function removeFromCart(productId) {
@@ -244,7 +356,7 @@
 
                     // Update total keseluruhan
                     updateCartTotal(data.total);
-                    updateShoppingCart(data.total);
+
 
                     // Periksa apakah keranjang kosong
                     const cartItems = document.querySelectorAll('[id^="cart-item-"]');
@@ -271,6 +383,7 @@
                             viewCartButton.remove();
                         }
                     }
+                    // window.location.reload();
                 } else {
                     alert('Gagal menghapus produk!');
                 }
@@ -280,6 +393,70 @@
                 alert('Terjadi kesalahan saat menghapus produk.');
             });
     }
+
+    function removeFromShoppingCart(productId) {
+        fetch(`/cart/remove/${productId}`, {
+                method: 'GET',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Hapus elemen produk dari DOM
+                    const itemElement = document.querySelector(`#shoppingcart-item-${productId}`);
+                    if (itemElement) itemElement.remove();
+
+                    // Perbarui total keseluruhan
+                    updateShoppingCartTotal(data.total);
+
+                    // Periksa apakah keranjang kosong
+                    const cartItems = document.querySelectorAll('[id^="shoppingcart-item-"]');
+                    if (cartItems.length === 0) {
+
+                        const shoppingCart = document.querySelector('#shoppingCart');
+
+                        // Tampilkan pesan keranjang kosong
+
+                        const emptyCartMessage = document.createElement('div');
+                        emptyCartMessage.id = 'empty-shopping-cart-message';
+                        emptyCartMessage.className = 'flex flex-col items-center justify-center';
+                        emptyCartMessage.innerHTML =
+                            '<img src="${window.imageUrl}" alt="Kucing Cape" class="w-100 mb-4"> <div class = "flex items-center justify-center h-10"><p class = "text-2xl text-gray-500 dark:text-gray-400">Keranjang kosong</p></div >';
+
+                        shoppingCart.appendChild(emptyCartMessage);
+
+                        // Tampilkan tombol "Kembali Belanja"
+                        const backShoppingButton = document.createElement('div');
+                        backShoppingButton.id = 'back-shopping';
+                        backShoppingButton.className = 'space-y-6';
+                        backShoppingButton.innerHTML = `
+                    <a href="{{ route('product') }}" class="flex w-full items-center justify-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Kembali Belanja</a>
+                `;
+                        shoppingCart.appendChild(backShoppingButton);
+
+                        const totalShoppingCartContainer = document.querySelector('#shopping-cart-total-container');
+                        if (totalShoppingCartContainer) {
+                            totalShoppingCartContainer.remove();
+                        }
+
+                        const checkoutButton = document.querySelector('#checkout-button');
+                        if (checkoutButton) {
+                            checkoutButton.remove();
+                        }
+                    }
+                } else {
+                    alert('Gagal menghapus produk!');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Terjadi kesalahan saat menghapus produk.');
+            });
+    }
+
+
 
     function updateCartTotal(total) {
         const totalElement = document.querySelector('#cart-total');
@@ -304,93 +481,7 @@
     }
 
     //shoppingcart
-    function updateShoppingCart(cart, total) {
-        const shoppingCart = document.querySelector('#shoppingCart');
-        shoppingCart.innerHTML = '';
 
-        if (Object.keys(cart).length === 0) {
-            const emptyCartMessage = document.createElement('div');
-            emptyCartMessage.id = 'empty-shopping-cart-message';
-            emptyCartMessage.className = 'flex items-center justify-center h-10';
-            emptyCartMessage.innerHTML = '<p class="text-gray-500 dark:text-gray-400">Keranjang kosong</p>';
-            shoppingCart.appendChild(emptyCartMessage);
-
-            const backShoppingButton = document.createElement('div');
-            backShoppingButton.id = 'back-shopping';
-            backShoppingButton.className = 'space-y-6';
-            backShoppingButton.innerHTML = `
-            <a href="{{ route('product') }}" class="flex w-full items-center justify-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Kembali Belanja</a>
-        `;
-            shoppingCart.appendChild(backShoppingButton);
-        } else {
-            for (const [id, item] of Object.entries(cart)) {
-                const productElement = document.createElement('div');
-                productElement.id = `shoppingcart-item-${id}`;
-                productElement.className =
-                    'rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 md:p-6 relative';
-                productElement.innerHTML = `
-                <button onclick="removeFromShoppingCart(${id})" class="absolute top-2 right-2 text-gray-500 hover:text-red-600 dark:hover:text-red-500">
-                    <svg class="h-5 w-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18 17.94 6M18 18 6.06 6" />
-                    </svg>
-                </button>
-                <div class="space-y-4 md:flex md:items-center md:justify-between md:gap-6 md:space-y-0">
-                    <a href="#" class="shrink-0 md:order-1">
-                        <img class="h-20 w-20 dark:hidden" src="${item.thumbnail}" alt="imac image" />
-                        <img class="hidden h-20 w-20 dark:block" src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/imac-front-dark.svg" alt="imac image" />
-                    </a>
-                    <div class="flex items-center justify-between md:order-3 md:justify-end">
-                        <div class="flex items-center">
-                            <button onclick="decreaseShoppingCartQuantity(${id})"
-                                class="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-gray-300 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700">
-                                <svg class="h-2.5 w-2.5 text-gray-900 dark:text-white"
-                                    aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                    viewBox="0 0 18 2">
-                                    <path stroke="currentColor" stroke-linecap="round"
-                                        stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
-                                </svg>
-                            </button>
-                            <input id="quantity-${id}" name="quantity-${id}"
-                                min="1" value="${item.quantity}"
-                                onchange="updateShoppingCartQuantityManual(${id})"
-                                class="w-10 shrink-0 border-0 bg-transparent text-center text-sm font-medium text-gray-900 focus:outline-none focus:ring-0 dark:text-white" />
-                            <button onclick="increaseShoppingCartQuantity(${id})"
-                                class="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-gray-300 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700">
-                                <svg class="h-2.5 w-2.5 text-gray-900 dark:text-white"
-                                    aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                    viewBox="0 0 18 18">
-                                    <path stroke="currentColor" stroke-linecap="round"
-                                        stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
-                                </svg>
-                            </button>
-                        </div>
-                        <div class="text-end md:order-4 md:w-32">
-                            <p class="text-base font-bold text-gray-900 dark:text-white">Rp. <span id="subtotal-${id}">${(item.price * item.quantity).toLocaleString()}</span></p>
-                        </div>
-                    </div>
-                    <div class="w-full min-w-0 flex-1 space-y-2 md:order-2 md:max-w-md">
-                        <a href="#" class="text-base font-semibold text-gray-900 hover:underline dark:text-white">${item.name}</a>
-                        <p class="text-gray-900 dark:text-white">${item.barcode}</p>
-                        <p>Rp. ${item.price.toLocaleString()}</p>
-                    </div>
-                </div>
-            `;
-                shoppingCart.appendChild(productElement);
-            }
-
-            const totalContainer = document.createElement('div');
-            totalContainer.id = 'shopping-cart-total-container';
-            totalContainer.className = 'space-y-6';
-            totalContainer.innerHTML = `
-            <dl class="flex items-center justify-between gap-4 border-t border-gray-200 pt-2 dark:border-gray-700">
-                <dt class="text-base font-bold text-gray-900 dark:text-white">Total</dt>
-                <dd class="text-base font-bold text-gray-900 dark:text-white" id="shopping-cart-total">Rp. <span>${total.toLocaleString()}</span></dd>
-            </dl>
-            <a href="#" class="flex w-full items-center justify-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Proses ke Checkout</a>
-        `;
-            shoppingCart.appendChild(totalContainer);
-        }
-    }
 
     function updateShoppingCartQuantity(productId, quantity) {
         if (quantity < 1) {
@@ -450,7 +541,7 @@
 
             // Jika quantity kurang dari 1, hapus produk dari keranjang
             if (quantity < 1) {
-                removeFromCart(productId);
+                removeProduct(productId);
                 return;
             }
 

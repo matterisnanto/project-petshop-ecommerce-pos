@@ -30,6 +30,7 @@ class ShoppingCartController extends Controller
         } else {
             $cart[$id] = [
                 "name" => $product->name,
+                "slug" => $product->slug,
                 "barcode" => $product->barcode,
                 "quantity" => $quantity,
                 "price" => $product->selling_price,

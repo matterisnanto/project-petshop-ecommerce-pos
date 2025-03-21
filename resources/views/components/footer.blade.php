@@ -1,10 +1,10 @@
 <!-- footer start -->
-<footer class="p-2 py-6 bg-primary-100 md:p-2 lg:p-4 dark:bg-gray-800">
+<footer class="p-2 py-4 bg-primary-100 md:p-2 lg:p-4 dark:bg-gray-800">
     <div class="mx-auto max-w-screen-xl text-center">
         <div class="grid lg:grid-cols-3">
             <!-- Logo Petshop (Centered on Mobile) -->
             <a href="#"
-                class="flex items-center justify-center text-2xl font-semibold text-gray-900 lg:justify-start lg:mb-0 dark:text-white">
+                class="flex mb-2 items-center justify-center text-2xl font-semibold text-gray-900 lg:justify-start lg:mb-2 dark:text-white">
                 Petshop
             </a>
 
@@ -39,7 +39,7 @@
                 </ul>
             </div>
         </div>
-        <hr class="my-6 border-pink-300 sm:mx-auto dark:border-gray-700 lg:my-8">
+        <hr class="my-2 border-pink-300 sm:mx-auto dark:border-gray-700 lg:my-4">
         <div class="sm:items-center sm:justify-between sm:flex">
             <span class="block text-sm text-gray-500 dark:text-gray-400">© 2025 <a href="https://flowbite.com"
                     class="hover:underline">Mamat&Vira™</a>. All Rights Reserved.</span>

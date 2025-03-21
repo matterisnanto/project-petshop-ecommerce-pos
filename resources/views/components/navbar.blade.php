@@ -106,7 +106,7 @@
                                         </button>
                                     </div>
                                     <!-- Tombol Hapus -->
-                                    <button onclick="removeFromCart({{ $id }})" type="button"
+                                    <button onclick="removeProduct({{ $id }})" type="button"
                                         class="text-red-600 hover:text-red-700 dark:text-red-500 dark:hover:text-red-600">
                                         <span class="sr-only">Remove</span>
                                         <svg class="h-4 w-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
