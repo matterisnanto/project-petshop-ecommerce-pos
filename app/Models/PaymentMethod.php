@@ -14,8 +14,15 @@ class PaymentMethod extends Model
 
     protected $fillable = ['name', 'image', 'is_cash'];
 
+    protected $appends = ['image_url'];
+
     public function posTransaction(): HasMany
     {
         return $this->hasMany(PosTransaction::class);
+    }
+
+    public function getImageUrlAttribute()
+    {
+        return $this->thumbnail ? url('storage/', $this->thumbnail) : null;
     }
 }

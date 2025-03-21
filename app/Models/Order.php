@@ -28,4 +28,10 @@ class Order extends Model
     {
         return $this->belongsTo(Product::class, 'product_id');
     }
+
+    public function paymentMethod(): BelongsTo
+{
+    return $this->belongsTo(PaymentMethod::class, 'payment_method_id');
+}
+
 }
