@@ -20,6 +20,7 @@ Route::post('/cart/update/{id}', [ShoppingCartController::class, 'updateCart'])-
 Route::get('/cart/remove/{id}', [ShoppingCartController::class, 'removeFromCart'])->name('cart.remove');
 Route::post('/remove-from-cart/{id}', [ShoppingCartController::class, 'removeFromCart'])->name('remove.from.cart');
 Route::get('/shopping-cart', [ShoppingCartController::class, 'viewCart'])->name('cart.view');
+Route::get('/shopping-cart/checkout', [ShoppingCartController::class, 'checkout'])->name('checkout');
 
 Route::get('/trx-check', [TrxController::class, 'index'])->name('trx');
 Route::post('/trx-check', [TrxController::class, 'searchTransaction'])->name('transaction.search');

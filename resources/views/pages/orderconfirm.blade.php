@@ -5,7 +5,7 @@
 @section('content')
     <section class="bg-white py-8 p-2 antialiased dark:bg-gray-900 md:py-16">
         <div
-            class="p-6 rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 mx-auto max-w-4xl px-4 2xl:px-2">
+            class="p-6 rounded-lg border border-gray-200 bg-white p-4 drop-shadow-sm dark:border-gray-700 dark:bg-gray-800 mx-auto max-w-4xl px-4 2xl:px-2">
             <h2 class="text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl mb-2">Terima Kasih telah berbelanja di
                 kami!</h2>
             <p class="text-gray-500 dark:text-gray-400 mb-6 md:mb-8">Orderan anda <a href="#"

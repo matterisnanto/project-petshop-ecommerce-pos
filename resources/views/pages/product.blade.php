@@ -209,7 +209,7 @@
                             </a>
                         </div>
                         <div class="pt-3 sm:pt-6">
-                            <a href="#"
+                            <a href="{{ route('product.detail', $product->slug) }}"
                                 class="text-sm sm:text-lg font-semibold leading-tight text-gray-900 hover:underline dark:text-white">
                                 {{ $product->name }}
                             </a>
@@ -223,7 +223,8 @@
                                     </svg>
                                     <p class="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Fast
                                     </p>
-                                    <p class="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400"> Delivery
+                                    <p class="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">
+                                        Delivery
                                     </p>
                                 </li>
                                 <li class="flex items-center gap-1 sm:gap-2">
@@ -234,7 +235,8 @@
                                     </svg>
                                     <p class="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Best
                                     </p>
-                                    <p class="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Price</p>
+                                    <p class="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Price
+                                    </p>
                                 </li>
                             </ul>
                             <div class="sm:mt-4 mt-2 flex items-center justify-between gap-2 sm:gap-4">

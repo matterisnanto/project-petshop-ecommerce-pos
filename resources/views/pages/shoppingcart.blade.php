@@ -6,11 +6,10 @@
 
     <section class="bg-white py-8 antialiased dark:bg-gray-900 md:py-16">
         <div class="mx-auto max-w-screen-xl px-4 2xl:px-0">
-            <h2 class="mt-6 text-xl font-semibold text-gray-900 dark:text-white">Keranjang Belanja</h2>
-
+            <h2 class="mt-2 text-xl font-semibold text-gray-900 dark:text-white">Keranjang Belanja</h2>
             <div class="mt-6 sm:mt-8 md:gap-6 lg:flex lg:items-start xl:gap-8">
                 <div class="mx-auto w-full">
-                    <div id="shoppingCart" class="space-y-6">
+                    <div id="shoppingCart" class="space-y-6" data-image-url="{{ asset('img/kucing-cape.png') }}">
                         @if (count(session('cart', [])) > 0)
                             @foreach (session('cart') as $id => $item)
                                 <div id="shoppingcart-item-{{ $id }}"
@@ -30,8 +29,7 @@
                                         <a href="#" class="shrink-0 md:order-1">
                                             <img class="h-20 w-20 dark:hidden" src="{{ asset($item['thumbnail']) }}"
                                                 alt="imac image" />
-                                            <img class="hidden h-20 w-20 dark:block"
-                                                src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/imac-front-dark.svg"
+                                            <img class="hidden h-20 w-20 dark:block" src="{{ asset($item['thumbnail']) }}"
                                                 alt="imac image" />
                                         </a>
 
@@ -77,13 +75,13 @@
                                         </div>
 
                                         <!-- Nama Produk dan Barcode -->
-                                        <div class="w-full min-w-0 flex-1 space-y-2 md:order-2 md:max-w-md md:ml-4">
+                                        <div class="w-full min-w-0 flex-1 md:order-2 md:max-w-md md:ml-4">
                                             <a href="#"
                                                 class="text-base font-semibold text-gray-900 hover:underline dark:text-white">
                                                 {{ $item['name'] }}
                                             </a>
                                             <p class="text-gray-900 dark:text-white">{{ $item['barcode'] }}</p>
-                                            <p>Rp. {{ number_format($item['price'], 0, ',', '.') }}</p>
+
                                         </div>
                                     </div>
                                 </div>
@@ -99,15 +97,14 @@
                                 </dl>
 
                                 <div id="checkout-button" class="space-y-6">
-                                    <a href="#"
+                                    <a href="{{ route('checkout') }}"
                                         class="flex w-full items-center justify-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Proses
                                         ke Checkout</a>
                                 </div>
                             </div>
                         @else
                             <!-- Jika Keranjang Kosong -->
-                            <div id="empty-shopping-cart-message" class="flex flex-col items-center justify-center"
-                                data-image-url="{{ asset('img/kucing-cape.png') }}">
+                            <div id="empty-shopping-cart-message" class="flex flex-col items-center justify-center">
                                 <img src="{{ asset('img/kucing-cape.png') }}" alt="Kucing Cape" class="w-100 mb-4">
                                 <div class="flex items-center justify-center h-10">
                                     <p class="text-2xl text-gray-500 dark:text-gray-400">Keranjang kosong</p>

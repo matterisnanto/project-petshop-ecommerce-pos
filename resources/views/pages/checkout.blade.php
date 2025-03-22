@@ -622,7 +622,9 @@
                         <div class="-my-3 divide-y divide-gray-200 dark:divide-gray-800">
                             <dl class="flex items-center justify-between gap-4 py-3">
                                 <dt class="text-base font-normal text-gray-500 dark:text-gray-400">Subtotal</dt>
-                                <dd class="text-base font-medium text-gray-900 dark:text-white">$8,094.00</dd>
+                                <dd class="text-base font-medium text-gray-900 dark:text-white">Rp.
+                                    {{ number_format(array_sum(array_map(fn($item) => $item['price'] * $item['quantity'], session('cart'))), 0, ',', '.') }}
+                                </dd>
                             </dl>
 
                             <dl class="flex items-center justify-between gap-4 py-3">

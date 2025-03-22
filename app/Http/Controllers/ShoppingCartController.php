@@ -108,4 +108,12 @@ class ShoppingCartController extends Controller
         }
         return $total;
     }
+
+    public function checkout()
+    {
+        $cart = session()->get('cart', []);
+        $total = $this->calculateTotal($cart);
+
+        return view('pages.checkout', compact('cart', 'total'));
+    }
 }

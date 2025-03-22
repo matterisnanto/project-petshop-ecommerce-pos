@@ -45,7 +45,7 @@
             <div class="flex items-center lg:space-x-2">
                 <!-- Tombol Cart -->
                 <button id="myCartDropdownButton1" data-dropdown-toggle="myCartDropdown1" type="button"
-                    class="inline-flex items-center rounded-lg justify-center p-2 {{ request()->is('shopping-cart') ? 'text-primary-500' : 'text-gray-900 dark:text-white' }} hover:bg-gray-100 dark:hover:bg-gray-700 text-sm font-medium leading-none">
+                    class="inline-flex items-center rounded-lg justify-center p-2 {{ request()->is('shopping-cart*') ? 'text-primary-500' : 'text-gray-900 dark:text-white' }} hover:bg-gray-100 dark:hover:bg-gray-700 text-sm font-medium leading-none">
                     <span class="sr-only">Cart</span>
                     <svg class="w-5 h-5 lg:me-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
                         height="24" fill="none" viewBox="0 0 24 24">
@@ -62,87 +62,103 @@
                 </button>
 
                 <!-- Dropdown Cart -->
-                <div id="myCartDropdown1"
-                    class="absolute z-1000 right-10 mt-2 w-96 bg-white border rounded-lg shadow-lg border-gray-200 dark:bg-gray-800 hidden">
-                    @if (count(session('cart', [])) > 0)
-                        @foreach (session('cart') as $id => $item)
-                            <!-- Produk -->
-                            <div id="cart-item-{{ $id }}"
-                                class="grid grid-cols-2 p-4 border-b border-gray-200 dark:border-gray-700">
-                                <div class="max-w-[200px]">
-                                    <a href="#"
-                                        class="block truncate text-sm font-semibold leading-none text-gray-900 dark:text-white hover:underline">
-                                        {{ $item['name'] }}
-                                    </a>
-                                    <p class="mt-0.5 truncate text-sm font-normal text-gray-500 dark:text-gray-400">
-                                        Rp. {{ number_format($item['price'], 0, ',', '.') }}
-                                    </p>
-                                </div>
-                                <div class="flex items-center justify-end gap-4">
-                                    <div class="flex items-center gap-2">
-                                        <!-- Tombol Minus -->
-                                        <button onclick="decreaseQuantityCart({{ $id }})"
-                                            class="p-1.5 text-gray-900 bg-white border border-gray-200 rounded-lg hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-700">
-                                            <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                                                width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                                <path stroke="currentColor" stroke-linecap="round"
-                                                    stroke-linejoin="round" stroke-width="2" d="M5 12h14" />
-                                            </svg>
-                                        </button>
-                                        <!-- Input Kuantitas -->
-                                        <input id="cart-quantity-{{ $id }}"
-                                            name="cart-quantity-{{ $id }}" min="1"
-                                            value="{{ $item['quantity'] }}"
-                                            onchange="updateQuantityManual({{ $id }})"
-                                            class="w-12 px-2 py-1.5 text-sm text-center text-gray-900 border border-gray-200 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" />
-                                        <!-- Tombol Plus -->
-                                        <button onclick="increaseQuantityCart({{ $id }})"
-                                            class="p-1.5 text-gray-900 bg-white border border-gray-200 rounded-lg hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-700">
-                                            <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                                                width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                                <path stroke="currentColor" stroke-linecap="round"
-                                                    stroke-linejoin="round" stroke-width="2" d="M5 12h14m-7 7V5" />
+                @if (request()->url() == route('checkout'))
+                    <div id="myCartDropdown1"
+                        class="absolute z-1000 right-10 mt-2 w-96 bg-gray-50 border rounded-lg drop-shadow-lg border-gray-200 dark:bg-gray-800 hidden">
+                        <div id="empty-cart-message" class="flex flex-col items-center justify-center h-60">
+                            <img src="{{ asset('img/kucing-tidur-dibox.png') }}" alt="Kucing Cape" class="w-50 mb-2">
+                            <p class="sm:text-xl text-gray-500 dark:text-gray-400">Kami checkout dulu ya keranjangnya
+                            </p>
+                        </div>
+                    </div>
+                @else
+                    <div id="myCartDropdown1"
+                        class="absolute z-1000 right-10 mt-2 w-96 bg-gray-50 border rounded-lg drop-shadow-lg border-gray-200 dark:bg-gray-800 hidden">
+                        @if (count(session('cart', [])) > 0)
+                            @foreach (session('cart') as $id => $item)
+                                <!-- Produk -->
+                                <div id="cart-item-{{ $id }}"
+                                    class="grid grid-cols-2 p-4 border-b border-gray-200 dark:border-gray-700">
+                                    <div class="max-w-[200px]">
+                                        <a href="#"
+                                            class="block truncate text-sm font-semibold leading-none text-gray-900 dark:text-white hover:underline">
+                                            {{ $item['name'] }}
+                                        </a>
+                                        <p class="mt-0.5 truncate text-sm font-normal text-gray-500 dark:text-gray-400">
+                                            Rp. {{ number_format($item['price'], 0, ',', '.') }}
+                                        </p>
+                                    </div>
+                                    <div class="flex items-center justify-end gap-4">
+                                        <div class="flex items-center gap-2">
+                                            <!-- Tombol Minus -->
+                                            <button onclick="decreaseQuantityCart({{ $id }})"
+                                                class="p-1.5 text-gray-900 bg-white border border-gray-200 rounded-lg hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-700">
+                                                <svg class="w-4 h-4" aria-hidden="true"
+                                                    xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                    fill="none" viewBox="0 0 24 24">
+                                                    <path stroke="currentColor" stroke-linecap="round"
+                                                        stroke-linejoin="round" stroke-width="2" d="M5 12h14" />
+                                                </svg>
+                                            </button>
+                                            <!-- Input Kuantitas -->
+                                            <input id="cart-quantity-{{ $id }}"
+                                                name="cart-quantity-{{ $id }}" min="1"
+                                                value="{{ $item['quantity'] }}"
+                                                onchange="updateQuantityManual({{ $id }})"
+                                                class="w-12 px-2 py-1.5 text-sm text-center text-gray-900 border border-gray-200 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" />
+                                            <!-- Tombol Plus -->
+                                            <button onclick="increaseQuantityCart({{ $id }})"
+                                                class="p-1.5 text-gray-900 bg-white border border-gray-200 rounded-lg hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-700">
+                                                <svg class="w-4 h-4" aria-hidden="true"
+                                                    xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                    fill="none" viewBox="0 0 24 24">
+                                                    <path stroke="currentColor" stroke-linecap="round"
+                                                        stroke-linejoin="round" stroke-width="2"
+                                                        d="M5 12h14m-7 7V5" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                        <!-- Tombol Hapus -->
+                                        <button onclick="removeProduct({{ $id }})" type="button"
+                                            class="text-red-600 hover:text-red-700 dark:text-red-500 dark:hover:text-red-600">
+                                            <span class="sr-only">Remove</span>
+                                            <svg class="h-4 w-4" aria-hidden="true"
+                                                xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path fill-rule="evenodd"
+                                                    d="M2 12a10 10 0 1 1 20 0 10 10 0 0 1-20 0Zm7.7-3.7a1 1 0 0 0-1.4 1.4l2.3 2.3-2.3 2.3a1 1 0 1 0 1.4 1.4l2.3-2.3 2.3 2.3a1 1 0 0 0 1.4-1.4L13.4 12l2.3-2.3a1 1 0 0 0-1.4-1.4L12 10.6 9.7 8.3Z"
+                                                    clip-rule="evenodd" />
                                             </svg>
                                         </button>
                                     </div>
-                                    <!-- Tombol Hapus -->
-                                    <button onclick="removeProduct({{ $id }})" type="button"
-                                        class="text-red-600 hover:text-red-700 dark:text-red-500 dark:hover:text-red-600">
-                                        <span class="sr-only">Remove</span>
-                                        <svg class="h-4 w-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                                            fill="currentColor" viewBox="0 0 24 24">
-                                            <path fill-rule="evenodd"
-                                                d="M2 12a10 10 0 1 1 20 0 10 10 0 0 1-20 0Zm7.7-3.7a1 1 0 0 0-1.4 1.4l2.3 2.3-2.3 2.3a1 1 0 1 0 1.4 1.4l2.3-2.3 2.3 2.3a1 1 0 0 0 1.4-1.4L13.4 12l2.3-2.3a1 1 0 0 0-1.4-1.4L12 10.6 9.7 8.3Z"
-                                                clip-rule="evenodd" />
-                                        </svg>
-                                    </button>
                                 </div>
+                            @endforeach
+
+                            <!-- Total Keseluruhan -->
+                            <div id="cart-total-container" class="p-2 border-t border-gray-200 dark:border-gray-700">
+                                <p class="text-lg font-bold text-gray-900 dark:text-white text-right">
+                                    Total: Rp. <span
+                                        id="cart-total">{{ number_format(array_sum(array_map(fn($item) => $item['price'] * $item['quantity'], session('cart'))), 0, ',', '.') }}</span>
+                                </p>
                             </div>
-                        @endforeach
 
-                        <!-- Total Keseluruhan -->
-                        <div id="cart-total-container" class="p-2 border-t border-gray-200 dark:border-gray-700">
-                            <p class="text-lg font-bold text-gray-900 dark:text-white text-right">
-                                Total: Rp. <span
-                                    id="cart-total">{{ number_format(array_sum(array_map(fn($item) => $item['price'] * $item['quantity'], session('cart'))), 0, ',', '.') }}</span>
-                            </p>
-                        </div>
-
-                        <!-- Tombol Lihat Keranjang -->
-                        <div id="view-cart-button-container" class="p-4">
-                            <a href="{{ route('cart.view') }}" title=""
-                                class="w-full inline-flex items-center justify-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
-                                role="button">Lihat Keranjang</a>
-                        </div>
-                    @else
-                        <!-- Jika Keranjang Kosong -->
-                        <div id="empty-cart-message" class="flex items-center justify-center h-20">
-                            <p class="text-gray-500 dark:text-gray-400">Keranjang kosong</p>
-                        </div>
-                    @endif
+                            <!-- Tombol Lihat Keranjang -->
+                            <div id="view-cart-button-container" class="p-4">
+                                <a href="{{ route('cart.view') }}" title=""
+                                    class="w-full inline-flex items-center justify-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+                                    role="button">Lihat Keranjang</a>
+                            </div>
+                        @else
+                            <!-- Jika Keranjang Kosong -->
+                            <div id="empty-cart-message" class="flex flex-col items-center justify-center h-50">
+                                <img src="{{ asset('img/kucing-cape.png') }}" alt="Kucing Cape" class="w-50 mb-2">
+                                <p class="sm:text-xl text-gray-500 dark:text-gray-400">Keranjang kosong</p>
+                            </div>
+                        @endif
 
 
-                </div>
+                    </div>
+                @endif
 
                 {{-- <button id="userDropdownButton1" data-dropdown-toggle="userDropdown1" type="button"
                         class="inline-flex items-center rounded-lg justify-center p-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-sm font-medium leading-none text-gray-900 dark:text-white">
