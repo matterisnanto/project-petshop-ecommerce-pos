@@ -104,7 +104,7 @@
                                             <input id="cart-quantity-{{ $id }}"
                                                 name="cart-quantity-{{ $id }}" min="1"
                                                 value="{{ $item['quantity'] }}"
-                                                onchange="updateQuantityManual({{ $id }})"
+                                                onchange="updateQuantityCartManual({{ $id }})"
                                                 class="w-12 px-2 py-1.5 text-sm text-center text-gray-900 border border-gray-200 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" />
                                             <!-- Tombol Plus -->
                                             <button onclick="increaseQuantityCart({{ $id }})"
