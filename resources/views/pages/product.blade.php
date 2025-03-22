@@ -198,17 +198,17 @@
             <div class="mb-4 grid gap-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4">
                 @foreach ($product as $index => $product)
                     <div
-                        class="product-item rounded-lg border border-gray-200 bg-white p-3 sm:p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800 {{ $index >= 8 ? 'hidden' : '' }}">
+                        class="product-item rounded-lg border border-gray-200 bg-white p-1 sm:p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800 {{ $index >= 8 ? 'hidden' : '' }}">
                         <!-- Konten produk -->
-                        <div class="h-40 w-full sm:h-56">
+                        <div class="h-45 w-full sm:h-56">
                             <a href="{{ route('product.detail', $product->slug) }}">
-                                <img class="mx-auto h-full w-full object-cover dark:hidden"
+                                <img class="mx-auto h-full w-full object-cover dark:hidden rounded-lg"
                                     src="{{ $product->image_url }}" alt="" />
                                 <img class="mx-auto hidden h-full w-full object-cover dark:block"
                                     src="{{ $product->image_url }}" alt="" />
                             </a>
                         </div>
-                        <div class="pt-3 sm:pt-6">
+                        <div class=" sm:pt-6">
                             <a href="{{ route('product.detail', $product->slug) }}"
                                 class="text-sm sm:text-lg font-semibold leading-tight text-gray-900 hover:underline dark:text-white">
                                 {{ $product->name }}
