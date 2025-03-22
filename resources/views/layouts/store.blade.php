@@ -45,8 +45,8 @@
     //cart dropdown
     function addToCart(productId) {
         // Ambil nilai quantity dari input
-        // const quantity = document.getElementById('quantity').value;
-        const quantity = document.getElementById('product-detail-quantity')?.value || 1;
+        const quantityInput = document.getElementById('product-detail-quantity');
+        const quantity = quantityInput ? quantityInput.value : 1;
 
         // Kirim permintaan AJAX ke server
         fetch(`/cart/add/${productId}`, {
@@ -61,7 +61,10 @@
             })
             .then(response => {
                 if (!response.ok) {
-                    throw new Error('Gagal menambahkan produk ke keranjang');
+                    // Jika respons tidak OK (misalnya, status 400), lempar error
+                    return response.json().then(err => {
+                        throw new Error(err.message || 'Gagal menambahkan produk ke keranjang');
+                    });
                 }
                 return response.json();
             })
@@ -76,7 +79,7 @@
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Terjadi kesalahan saat menambahkan produk ke keranjang.');
+                alert(error.message || 'Terjadi kesalahan saat menambahkan produk ke keranjang.');
             });
     }
 
@@ -124,7 +127,7 @@
                             </svg>
                         </button>
                     </div>
-                    <button onclick="removeFromCart(${id})" data-tooltip-target="tooltipRemoveItem1a" type="button" class="text-red-600 hover:text-red-700 dark:text-red-500 dark:hover:text-red-600">
+                    <button onclick="removeProduct(${id})" data-tooltip-target="tooltipRemoveItem1a" type="button" class="text-red-600 hover:text-red-700 dark:text-red-500 dark:hover:text-red-600">
                         <span class="sr-only"> Remove </span>
                         <svg class="h-4 w-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
                             <path fill-rule="evenodd" d="M2 12a10 10 0 1 1 20 0 10 10 0 0 1-20 0Zm7.7-3.7a1 1 0 0 0-1.4 1.4l2.3 2.3-2.3 2.3a1 1 0 1 0 1.4 1.4l2.3-2.3 2.3 2.3a1 1 0 0 0 1.4-1.4L13.4 12l2.3-2.3a1 1 0 0 0-1.4-1.4L12 10.6 9.7 8.3Z" clip-rule="evenodd" />
@@ -159,7 +162,7 @@
 
     function updateCartQuantity(productId, quantity) {
         if (quantity < 1) {
-            removeFromCart(productId);
+            removeProduct(productId);
             return;
         }
 
@@ -375,7 +378,7 @@
                             </button>
                         </div>
                         <div class="text-end md:order-4 md:w-32">
-                            <p class="text-base font-bold text-gray-900 dark:text-white">Rp. <span id="subtotal-${id}"></span></p>
+                            <p class="text-base font-bold text-gray-900 dark:text-white">Rp. <span id="subtotal-${id}">${(item.price * item.quantity).toLocaleString()}</span></p>
                         </div>
                     </div>
                     <div class="w-full min-w-0 flex-1 space-y-2 md:order-2 md:max-w-md md:ml-4">
@@ -412,7 +415,7 @@
 
     function updateShoppingCartQuantity(productId, quantity) {
         if (quantity < 1) {
-            removeFromCart(productId);
+            removeProduct(productId);
             return;
         }
 
@@ -563,6 +566,19 @@
         if (totalElement) {
             totalElement.textContent = total.toLocaleString();
         }
+    }
+
+    function updateSubtotal(productId, quantity) {
+        const item = cart[productId];
+        const subtotal = item.price * quantity;
+        const subtotalElement = document.querySelector(`#subtotal-${productId}`);
+
+        if (subtotalElement) {
+            subtotalElement.textContent = subtotal.toLocaleString();
+        }
+
+        // Perbarui total keseluruhan
+        // updateShoppingCartTotal();
     }
 
     function formatRupiah(angka) {

@@ -25,6 +25,19 @@ class ShoppingCartController extends Controller
 
         $cart = session()->get('cart', []);
 
+        // Hitung total quantity yang akan ditambahkan ke keranjang
+        $totalQuantityInCart = isset($cart[$id]) ? $cart[$id]['quantity'] : 0;
+        $totalQuantityRequested = $totalQuantityInCart + $quantity;
+
+        // Cek apakah stok mencukupi
+        if ($product->stock < $totalQuantityRequested) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Stok tidak mencukupi. Sisa stok hanya ' . $product->stock,
+            ], 400); // 400 Bad Request
+        }
+
+        // Tambahkan produk ke keranjang
         if (isset($cart[$id])) {
             $cart[$id]['quantity'] += $quantity;
         } else {
@@ -107,6 +120,15 @@ class ShoppingCartController extends Controller
             $total += $item['price'] * $item['quantity'];
         }
         return $total;
+    }
+
+    private function calculateSubTotal($cart)
+    {
+        $subtotal = 0;
+        foreach ($cart as $item) {
+            $subtotal += $item['price'] * $item['quantity'];
+        }
+        return $subtotal;
     }
 
     public function checkout()
