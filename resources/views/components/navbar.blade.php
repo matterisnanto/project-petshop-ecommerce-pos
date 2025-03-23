@@ -80,7 +80,7 @@
                                 <div id="cart-item-{{ $id }}"
                                     class="grid grid-cols-2 p-4 border-b border-gray-200 dark:border-gray-700">
                                     <div class="max-w-[200px]">
-                                        <a href="#"
+                                        <a href="{{ route('product.detail', $item['slug']) }}"
                                             class="block truncate text-sm font-semibold leading-none text-gray-900 dark:text-white hover:underline">
                                             {{ $item['name'] }}
                                         </a>
@@ -103,7 +103,7 @@
                                             <!-- Input Kuantitas -->
                                             <input id="cart-quantity-{{ $id }}"
                                                 name="cart-quantity-{{ $id }}" min="1"
-                                                value="{{ $item['quantity'] }}"
+                                                max="{{ $item['stock'] }}" value="{{ $item['quantity'] }}"
                                                 onchange="updateQuantityCartManual({{ $id }})"
                                                 class="w-12 px-2 py-1.5 text-sm text-center text-gray-900 border border-gray-200 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" />
                                             <!-- Tombol Plus -->

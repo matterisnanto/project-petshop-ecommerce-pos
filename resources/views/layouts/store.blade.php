@@ -38,8 +38,11 @@
         // Panggil fungsi removeFromCart
         removeFromCart(productId);
 
-        // Panggil fungsi removeFromShoppingCart
-        removeFromShoppingCart(productId);
+        // Cek apakah pengguna berada di halaman shopping-cart
+        if (window.location.pathname.includes('shopping-cart')) {
+            // Panggil fungsi removeFromShoppingCart hanya jika berada di halaman shopping-cart
+            removeFromShoppingCart(productId);
+        }
     }
 
     //cart dropdown
@@ -108,7 +111,7 @@
                 productElement.className = 'grid grid-cols-2 p-4 border-b border-gray-200 dark:border-gray-700';
                 productElement.innerHTML = `
                 <div class="max-w-[200px]">
-                    <a href="#" class="block truncate text-sm font-semibold leading-none text-gray-900 dark:text-white hover:underline">
+                    <a href="/product/${item.slug}" class="block truncate text-sm font-semibold leading-none text-gray-900 dark:text-white hover:underline">
                         ${item.name}
                     </a>
                     <p class="mt-0.5 truncate text-sm font-normal text-gray-500 dark:text-gray-400">Rp. ${item.price.toLocaleString()}</p>
@@ -120,7 +123,7 @@
                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14" />
                             </svg>
                         </button>
-                        <input id="cart-quantity-${id}" name="cart-quantity-${id}" min="1" value="${item.quantity}" onchange="updateQuantityCartManual(${id})" class="w-12 px-2 py-1.5 text-sm text-center text-gray-900 border border-gray-200 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" />
+                        <input id="cart-quantity-${id}" name="cart-quantity-${id}" min="1" max="${item.stock}" value="${item.quantity}" onchange="updateQuantityCartManual(${id})" class="w-12 px-2 py-1.5 text-sm text-center text-gray-900 border border-gray-200 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" />
                         <button onclick="increaseQuantityCart(${id})" class="p-1.5 text-gray-900 bg-white border border-gray-200 rounded-lg hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-700">
                             <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-7 7V5" />
@@ -205,11 +208,18 @@
         const input = document.querySelector(`input[name="cart-quantity-${productId}"]`);
         if (input) {
             let quantity = parseInt(input.value);
+            const maxStock = parseInt(input.getAttribute('max'));
 
             // Validasi quantity
             if (isNaN(quantity) || quantity < 1) {
                 alert('Kuantitas harus lebih dari 0');
                 input.value = 1; // Reset ke nilai default
+                return;
+            }
+
+            if (quantity > maxStock) {
+                alert('Kuantitas tidak boleh melebihi stok yang tersedia.');
+                input.value = maxStock; // Reset ke nilai maksimum
                 return;
             }
 
@@ -222,6 +232,13 @@
         const input = document.querySelector(`input[name="cart-quantity-${productId}"]`);
         if (input) {
             let quantity = parseInt(input.value) + 1;
+            const maxStock = parseInt(input.getAttribute('max'));
+
+            if (quantity > maxStock) {
+                alert('Kuantitas tidak boleh melebihi stok yang tersedia.');
+                return;
+            }
+
             input.value = quantity; // Langsung update nilai input
             updateCartQuantity(productId, quantity);
             updateShoppingCartQuantity(productId, quantity); // Kirim permintaan ke server
@@ -458,6 +475,13 @@
         const input = document.querySelector(`input[name="quantity-${productId}"]`);
         if (input) {
             let quantity = parseInt(input.value) + 1;
+            const maxStock = parseInt(input.getAttribute('max'));
+
+            if (quantity > maxStock) {
+                alert('Kuantitas tidak boleh melebihi stok yang tersedia.');
+                return;
+            }
+
             input.value = quantity; // Langsung update nilai input
             updateShoppingCartQuantity(productId, quantity);
             updateCartQuantity(productId, quantity) // Kirim permintaan ke server
@@ -485,11 +509,18 @@
         const input = document.querySelector(`input[name="quantity-${productId}"]`);
         if (input) {
             let quantity = parseInt(input.value);
+            const maxStock = parseInt(input.getAttribute('max'));
 
             // Validasi quantity
             if (isNaN(quantity) || quantity < 1) {
                 alert('Kuantitas harus lebih dari 0');
                 input.value = 1; // Reset ke nilai default
+                return;
+            }
+
+            if (quantity > maxStock) {
+                alert('Kuantitas tidak boleh melebihi stok yang tersedia.');
+                input.value = maxStock; // Reset ke nilai maksimum
                 return;
             }
 
@@ -576,9 +607,6 @@
         if (subtotalElement) {
             subtotalElement.textContent = subtotal.toLocaleString();
         }
-
-        // Perbarui total keseluruhan
-        // updateShoppingCartTotal();
     }
 
     function formatRupiah(angka) {

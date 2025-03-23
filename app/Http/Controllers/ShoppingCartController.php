@@ -45,6 +45,7 @@ class ShoppingCartController extends Controller
                 "name" => $product->name,
                 "slug" => $product->slug,
                 "barcode" => $product->barcode,
+                "stock" => $product->stock,
                 "quantity" => $quantity,
                 "price" => $product->selling_price,
                 "thumbnail" => $product->thumbnail ? 'storage/' . $product->thumbnail : 'https://flowbite.s3.amazonaws.com/blocks/e-commerce/imac-front-dark.svg',

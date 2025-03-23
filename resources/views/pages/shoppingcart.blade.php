@@ -49,7 +49,8 @@
 
                                                 <!-- Input Quantity -->
                                                 <input id="quantity-{{ $id }}" name="quantity-{{ $id }}"
-                                                    min="1" value="{{ $item['quantity'] }}"
+                                                    min="1" max="{{ $item['stock'] }}"
+                                                    value="{{ $item['quantity'] }}"
                                                     onchange="updateShoppingCartQuantityManual({{ $id }})"
                                                     class="w-10 shrink-0 border-0 bg-transparent text-center text-sm font-medium text-gray-900 focus:outline-none focus:ring-0 dark:text-white" />
 
@@ -66,21 +67,24 @@
                                             </div>
 
                                             <!-- Sub Total -->
-                                            <div class="text-end md:order-4 md:w-32">
+                                            {{-- <div class="text-end md:order-4 md:w-32">
                                                 <p class="text-base font-bold text-gray-900 dark:text-white">
                                                     Rp. <span
                                                         id="subtotal-{{ $id }}">{{ number_format($item['price'] * $item['quantity'], 0, ',', '.') }}</span>
                                                 </p>
-                                            </div>
+                                            </div> --}}
                                         </div>
 
                                         <!-- Nama Produk dan Barcode -->
                                         <div class="w-full min-w-0 flex-1 md:order-2 md:max-w-md md:ml-4">
-                                            <a href="#"
+                                            <a href="{{ route('product.detail', $item['slug']) }}"
                                                 class="text-base font-semibold text-gray-900 hover:underline dark:text-white">
                                                 {{ $item['name'] }}
                                             </a>
                                             <p class="text-gray-900 dark:text-white">{{ $item['barcode'] }}</p>
+                                            <p class="font-semibold text-gray-900 dark:text-white">Rp.
+                                                {{ number_format($item['price'], 0, ',', '.') }}</p>
+
 
                                         </div>
                                     </div>
