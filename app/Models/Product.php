@@ -34,7 +34,7 @@ class Product extends Model
 
     public function photos(): HasMany
     {
-        return $this->hasMany(ProductPhoto::class);
+        return $this->hasMany(ProductPhoto::class, 'product_id');
     }
 
     public static function generateUniqueSlug(string $name): string

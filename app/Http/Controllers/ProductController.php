@@ -20,4 +20,13 @@ class ProductController extends Controller
         $product = Product::all();
         return view('pages.product', compact('product'));
     }
+
+    public function show($slug)
+    {
+        // Cari produk berdasarkan slug dan eager load relasi photos dan brand
+        $product = Product::with(['photos', 'brand', 'category'])->where('slug', $slug)->firstOrFail();
+
+        // Tampilkan view detail produk dengan data yang ditemukan
+        return view('pages.productdetail', compact('product'));
+    }
 }
