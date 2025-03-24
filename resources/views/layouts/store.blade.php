@@ -43,6 +43,7 @@
             // Panggil fungsi removeFromShoppingCart hanya jika berada di halaman shopping-cart
             removeFromShoppingCart(productId);
         }
+        toastr.success('Produk berhasil dihapus dari keranjang', 'Sukses');
     }
 
     //cart dropdown
@@ -72,7 +73,7 @@
                     toastr.success(body.message || 'Produk berhasil ditambahkan ke keranjang!');
                     updateCartDropdown(body.cart, body.total);
                 } else {
-                    toastr.error(body.message || 'Gagal menambahkan produk!');
+                    toastr.error(body.message || 'Gagal menambahkan produk!', body.title || 'Peringatan');
                 }
             })
             .catch(error => {

@@ -33,6 +33,7 @@ class ShoppingCartController extends Controller
         if ($product->stock < $totalQuantityRequested) {
             return response()->json([
                 'success' => false,
+                'title'   => 'Peringatan',
                 'message' => 'Stok tidak mencukupi. Stok hanya tersedia ' . $product->stock,
             ], 400); // 400 Bad Request
         }
