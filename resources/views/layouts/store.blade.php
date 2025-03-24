@@ -9,10 +9,10 @@
     <title>Document</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script src="{{ asset('js/custom.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
@@ -47,11 +47,9 @@
 
     //cart dropdown
     function addToCart(productId) {
-        // Ambil nilai quantity dari input
         const quantityInput = document.getElementById('product-detail-quantity');
         const quantity = quantityInput ? quantityInput.value : 1;
 
-        // Kirim permintaan AJAX ke server
         fetch(`/cart/add/${productId}`, {
                 method: 'POST',
                 headers: {
@@ -62,29 +60,27 @@
                     quantity: quantity
                 })
             })
-            .then(response => {
-                if (!response.ok) {
-                    // Jika respons tidak OK (misalnya, status 400), lempar error
-                    return response.json().then(err => {
-                        throw new Error(err.message || 'Gagal menambahkan produk ke keranjang');
-                    });
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.success) {
-                    alert('Produk berhasil ditambahkan ke keranjang');
-                    // Perbarui tampilan keranjang jika diperlukan
-                    updateCartDropdown(data.cart, data.total);
+            .then(response => response.json().then(data => ({
+                status: response.status,
+                body: data
+            })))
+            .then(({
+                status,
+                body
+            }) => {
+                if (status >= 200 && status < 300 && body.success) {
+                    toastr.success(body.message || 'Produk berhasil ditambahkan ke keranjang!');
+                    updateCartDropdown(body.cart, body.total);
                 } else {
-                    alert('Gagal menambahkan produk ke keranjang: ' + (data.message || ''));
+                    toastr.error(body.message || 'Gagal menambahkan produk!');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert(error.message || 'Terjadi kesalahan saat menambahkan produk ke keranjang.');
+                toastr.error('Terjadi kesalahan sistem.');
             });
     }
+
 
     function updateCartDropdown(cart, total) {
         const cartDropdown = document.querySelector('#myCartDropdown1');
@@ -230,20 +226,22 @@
 
     function increaseQuantityCart(productId) {
         const input = document.querySelector(`input[name="cart-quantity-${productId}"]`);
+
         if (input) {
             let quantity = parseInt(input.value) + 1;
             const maxStock = parseInt(input.getAttribute('max'));
 
             if (quantity > maxStock) {
-                alert('Kuantitas tidak boleh melebihi stok yang tersedia.');
+                toastr.error(`Stok tidak mencukupi! Stok hanya tersedia ${maxStock}.`, 'Peringatan');
                 return;
             }
 
-            input.value = quantity; // Langsung update nilai input
+            input.value = quantity; // Update input quantity
             updateCartQuantity(productId, quantity);
-            updateShoppingCartQuantity(productId, quantity); // Kirim permintaan ke server
+            updateShoppingCartQuantity(productId, quantity);
         }
     }
+
 
     function decreaseQuantityCart(productId) {
         const input = document.querySelector(`input[name="cart-quantity-${productId}"]`);
@@ -478,13 +476,13 @@
             const maxStock = parseInt(input.getAttribute('max'));
 
             if (quantity > maxStock) {
-                alert('Kuantitas tidak boleh melebihi stok yang tersedia.');
+                toastr.error(`Stok tidak mencukupi! Stok hanya tersedia ${maxStock}.`, 'Peringatan');
                 return;
             }
 
-            input.value = quantity; // Langsung update nilai input
+            input.value = quantity; // Update input quantity
+            updateCartQuantity(productId, quantity);
             updateShoppingCartQuantity(productId, quantity);
-            updateCartQuantity(productId, quantity) // Kirim permintaan ke server
         }
     }
 
