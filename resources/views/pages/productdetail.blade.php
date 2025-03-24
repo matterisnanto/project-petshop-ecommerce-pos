@@ -136,7 +136,9 @@
                                 Add to cart
                             </a>
                         </div>
+
                     </div>
+                    <p>Stok : {{ $product->stock }}</p>
                     <hr class="my-4 md:my-8 border-gray-500 dark:border-gray-800" />
                     <div class="lg:text-left text-center">
                         <!-- Teks dan tombol akan berada di tengah -->

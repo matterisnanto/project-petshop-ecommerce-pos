@@ -604,6 +604,20 @@
                         </div>
                     </div>
 
+                    {{-- <div class="space-y-4">
+                        <label for="voucher" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">
+                            Masukan kode promo anda</label>
+                        <div class="flex  items-center gap-4">
+                            <input type="text" id="voucher"
+                                class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500"
+                                placeholder="" required />
+                            <button type="button"
+                                class="flex items-center justify-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Terapkan</button>
+                        </div>
+                    </div> --}}
+                </div>
+
+                <div class="mt-6 w-full space-y-6 sm:mt-8 lg:mt-0 lg:max-w-xs xl:max-w-md">
                     <div class="space-y-4">
                         <label for="voucher" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">
                             Masukan kode promo anda</label>
@@ -615,9 +629,6 @@
                                 class="flex items-center justify-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Terapkan</button>
                         </div>
                     </div>
-                </div>
-
-                <div class="mt-6 w-full space-y-6 sm:mt-8 lg:mt-0 lg:max-w-xs xl:max-w-md">
                     <div class="flow-root">
                         <div class="-my-3 divide-y divide-gray-200 dark:divide-gray-800">
                             <dl class="flex items-center justify-between gap-4 py-3">
