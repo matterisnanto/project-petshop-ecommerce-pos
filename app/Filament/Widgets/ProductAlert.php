@@ -22,7 +22,8 @@ class ProductAlert extends BaseWidget
             )
             ->columns([
                 Tables\Columns\ImageColumn::make('thumbnail')
-                    ->square(), // Biar tampil rapi
+                ->label('Photo')
+                ->square(), // Biar tampil rapi
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('stock')

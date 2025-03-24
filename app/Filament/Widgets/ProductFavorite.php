@@ -21,7 +21,8 @@ class ProductFavorite extends BaseWidget
             ->query($productQuery)
             ->columns([
                 Tables\Columns\ImageColumn::make('thumbnail')
-                    ->square(),
+                ->label('Photo')
+                ->square(),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('order_count')

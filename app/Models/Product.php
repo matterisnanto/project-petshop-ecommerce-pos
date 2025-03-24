@@ -15,6 +15,8 @@ class Product extends Model
     //
     protected $fillable = ['name', 'slug', 'barcode', 'thumbnail', 'about', 'purchase_price', 'selling_price', 'is_active', 'is_popular', 'stock', 'category_id', 'brand_id', 'supplier_id'];
 
+    protected $appends = ['image_url'];
+
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class, 'category_id');

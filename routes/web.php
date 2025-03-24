@@ -8,6 +8,8 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ContactUsController;
 use App\Http\Controllers\ShoppingCartController;
+use App\Exports\TemplateExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -26,3 +28,10 @@ Route::get('/trx-check', [TrxController::class, 'index'])->name('trx');
 Route::post('/trx-check', [TrxController::class, 'searchTransaction'])->name('transaction.search');
 
 Route::get('/contact-us', [ContactUsController::class, 'index'])->name('contactus');
+Route::get('contact-us', [ContactUsController::class, 'index'])->name('contactus');
+
+Route::get('/download-template', function () {
+    return Excel::download(new TemplateExport, 'template.xlsx');
+})->name('download-template');
+
+use App\Livewire\Pos;
