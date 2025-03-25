@@ -60,6 +60,25 @@ class Product extends Model
         return $query->where("name", "like", "%{$value}%");
     }
 
+    public function scopePopular($query)
+    {
+        return $query->where('is_popular', true);
+    }
+
+    public function scopePriceAsc($query)
+    {
+        return $query->orderBy('selling_price', 'asc');
+    }
+
+    public function scopePriceDesc($query)
+    {
+        return $query->orderBy('selling_price', 'desc');
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
 
     public function order(): HasMany
     {

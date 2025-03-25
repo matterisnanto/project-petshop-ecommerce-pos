@@ -15,13 +15,13 @@
                 <ul class="hidden lg:flex items-center justify-start gap-6 md:gap-8 py-3 sm:justify-center">
                     <li>
                         <a wire:navigate href="/" title=""
-                            class="flex text-sm font-medium text-gray-900 hover:text-primary-700 dark:text-white dark:hover:text-primary-500">
+                            class="{{ request()->is('/') ? 'text-primary-500' : 'text-gray-900 dark:text-white' }} flex text-sm font-medium  hover:text-primary-700  dark:hover:text-primary-500">
                             Home
                         </a>
                     </li>
                     <li class="shrink-0">
                         <a wire:navigate href="/products" title=""
-                            class="flex text-sm font-medium text-gray-900 hover:text-primary-700 dark:text-white dark:hover:text-primary-500">
+                            class="{{ request()->is('products') ? 'text-primary-500' : 'text-gray-900 dark:text-white' }} flex text-sm font-medium  hover:text-primary-700  dark:hover:text-primary-500">
                             Product
                         </a>
                     </li>
@@ -42,60 +42,100 @@
 
             <div class="flex items-center lg:space-x-2">
 
+                <!-- Mobile Button -->
+                <button type="button"
+                    class="sm:hidden flex items-center justify-center p-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-900 dark:text-white relative">
+                    <!-- Badge Notification -->
+                    <span
+                        class="absolute inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full -top-1 -right-1 dark:border-gray-900">
+                        3
+                    </span>
+                    <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
+                        height="24" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M5 4h1.5L9 16m0 0h8m-8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-8.5-3h9.25L19 7H7.312" />
+                    </svg>
+                </button>
+
+                <!-- Desktop Button -->
                 <button id="myCartDropdownButton1" data-dropdown-toggle="myCartDropdown1" type="button"
-                    class="inline-flex items-center rounded-lg justify-center p-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-sm font-medium leading-none text-gray-900 dark:text-white">
-                    <span class="sr-only">
-                        Cart
+                    class="hidden sm:flex items-center justify-center p-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-900 dark:text-white relative">
+                    <span class="sr-only">Cart</span>
+                    <!-- Badge Notification -->
+                    <span
+                        class="absolute inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full -top-1 -right-1 dark:border-gray-900">
+                        3
                     </span>
                     <svg class="w-5 h-5 lg:me-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
                         height="24" fill="none" viewBox="0 0 24 24">
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M5 4h1.5L9 16m0 0h8m-8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-8.5-3h9.25L19 7H7.312" />
                     </svg>
-                    <span class="hidden sm:flex">My Cart</span>
-                    <svg class="hidden sm:flex w-4 h-4 text-gray-900 dark:text-white ms-1" aria-hidden="true"
-                        xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
-                        viewBox="0 0 24 24">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="m19 9-7 7-7-7" />
-                    </svg>
+                    <span class="hidden sm:inline-flex items-center">
+                        My Cart
+                    </span>
                 </button>
 
                 <div id="myCartDropdown1"
-                    class="hidden z-10 mx-auto max-w-sm space-y-4 overflow-hidden rounded-lg bg-white p-4 antialiased shadow-lg dark:bg-gray-800">
-                    <div class="grid grid-cols-2">
-                        <div>
-                            <a href="#"
-                                class="truncate text-sm font-semibold leading-none text-gray-900 dark:text-white hover:underline">Apple
-                                iPhone 15</a>
-                            <p class="mt-0.5 truncate text-sm font-normal text-gray-500 dark:text-gray-400">$599</p>
-                        </div>
+                    class="hidden z-10 mx-auto max-w-lg rounded-lg bg-white p-5 shadow-sm border border-gray-200 dark:bg-gray-800 right-0 left-0">
+                    <div class="space-y-2">
+                        <!-- Product on cart -->
+                        <div class="flex items-center gap-4 p-1">
+                            <img src="{{ asset('img/b2f610d5d162031e280ec4c61b13e98a.jpg') }}" alt="Apple iPhone 15"
+                                class="w-16 h-16 rounded-lg shadow-md">
+                            <div class="flex-1 min-w-0">
+                                <a href="#"
+                                    class="block text-sm font-medium text-gray-900 dark:text-white hover:underline truncate max-w-[150px]">
+                                    Apple iPhone 15 Pro
+                                </a>
 
-                        <div class="flex items-center justify-end gap-6">
-                            <p class="text-sm font-normal leading-none text-gray-500 dark:text-gray-400">Qty: 1</p>
-
-                            <button data-tooltip-target="tooltipRemoveItem1a" type="button"
-                                class="text-red-600 hover:text-red-700 dark:text-red-500 dark:hover:text-red-600">
-                                <span class="sr-only"> Remove </span>
-                                <svg class="h-4 w-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                                    fill="currentColor" viewBox="0 0 24 24">
-                                    <path fill-rule="evenodd"
-                                        d="M2 12a10 10 0 1 1 20 0 10 10 0 0 1-20 0Zm7.7-3.7a1 1 0 0 0-1.4 1.4l2.3 2.3-2.3 2.3a1 1 0 1 0 1.4 1.4l2.3-2.3 2.3 2.3a1 1 0 0 0 1.4-1.4L13.4 12l2.3-2.3a1 1 0 0 0-1.4-1.4L12 10.6 9.7 8.3Z"
-                                        clip-rule="evenodd" />
-                                </svg>
-                            </button>
-                            <div id="tooltipRemoveItem1a" role="tooltip"
-                                class="tooltip invisible absolute z-10 inline-block rounded-lg bg-gray-900 px-3 py-2 text-sm font-medium text-white opacity-0 shadow-sm transition-opacity duration-300 dark:bg-gray-700">
-                                Remove item
-                                <div class="tooltip-arrow" data-popper-arrow></div>
+                                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">$599</p>
                             </div>
+                            <div class="flex items-center gap-2">
+                                <button type="button"
+                                    class="inline-flex items-center px-2 py-1 text-sm font-medium text-white bg-red-400 rounded-lg hover:bg-red-500 focus:ring-4 focus:ring-red-300 dark:bg-red-500 dark:hover:bg-red-600 dark:focus:ring-red-800">
+                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M19 13H5v-2h14v2z" />
+                                    </svg>
+                                </button>
+                                <input
+                                    class="w-10 p-1 text-center text-sm font-medium border-gray-500 border rounded-lg dark:bg-gray-700 dark:text-white"
+                                    value="1" min="1">
+                                <button type="button"
+                                    class="inline-flex items-center px-2 py-1 text-sm font-medium text-white bg-green-400 rounded-lg hover:bg-green-500 focus:ring-4 focus:ring-green-300 dark:bg-green-500 dark:hover:bg-green-600 dark:focus:ring-green-800">
+                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M19 11h-6V5h-2v6H5v2h6v6h2v-6h6v-2z" />
+                                    </svg>
+                                </button>
+                                <button type="button"
+                                    class="text-red-600 hover:text-red-700 dark:text-red-500 dark:hover:text-red-600">
+                                    <span class="sr-only">Remove</span>
+                                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path fill-rule="evenodd"
+                                            d="M2 12a10 10 0 1 1 20 0 10 10 0 0 1-20 0Zm7.7-3.7a1 1 0 0 0-1.4 1.4l2.3 2.3-2.3 2.3a1 1 0 1 0 1.4 1.4l2.3-2.3 2.3 2.3a1 1 0 0 0 1.4-1.4L13.4 12l2.3-2.3a1 1 0 0 0-1.4-1.4L12 10.6 9.7 8.3Z"
+                                            clip-rule="evenodd" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        <!-- End product on cart -->
+
+                        <div class="flex justify-between text-base font-medium border-gray-400 border-t pt-1">
+                            <span class="text-gray-900 dark:text-white">Total:</span>
+                            <span class="text-gray-900 dark:text-white" id="cartTotal">$599</span>
                         </div>
                     </div>
 
-                    <a href="#" title=""
-                        class="mb-2 me-2 inline-flex w-full items-center justify-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
-                        role="button"> Proceed to Checkout </a>
+                    <a href="#"
+                        class="mt-4 block w-full rounded-lg bg-primary-500 px-5 py-2 text-center text-sm font-medium text-white shadow-md hover:bg-primary-600 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-500 dark:hover:bg-blue-600 dark:focus:ring-blue-800">
+                        View your cart
+                    </a>
                 </div>
+
+
+
+
 
                 {{-- <button id="userDropdownButton1" data-dropdown-toggle="userDropdown1" type="button"
                     class="inline-flex items-center rounded-lg justify-center p-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-sm font-medium leading-none text-gray-900 dark:text-white">
@@ -163,11 +203,11 @@
             <ul class="text-gray-900 dark:text-white text-sm font-medium dark:text-white space-y-3">
                 <li>
                     <a wire:navigate href="/"
-                        class="hover:text-primary-700 dark:hover:text-primary-500">Home</a>
+                        class="{{ request()->is('/') ? 'text-primary-500' : 'text-gray-900 dark:text-white' }} hover:text-primary-700 dark:hover:text-primary-500">Home</a>
                 </li>
                 <li>
                     <a wire:navigate href="/products"
-                        class="hover:text-primary-700 dark:hover:text-primary-500">Product</a>
+                        class="{{ request()->is('products*') ? 'text-primary-500' : 'text-gray-900 dark:text-white' }} hover:text-primary-700 dark:hover:text-primary-500">Product</a>
                 </li>
                 <li>
                     <a href="#" class="hover:text-primary-700 dark:hover:text-primary-500">Trx Check</a>
