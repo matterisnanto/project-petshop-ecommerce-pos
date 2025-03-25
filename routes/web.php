@@ -33,5 +33,3 @@ Route::get('contact-us', [ContactUsController::class, 'index'])->name('contactus
 Route::get('/download-template', function () {
     return Excel::download(new TemplateExport, 'template.xlsx');
 })->name('download-template');
-
-use App\Livewire\Pos;
