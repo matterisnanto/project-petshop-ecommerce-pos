@@ -26,14 +26,14 @@
                         </a>
                     </li>
                     <li class="shrink-0">
-                        <a href="#" title=""
-                            class="flex text-sm font-medium text-gray-900 hover:text-primary-700 dark:text-white dark:hover:text-primary-500">
+                        <a wire:navigate href="/trx-check*" title=""
+                            class="{{ request()->is('trx-check') ? 'text-primary-500' : 'text-gray-900 dark:text-white' }} flex text-sm font-medium  hover:text-primary-700  dark:hover:text-primary-500">
                             Trx Check
                         </a>
                     </li>
                     <li class="shrink-0">
-                        <a href="#" title=""
-                            class="text-sm font-medium text-gray-900 hover:text-primary-700 dark:text-white dark:hover:text-primary-500">
+                        <a wire:navigate href="/contact-us" title=""
+                            class="{{ request()->is('contact-us') ? 'text-primary-500' : 'text-gray-900 dark:text-white' }} flex text-sm font-medium  hover:text-primary-700  dark:hover:text-primary-500">
                             Contact Us
                         </a>
                     </li>
@@ -210,10 +210,14 @@
                         class="{{ request()->is('products*') ? 'text-primary-500' : 'text-gray-900 dark:text-white' }} hover:text-primary-700 dark:hover:text-primary-500">Product</a>
                 </li>
                 <li>
-                    <a href="#" class="hover:text-primary-700 dark:hover:text-primary-500">Trx Check</a>
+                    <a wire:navigate href="/trx-check*"
+                        class="{{ request()->is('trx-check') ? 'text-primary-500' : 'text-gray-900 dark:text-white' }} hover:text-primary-700 dark:hover:text-primary-500">Trx
+                        Check</a>
                 </li>
                 <li>
-                    <a href="#" class="hover:text-primary-700 dark:hover:text-primary-500">Contact Us</a>
+                    <a wire:navigate href="/contact-us"
+                        class="{{ request()->is('contact-us') ? 'text-primary-500' : 'text-gray-900 dark:text-white' }} hover:text-primary-700 dark:hover:text-primary-500">Contact
+                        Us</a>
                 </li>
                 </li>
             </ul>

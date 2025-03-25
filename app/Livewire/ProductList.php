@@ -12,34 +12,25 @@ class ProductList extends Component
 {
     use WithPagination;
 
-    public $sortBy = 'default'; // default, price_asc, price_desc, popular
+    public $sortBy = 'default';
     public $selectedBrands = [];
     public $selectedCategories = [];
     public $minPrice = 0;
-    public $maxPrice = 7000;
+    public $maxPrice = 5000000;
     public $showFilters = false;
-    public $activeTab = 'brand';
 
     protected $queryString = [
         'sortBy' => ['except' => 'default'],
         'selectedBrands' => ['except' => [], 'as' => 'brands'],
         'selectedCategories' => ['except' => [], 'as' => 'categories'],
         'minPrice' => ['except' => 0],
-        'maxPrice' => ['except' => 7000],
-        'activeTab' => ['except' => 'brand'] // Tambahkan ini
+        'maxPrice' => ['except' => 5000000],
     ];
-
-    public function changeTab($tab)
-    {
-        $this->activeTab = $tab;
-        $this->dispatch('tab-changed'); // Untuk optimasi lebih lanjut
-    }
 
     public function mount()
     {
-        // Initialize from query string if present
         $this->minPrice = request('minPrice', 0);
-        $this->maxPrice = request('maxPrice', 10000000);
+        $this->maxPrice = request('maxPrice', 5000000);
         $this->selectedBrands = request('brands', []);
         $this->selectedCategories = request('categories', []);
         $this->sortBy = request('sortBy', 'default');
@@ -47,39 +38,40 @@ class ProductList extends Component
 
     public function render()
     {
-        $products = Product::query()
-            ->when($this->sortBy === 'price_asc', function ($query) {
-                return $query->orderBy('selling_price', 'asc');
-            })
-            ->when($this->sortBy === 'price_desc', function ($query) {
-                return $query->orderBy('selling_price', 'desc');
-            })
-            ->when($this->sortBy === 'popular', function ($query) {
-                return $query->where('is_popular', true);
-            })
-            ->when(!empty($this->selectedBrands), function ($query) {
-                return $query->whereIn('brand_id', $this->selectedBrands);
-            })
-            ->when(!empty($this->selectedCategories), function ($query) {
-                return $query->whereIn('category_id', $this->selectedCategories);
-            })
-            ->when($this->minPrice > 0 || $this->maxPrice < 7000, function ($query) {
-                return $query->whereBetween('selling_price', [$this->minPrice, $this->maxPrice]);
-            })
-            ->where('is_active', true)
-            ->with(['category', 'brand'])
-            ->paginate(12);
+        $query = Product::where('is_active', true)
+            ->where('stock', '>', 5)
+            ->with(['category', 'brand']);
 
-        $brands = Brand::withProductsCount()
+        $filteredQuery = (clone $query)
+            ->when($this->sortBy === 'price_asc', fn($q) => $q->orderBy('selling_price', 'asc'))
+            ->when($this->sortBy === 'price_desc', fn($q) => $q->orderBy('selling_price', 'desc'))
+            ->when($this->sortBy === 'popular', fn($q) => $q->where('is_popular', true))
+            ->when(!empty($this->selectedBrands), fn($q) => $q->whereIn('brand_id', $this->selectedBrands))
+            ->when(!empty($this->selectedCategories), fn($q) => $q->whereIn('category_id', $this->selectedCategories))
+            ->when($this->minPrice > 0 || $this->maxPrice < 5000000, fn($q) => $q->whereBetween('selling_price', [$this->minPrice, $this->maxPrice]));
+
+        $products = $filteredQuery->paginate(12);
+
+        $brands = Brand::select('id', 'name')
+            ->withCount(['products' => function ($query) {
+                $query->where('is_active', true)
+                    ->where('stock', '>', 5);
+            }])
             ->whereHas('products', function ($query) {
-                $query->where('is_active', true);
+                $query->where('is_active', true)
+                    ->where('stock', '>', 5);
             })
             ->orderBy('name')
             ->get();
 
-        $categories = Category::withProductsCount()
+        $categories = Category::select('id', 'name')
+            ->withCount(['products' => function ($query) {
+                $query->where('is_active', true)
+                    ->where('stock', '>', 5);
+            }])
             ->whereHas('products', function ($query) {
-                $query->where('is_active', true);
+                $query->where('is_active', true)
+                    ->where('stock', '>', 5);
             })
             ->orderBy('name')
             ->get();
@@ -109,7 +101,8 @@ class ProductList extends Component
         $this->selectedBrands = [];
         $this->selectedCategories = [];
         $this->minPrice = 0;
-        $this->maxPrice = 10000000;
+        $this->maxPrice = 5000000;
+        $this->sortBy = 'default';
         $this->resetPage();
     }
 
@@ -125,6 +118,26 @@ class ProductList extends Component
     {
         if ($value < $this->minPrice) {
             $this->maxPrice = $this->minPrice;
+        }
+        $this->resetPage();
+    }
+
+    public function toggleBrand($brandId)
+    {
+        if (in_array($brandId, $this->selectedBrands)) {
+            $this->selectedBrands = array_diff($this->selectedBrands, [$brandId]);
+        } else {
+            $this->selectedBrands[] = $brandId;
+        }
+        $this->resetPage();
+    }
+
+    public function toggleCategory($categoryId)
+    {
+        if (in_array($categoryId, $this->selectedCategories)) {
+            $this->selectedCategories = array_diff($this->selectedCategories, [$categoryId]);
+        } else {
+            $this->selectedCategories[] = $categoryId;
         }
         $this->resetPage();
     }

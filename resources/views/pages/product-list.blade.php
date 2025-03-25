@@ -47,7 +47,7 @@
                 </div>
                 <div
                     class="sm:flex sm:items-center sm:space-x-4 mb-4 grid gap-4 grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4">
-                    <button wire:click="$toggle('showFilters')" type="button"
+                    <button data-modal-toggle="filterModal" data-modal-target="filterModal" type="button"
                         class="flex w-full items-center justify-center rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700 sm:w-auto">
                         <svg class="-ms-0.5 me-2 h-4 w-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                             width="24" height="24" fill="none" viewBox="0 0 24 24">
@@ -238,17 +238,17 @@
 
         </div>
         <!-- Filter modal -->
-        <div x-show="$wire.showFilters" @click.away="$wire.showFilters = false"
-            class="fixed left-0 right-0 top-0 z-50 h-full w-full overflow-y-auto overflow-x-hidden p-4 md:inset-0 md:h-full"
-            style="background-color: rgba(0,0,0,0.5)">
-            <div class="relative mx-auto h-full w-full max-w-xl md:h-auto">
+        <div id="filterModal" wire:ignore.self tabindex="-1" aria-hidden="true"
+            class="fixed left-0 right-0 top-0 z-50 hidden h-full w-full overflow-y-auto overflow-x-hidden p-4 md:inset-0 md:h-full">
+            <div class="relative h-full w-full max-w-xl md:h-auto">
                 <!-- Modal content -->
                 <div class="relative rounded-lg bg-white shadow dark:bg-gray-800">
                     <!-- Modal header -->
                     <div class="flex items-start justify-between rounded-t p-4 md:p-5">
                         <h3 class="text-lg font-normal text-gray-500 dark:text-gray-400">Filters</h3>
-                        <button wire:click="$set('showFilters', false)" type="button"
-                            class="ml-auto inline-flex items-center rounded-lg bg-transparent p-1.5 text-sm text-gray-400 hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-600 dark:hover:text-white">
+                        <button type="button"
+                            class="ml-auto inline-flex items-center rounded-lg bg-transparent p-1.5 text-sm text-gray-400 hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-600 dark:hover:text-white"
+                            data-modal-hide="filterModal">
                             <svg class="h-5 w-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                                 width="24" height="24" fill="none" viewBox="0 0 24 24">
                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
@@ -257,84 +257,83 @@
                             <span class="sr-only">Close modal</span>
                         </button>
                     </div>
-
                     <!-- Modal body -->
                     <div class="px-4 md:px-5">
                         <div class="mb-4 border-b border-gray-200 dark:border-gray-700">
-                            <ul class="-mb-px flex flex-wrap text-center text-sm font-medium">
+                            <ul class="-mb-px flex flex-wrap text-center text-sm font-medium" id="myTab"
+                                data-tabs-toggle="#myTabContent" role="tablist">
                                 <li class="mr-1" role="presentation">
-                                    <button wire:click="changeTab('brand')"
-                                        class="inline-block pb-2 pr-1 {{ $activeTab === 'brand' ? 'border-b-2 border-primary-500 text-primary-500' : 'text-gray-500' }}">
-                                        Brand
-                                    </button>
+                                    <button
+                                        class="inline-block border-b-2 border-transparent px-2 pb-2 pr-1 hover:border-gray-300 hover:text-gray-600 dark:hover:text-gray-300"
+                                        id="brand-tab" data-tabs-target="#brand" type="button" role="tab"
+                                        aria-controls="brand" aria-selected="true">Brand</button>
                                 </li>
                                 <li class="mr-1" role="presentation">
-                                    <button wire:click="changeTab('category')"
-                                        class="inline-block pb-2 px-2 pr-1 {{ $activeTab === 'category' ? 'border-b-2 border-primary-500 text-primary-500' : 'text-gray-500' }}">
-                                        Category
-                                    </button>
+                                    <button
+                                        class="inline-block border-b-2 border-transparent px-2 pb-2 pr-1 hover:border-gray-300 hover:text-gray-600 dark:hover:text-gray-300"
+                                        id="category-tab" data-tabs-target="#category" type="button" role="tab"
+                                        aria-controls="category" aria-selected="false">Category</button>
                                 </li>
                                 <li class="mr-1" role="presentation">
-                                    <button wire:click="changeTab('advanced')"
-                                        class="inline-block px-2 pb-2 {{ $activeTab === 'advanced' ? 'border-b-2 border-primary-500 text-primary-500' : 'text-gray-500' }}">
-                                        Advanced Filters
-                                    </button>
+                                    <button
+                                        class="inline-block border-b-2 border-transparent px-2 pb-2 hover:border-gray-300 hover:text-gray-600 dark:hover:text-gray-300"
+                                        id="price-tab" data-tabs-target="#price" type="button" role="tab"
+                                        aria-controls="price" aria-selected="false">Price Range</button>
                                 </li>
                             </ul>
                         </div>
-
                         <div id="myTabContent">
                             <!-- Brand Tab -->
-                            @if ($activeTab === 'brand')
-                                <div class="grid grid-cols-2 gap-4 md:grid-cols-3">
-                                    @foreach ($brands->groupBy(function ($item) {
+                            <div class="grid grid-cols-2 gap-4 md:grid-cols-3 p-4 rounded-lg bg-gray-50 dark:bg-gray-800"
+                                id="brand" role="tabpanel" aria-labelledby="brand-tab">
+                                @foreach ($brands->groupBy(function ($item) {
         return strtoupper(substr($item->name, 0, 1));
-    }) as $letter => $brandGroup)
-                                        <div class="space-y-2">
-                                            <h5 class="text-lg font-medium uppercase text-black dark:text-white">
-                                                {{ $letter }}</h5>
-                                            @foreach ($brandGroup as $brand)
-                                                <div class="flex items-center">
-                                                    <input wire:model="selectedBrands" id="brand-{{ $brand->id }}"
-                                                        type="checkbox" value="{{ $brand->id }}"
-                                                        class="h-4 w-4 rounded border-gray-300 bg-gray-100 text-primary-600 focus:ring-2 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-primary-600" />
-                                                    <label for="brand-{{ $brand->id }}"
-                                                        class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
-                                                        {{ $brand->name }} ({{ $brand->products_count }})
-                                                    </label>
-                                                </div>
-                                            @endforeach
-                                        </div>
-                                    @endforeach
-                                </div>
+    }) as $initial => $brandGroup)
+                                    <div class="space-y-2">
+                                        <h5 class="text-lg font-medium uppercase text-black dark:text-white">
+                                            {{ $initial }}</h5>
+                                        @foreach ($brandGroup as $brand)
+                                            <div class="flex items-center">
+                                                <input id="brand-{{ $brand->id }}" type="checkbox"
+                                                    wire:model="selectedBrands" value="{{ $brand->id }}"
+                                                    class="h-4 w-4 rounded border-gray-300 bg-gray-100 text-primary-600 focus:ring-2 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-primary-600" />
+                                                <label for="brand-{{ $brand->id }}"
+                                                    class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
+                                                    {{ $brand->name }} ({{ $brand->products_count }})
+                                                </label>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                @endforeach
+                            </div>
 
-                                <!-- Category Tab -->
-                            @elseif($activeTab === 'category')
-                                <div class="grid grid-cols-2 gap-4 md:grid-cols-3">
-                                    @foreach ($categories->groupBy(function ($item) {
+                            <!-- Category Tab -->
+                            <div class="hidden grid-cols-2 gap-4 md:grid-cols-3 p-4 rounded-lg bg-gray-50 dark:bg-gray-800"
+                                id="category" role="tabpanel" aria-labelledby="category-tab">
+                                @foreach ($categories->groupBy(function ($item) {
         return strtoupper(substr($item->name, 0, 1));
-    }) as $letter => $categoryGroup)
-                                        <div class="space-y-2">
-                                            <h5 class="text-lg font-medium uppercase text-black dark:text-white">
-                                                {{ $letter }}</h5>
-                                            @foreach ($categoryGroup as $category)
-                                                <div class="flex items-center">
-                                                    <input wire:model="selectedCategories"
-                                                        id="category-{{ $category->id }}" type="checkbox"
-                                                        value="{{ $category->id }}"
-                                                        class="h-4 w-4 rounded border-gray-300 bg-gray-100 text-primary-600 focus:ring-2 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-primary-600" />
-                                                    <label for="category-{{ $category->id }}"
-                                                        class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
-                                                        {{ $category->name }} ({{ $category->products_count }})
-                                                    </label>
-                                                </div>
-                                            @endforeach
-                                        </div>
-                                    @endforeach
-                                </div>
+    }) as $initial => $categoryGroup)
+                                    <div class="space-y-2">
+                                        <h5 class="text-lg font-medium uppercase text-black dark:text-white">
+                                            {{ $initial }}</h5>
+                                        @foreach ($categoryGroup as $category)
+                                            <div class="flex items-center">
+                                                <input id="category-{{ $category->id }}" type="checkbox"
+                                                    wire:model="selectedCategories" value="{{ $category->id }}"
+                                                    class="h-4 w-4 rounded border-gray-300 bg-gray-100 text-primary-600 focus:ring-2 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-primary-600" />
+                                                <label for="category-{{ $category->id }}"
+                                                    class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
+                                                    {{ $category->name }} ({{ $category->products_count }})
+                                                </label>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                @endforeach
+                            </div>
 
-                                <!-- Advanced Filters Tab -->
-                            @else
+                            <!-- Price Range Tab -->
+                            <div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="price"
+                                role="tabpanel" aria-labelledby="price-tab">
                                 <div class="space-y-4">
                                     <div class="grid grid-cols-1 gap-8">
                                         <div class="grid grid-cols-2 gap-3">
@@ -342,43 +341,47 @@
                                                 <label for="min-price"
                                                     class="block text-sm font-medium text-gray-900 dark:text-white">Min
                                                     Price</label>
-                                                <input wire:model="minPrice" id="min-price" type="range"
-                                                    min="0" max="5000000" step="1"
-                                                    class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200 dark:bg-gray-700" />
+                                                <input id="min-price" type="range" min="0" max="5000000"
+                                                    wire:model="minPrice"
+                                                    class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 accent-primary-500" />
                                             </div>
+
                                             <div>
                                                 <label for="max-price"
                                                     class="block text-sm font-medium text-gray-900 dark:text-white">Max
                                                     Price</label>
-                                                <input wire:model="maxPrice" id="max-price" type="range"
-                                                    min="0" max="5000000" step="1"
+                                                <input id="max-price" type="range" min="0" max="5000000"
+                                                    wire:model="maxPrice"
                                                     class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200 dark:bg-gray-700" />
                                             </div>
+
                                             <div class="col-span-2 flex items-center justify-between space-x-2">
-                                                <input wire:model="minPrice" type="number" id="min-price-input"
+                                                <input type="number" id="min-price-input" wire:model="minPrice"
                                                     min="0" max="5000000"
                                                     class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500" />
+
                                                 <div class="shrink-0 text-sm font-medium dark:text-gray-300">to</div>
-                                                <input wire:model="maxPrice" type="number" id="max-price-input"
+
+                                                <input type="number" id="max-price-input" wire:model="maxPrice"
                                                     min="0" max="5000000"
                                                     class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500" />
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            @endif
+                            </div>
                         </div>
                     </div>
 
                     <!-- Modal footer -->
                     <div class="flex items-center space-x-4 rounded-b p-4 dark:border-gray-600 md:p-5">
-                        <button wire:click="applyFilters" type="button"
-                            class="rounded-lg bg-primary-500 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-600 dark:focus:ring-primary-800">
-                            Show results
+                        <button type="button" wire:click="applyFilters" data-modal-hide="filterModal"
+                            class="rounded-lg bg-primary-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-700 dark:hover:bg-primary-800 dark:focus:ring-primary-800">
+                            Apply Filters
                         </button>
-                        <button wire:click="resetFilters" type="button"
+                        <button type="button" wire:click="resetFilters" data-modal-hide="filterModal"
                             class="rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700">
-                            Reset
+                            Reset All
                         </button>
                     </div>
                 </div>
