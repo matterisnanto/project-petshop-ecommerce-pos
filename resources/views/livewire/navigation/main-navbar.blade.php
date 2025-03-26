@@ -20,7 +20,7 @@
                         </a>
                     </li>
                     <li class="shrink-0">
-                        <a wire:navigate href="/products" title=""
+                        <a wire:navigate href="{{ route('products') }}" title=""
                             class="{{ request()->is('products*') ? 'text-primary-500' : 'text-gray-900 dark:text-white' }} flex text-sm font-medium  hover:text-primary-700  dark:hover:text-primary-500">
                             Products
                         </a>
@@ -46,10 +46,12 @@
                 <button type="button"
                     class="sm:hidden flex items-center justify-center p-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-900 dark:text-white relative">
                     <!-- Badge Notification -->
-                    <span
-                        class="absolute inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full -top-1 -right-1 dark:border-gray-900">
-                        3
-                    </span>
+                    @if ($itemCount > 0)
+                        <span
+                            class="absolute inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full -top-1 -right-1 dark:border-gray-900">
+                            {{ $itemCount }}
+                        </span>
+                    @endif
                     <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
                         height="24" fill="none" viewBox="0 0 24 24">
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -62,10 +64,12 @@
                     class="hidden sm:flex items-center justify-center p-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-900 dark:text-white relative">
                     <span class="sr-only">Cart</span>
                     <!-- Badge Notification -->
-                    <span
-                        class="absolute inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full -top-1 -right-1 dark:border-gray-900">
-                        3
-                    </span>
+                    @if ($itemCount > 0)
+                        <span
+                            class="absolute inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full -top-1 -right-1 dark:border-gray-900">
+                            {{ $itemCount }}
+                        </span>
+                    @endif
                     <svg class="w-5 h-5 lg:me-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
                         height="24" fill="none" viewBox="0 0 24 24">
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -80,51 +84,67 @@
                     class="hidden z-10 mx-auto max-w-lg rounded-lg bg-white p-5 shadow-sm border border-gray-200 dark:bg-gray-800 right-0 left-0">
                     <div class="space-y-2">
                         <!-- Product on cart -->
-                        <div class="flex items-center gap-4 p-1">
-                            <img src="{{ asset('img/b2f610d5d162031e280ec4c61b13e98a.jpg') }}" alt="Apple iPhone 15"
-                                class="w-16 h-16 rounded-lg shadow-md">
-                            <div class="flex-1 min-w-0">
-                                <a href="#"
-                                    class="block text-sm font-medium text-gray-900 dark:text-white hover:underline truncate max-w-[150px]">
-                                    Apple iPhone 15 Pro
-                                </a>
+                        @if (count($cartItems) > 0)
+                            @foreach ($cartItems as $item)
+                                <div class="flex items-center gap-4 p-1" wire:key="cart-item-{{ $item['id'] }}">
+                                    <img src="{{ $item['image'] }}" alt="{{ $item['name'] }}"
+                                        class="w-16 h-16 rounded-lg shadow-md">
+                                    <div class="flex-1 min-w-0">
+                                        <a href="#"
+                                            class="block text-sm font-medium text-gray-900 dark:text-white hover:underline truncate max-w-[150px]">
+                                            {{ $item['name'] }}
+                                        </a>
 
-                                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">$599</p>
+                                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                                            {{ format_currency($item['price']) }}</p>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <button type="button"
+                                            wire:click="updateQuantity('{{ $item['id'] }}', {{ $item['quantity'] - 1 }})"
+                                            wire:ignore.self
+                                            class="inline-flex items-center px-2 py-1 text-sm font-medium text-white bg-red-400 rounded-lg hover:bg-red-500 focus:ring-4 focus:ring-red-300 dark:bg-red-500 dark:hover:bg-red-600 dark:focus:ring-red-800">
+                                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                                <path d="M19 13H5v-2h14v2z" />
+                                            </svg>
+                                        </button>
+                                        <input wire:model.debounce.500ms="cartItems.{{ $item['id'] }}.quantity"
+                                            wire:change="updateQuantity('{{ $item['id'] }}', $event.target.value)"
+                                            class="w-10 p-1 text-center text-sm font-medium border-gray-500 border rounded-lg dark:bg-gray-700 dark:text-white"
+                                            value="{{ $item['quantity'] }}" value="1" min="1">
+                                        <button type="button"
+                                            wire:click="updateQuantity('{{ $item['id'] }}', {{ $item['quantity'] + 1 }})"
+                                            wire:ignore.self
+                                            class="inline-flex items-center px-2 py-1 text-sm font-medium text-white bg-green-400 rounded-lg hover:bg-green-500 focus:ring-4 focus:ring-green-300 dark:bg-green-500 dark:hover:bg-green-600 dark:focus:ring-green-800">
+                                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                                <path d="M19 11h-6V5h-2v6H5v2h6v6h2v-6h6v-2z" />
+                                            </svg>
+                                        </button>
+                                        <button type="button" wire:click="removeItem('{{ $item['id'] }}')"
+                                            class="text-red-600 hover:text-red-700 dark:text-red-500 dark:hover:text-red-600">
+                                            <span class="sr-only">Remove</span>
+                                            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path fill-rule="evenodd"
+                                                    d="M2 12a10 10 0 1 1 20 0 10 10 0 0 1-20 0Zm7.7-3.7a1 1 0 0 0-1.4 1.4l2.3 2.3-2.3 2.3a1 1 0 1 0 1.4 1.4l2.3-2.3 2.3 2.3a1 1 0 0 0 1.4-1.4L13.4 12l2.3-2.3a1 1 0 0 0-1.4-1.4L12 10.6 9.7 8.3Z"
+                                                    clip-rule="evenodd" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                                <!-- End product on cart -->
+                            @endforeach
+                        @else
+                            <p class="text-sm text-gray-500 dark:text-gray-400 text-center py-4">
+                                Your cart is empty
+                            </p>
+                        @endif
+                        @if (count($cartItems) > 0)
+                            <div class="flex justify-between text-base font-medium border-gray-400 border-t pt-1">
+                                <span class="text-gray-900 dark:text-white">Total:</span>
+                                <span class="text-gray-900 dark:text-white" id="cartTotal">
+                                    {{ format_currency($this->total) }}</span>
                             </div>
-                            <div class="flex items-center gap-2">
-                                <button type="button"
-                                    class="inline-flex items-center px-2 py-1 text-sm font-medium text-white bg-red-400 rounded-lg hover:bg-red-500 focus:ring-4 focus:ring-red-300 dark:bg-red-500 dark:hover:bg-red-600 dark:focus:ring-red-800">
-                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                                        <path d="M19 13H5v-2h14v2z" />
-                                    </svg>
-                                </button>
-                                <input
-                                    class="w-10 p-1 text-center text-sm font-medium border-gray-500 border rounded-lg dark:bg-gray-700 dark:text-white"
-                                    value="1" min="1">
-                                <button type="button"
-                                    class="inline-flex items-center px-2 py-1 text-sm font-medium text-white bg-green-400 rounded-lg hover:bg-green-500 focus:ring-4 focus:ring-green-300 dark:bg-green-500 dark:hover:bg-green-600 dark:focus:ring-green-800">
-                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                                        <path d="M19 11h-6V5h-2v6H5v2h6v6h2v-6h6v-2z" />
-                                    </svg>
-                                </button>
-                                <button type="button"
-                                    class="text-red-600 hover:text-red-700 dark:text-red-500 dark:hover:text-red-600">
-                                    <span class="sr-only">Remove</span>
-                                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path fill-rule="evenodd"
-                                            d="M2 12a10 10 0 1 1 20 0 10 10 0 0 1-20 0Zm7.7-3.7a1 1 0 0 0-1.4 1.4l2.3 2.3-2.3 2.3a1 1 0 1 0 1.4 1.4l2.3-2.3 2.3 2.3a1 1 0 0 0 1.4-1.4L13.4 12l2.3-2.3a1 1 0 0 0-1.4-1.4L12 10.6 9.7 8.3Z"
-                                            clip-rule="evenodd" />
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
-                        <!-- End product on cart -->
-
-                        <div class="flex justify-between text-base font-medium border-gray-400 border-t pt-1">
-                            <span class="text-gray-900 dark:text-white">Total:</span>
-                            <span class="text-gray-900 dark:text-white" id="cartTotal">$599</span>
-                        </div>
+                        @endif
                     </div>
 
                     <a href="#"
@@ -132,10 +152,6 @@
                         View your cart
                     </a>
                 </div>
-
-
-
-
 
                 {{-- <button id="userDropdownButton1" data-dropdown-toggle="userDropdown1" type="button"
                     class="inline-flex items-center rounded-lg justify-center p-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-sm font-medium leading-none text-gray-900 dark:text-white">
@@ -152,7 +168,6 @@
                             d="m19 9-7 7-7-7" />
                     </svg>
                 </button>
-
                 <div id="userDropdown1"
                     class="hidden z-10 w-56 divide-y divide-gray-100 overflow-hidden overflow-y-auto rounded-lg bg-white antialiased shadow dark:divide-gray-600 dark:bg-gray-700">
                     <ul class="p-2 text-start text-sm font-medium text-gray-900 dark:text-white">

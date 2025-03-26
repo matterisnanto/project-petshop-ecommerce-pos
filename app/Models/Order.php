@@ -22,6 +22,10 @@ class Order extends Model
     {
         return $this->belongsTo(PosTransaction::class, 'pos_transaction_id');
     }
+    public function olshopTransaction(): BelongsTo
+    {
+        return $this->belongsTo(OlshopTransaction::class, 'olshop_transaction_id');
+    }
 
 
     public function product(): BelongsTo
@@ -30,8 +34,7 @@ class Order extends Model
     }
 
     public function paymentMethod(): BelongsTo
-{
-    return $this->belongsTo(PaymentMethod::class, 'payment_method_id');
-}
-
+    {
+        return $this->belongsTo(PaymentMethod::class, 'payment_method_id');
+    }
 }

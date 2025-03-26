@@ -2,11 +2,12 @@
 
 namespace App\Livewire;
 
-use App\Models\Product;
 use App\Models\Brand;
-use App\Models\Category;
+use App\Models\Product;
 use Livewire\Component;
+use App\Models\Category;
 use Livewire\WithPagination;
+use Illuminate\Support\Facades\Session;
 
 class ProductList extends Component
 {
@@ -18,6 +19,7 @@ class ProductList extends Component
     public $minPrice = 0;
     public $maxPrice = 5000000;
     public $showFilters = false;
+    public $cartItemCount = 0;
 
     protected $queryString = [
         'sortBy' => ['except' => 'default'],
@@ -34,6 +36,7 @@ class ProductList extends Component
         $this->selectedBrands = request('brands', []);
         $this->selectedCategories = request('categories', []);
         $this->sortBy = request('sortBy', 'default');
+        $this->updateCartItemCount();
     }
 
     public function render()
@@ -140,5 +143,34 @@ class ProductList extends Component
             $this->selectedCategories[] = $categoryId;
         }
         $this->resetPage();
+    }
+
+    public function addToCart($productId)
+    {
+        $product = Product::findOrFail($productId);
+
+        $cart = Session::get('cart', []);
+
+        if (isset($cart[$productId])) {
+            $cart[$productId]['quantity'] += 1;
+        } else {
+            $cart[$productId] = [
+                'id' => $product->id,
+                'name' => $product->name,
+                'price' => $product->selling_price,
+                'image' => $product->image_url ?: 'https://via.placeholder.com/300',
+                'quantity' => 1
+            ];
+        }
+
+        Session::put('cart', $cart);
+        $this->updateCartItemCount();
+        $this->dispatch('cartUpdated');
+    }
+
+    protected function updateCartItemCount()
+    {
+        $cart = Session::get('cart', []);
+        $this->cartItemCount = array_sum(array_column($cart, 'quantity'));
     }
 }

@@ -4,10 +4,7 @@
             <!-- Heading & Filters -->
             <div class="mb-4 items-end justify-between space-y-4 sm:flex sm:space-y-0 md:mb-8">
                 <div>
-                    <livewire:navigation.bread-crumb :links="[
-                        ['text' => 'Home', 'url' => route('home')],
-                        ['text' => 'Products', 'url' => route('products')],
-                    ]" :currentPage="$categoryName ?? 'All Products'" />
+                    <livewire:navigation.bread-crumb :links="[['text' => 'Home', 'url' => route('home')]]" :currentPage="$categoryName ?? 'All Products'" />
                     <h2 class="mt-3 text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">
                         {{ $categoryName ?? 'All Products' }}</h2>
                 </div>
@@ -138,7 +135,7 @@
                                     class="text-sm sm:text-lg font-extrabold leading-tight text-gray-900 dark:text-white md:text-xl">
                                     {{ format_currency($product->selling_price) }}</p>
 
-                                <button type="button"
+                                <button type="button" wire:click="addToCart('{{ $product->id }}')"
                                     class="inline-flex items-center rounded-lg bg-primary-500 px-2 py-1 text-xs font-medium text-white hover:bg-primary-600 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-600 dark:focus:ring-primary-800 md:px-2 md:py-1.5 md:text-sm">
                                     <svg class="-ms-1 me-1 h-3 w-3 md:h-5 md:w-5" aria-hidden="true"
                                         xmlns="http://www.w3.org/2000/svg" width="24" height="24"

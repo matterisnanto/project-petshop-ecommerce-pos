@@ -7,26 +7,61 @@
     <title>{{ $title ?? 'Laravel Livewire' }}</title>
 
     <link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
-    <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
+
     @vite(['resources/css/app.css', 'resources/js/app.js']) <!-- Import Vite -->
 
     @livewireStyles
 
 </head>
 
-<body class="antialiased">
+<body>
     @livewire('navigation.main-navbar')
 
-    <main class="">
+    <main>
         {{ $slot }}
     </main>
 
     @livewire('navigation.main-footer')
 
 
+    @livewireScripts
+    <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
+    <script>
+        // Set initial theme based on browser preference
+        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark')
+        } else {
+            document.documentElement.classList.remove('dark')
+        }
+
+        // Listen for changes in browser preference
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+            if (e.matches) {
+                document.documentElement.classList.add('dark')
+            } else {
+                document.documentElement.classList.remove('dark')
+            }
+        });
+
+        document.addEventListener('livewire:initialized', () => {
+            // Initialize Flowbite dropdown
+            const cartDropdownButton = document.getElementById('myCartDropdownButton1');
+            const cartDropdown = document.getElementById('myCartDropdown1');
+
+            if (cartDropdownButton && cartDropdown) {
+                new Dropdown(cartDropdown, cartDropdownButton);
+            }
+
+            // Handle mobile cart
+            Livewire.on('openCart', () => {
+                // Implement mobile cart drawer here
+                alert('Mobile cart view would open here');
+            });
+        });
+    </script>
 </body>
 
-<script>
+{{-- <script>
     // Set initial theme based on browser preference
     if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
         document.documentElement.classList.add('dark')
@@ -42,6 +77,7 @@
             document.documentElement.classList.remove('dark')
         }
     })
-</script>
+</script> --}}
+
 
 </html>
