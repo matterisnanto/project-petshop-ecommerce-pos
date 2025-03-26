@@ -80,6 +80,11 @@ class Product extends Model
         return $query->where('is_active', true);
     }
 
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
+
     public function order(): HasMany
     {
         return $this->hasMany(Order::class);

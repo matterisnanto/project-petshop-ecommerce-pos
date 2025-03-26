@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class ProductPhoto extends Model
 {
     use HasFactory;
-    
+
     protected $table = 'product_photos';
     //
     protected $fillable = ['photo', 'product_id'];
@@ -18,4 +18,8 @@ class ProductPhoto extends Model
         return $this->belongsTo(Product::class);
     }
 
+    public function getPhotoUrlAttribute()
+    {
+        return $this->photo ? asset('storage/' . $this->photo) : null;
+    }
 }
