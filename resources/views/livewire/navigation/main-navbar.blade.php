@@ -21,13 +21,13 @@
                     </li>
                     <li class="shrink-0">
                         <a wire:navigate href="/products" title=""
-                            class="{{ request()->is('products') ? 'text-primary-500' : 'text-gray-900 dark:text-white' }} flex text-sm font-medium  hover:text-primary-700  dark:hover:text-primary-500">
-                            Product
+                            class="{{ request()->is('products*') ? 'text-primary-500' : 'text-gray-900 dark:text-white' }} flex text-sm font-medium  hover:text-primary-700  dark:hover:text-primary-500">
+                            Products
                         </a>
                     </li>
                     <li class="shrink-0">
-                        <a wire:navigate href="/trx-check*" title=""
-                            class="{{ request()->is('trx-check') ? 'text-primary-500' : 'text-gray-900 dark:text-white' }} flex text-sm font-medium  hover:text-primary-700  dark:hover:text-primary-500">
+                        <a wire:navigate href="/trx-check" title=""
+                            class="{{ request()->is('trx-check*') ? 'text-primary-500' : 'text-gray-900 dark:text-white' }} flex text-sm font-medium  hover:text-primary-700  dark:hover:text-primary-500">
                             Trx Check
                         </a>
                     </li>
@@ -207,7 +207,7 @@
                 </li>
                 <li>
                     <a wire:navigate href="/products"
-                        class="{{ request()->is('products*') ? 'text-primary-500' : 'text-gray-900 dark:text-white' }} hover:text-primary-700 dark:hover:text-primary-500">Product</a>
+                        class="{{ request()->is('products*') ? 'text-primary-500' : 'text-gray-900 dark:text-white' }} hover:text-primary-700 dark:hover:text-primary-500">Products</a>
                 </li>
                 <li>
                     <a wire:navigate href="/trx-check*"

@@ -258,8 +258,8 @@
                         </button>
                     </div>
                     <!-- Modal body -->
-                    <div class="px-4 md:px-5">
-                        <div class="mb-4 border-b border-gray-200 dark:border-gray-700">
+                    <div class="px-2 md:px-5">
+                        <div class=" border-b border-gray-200 dark:border-gray-700">
                             <ul class="-mb-px flex flex-wrap text-center text-sm font-medium" id="myTab"
                                 data-tabs-toggle="#myTabContent" role="tablist">
                                 <li class="mr-1" role="presentation">
@@ -284,7 +284,7 @@
                         </div>
                         <div id="myTabContent">
                             <!-- Brand Tab -->
-                            <div class="grid grid-cols-2 gap-4 md:grid-cols-3 p-4 rounded-lg bg-gray-50 dark:bg-gray-800"
+                            <div class="grid-cols-2 gap-4 md:grid-cols-3 p-4 rounded-lg bg-gray-50 dark:bg-gray-800"
                                 id="brand" role="tabpanel" aria-labelledby="brand-tab">
                                 @foreach ($brands->groupBy(function ($item) {
         return strtoupper(substr($item->name, 0, 1));
@@ -343,7 +343,7 @@
                                                     Price</label>
                                                 <input id="min-price" type="range" min="0" max="5000000"
                                                     wire:model="minPrice"
-                                                    class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 accent-primary-500" />
+                                                    class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700" />
                                             </div>
 
                                             <div>

@@ -18,4 +18,59 @@
 
 @plugin "flowbite/plugin";
 
+[aria-selected="true"] {
+    color: #ec4899 !important; /* Warna teks (merah) */
+    border-color: #ec4899 !important; /* Warna border */
+}
+
+/* Cursor saat hover */
+input[type="range"] {
+    appearance: none; /* Hilangkan styling default */
+    width: 100%;
+    height: 6px;
+    background: #D1D5DB; /* Warna track default */
+    border-radius: 5px;
+    outline: none;
+    cursor: pointer;
+}
+
+input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 6px;
+    background: #D1D5DB; /* Warna track default */
+    border-radius: 5px;
+    outline: none;
+    cursor: pointer;
+    transition: background 0.15s ease-in-out;
+}
+
+/* Track yang sudah tergeser (hanya berlaku di Firefox) */
+input[type="range"]::-moz-range-progress {
+    background: #ec4899; /* Warna sebelah kiri */
+    height: 6px;
+    border-radius: 5px;
+}
+
+/* Thumb (tombol geser) */
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #ec4899; /* Warna thumb */
+    cursor: pointer;
+    position: relative;
+}
+
+/* Firefox Thumb */
+input[type="range"]::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #ec4899;
+    cursor: pointer;
+}
 
