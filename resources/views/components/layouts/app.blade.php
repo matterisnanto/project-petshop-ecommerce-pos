@@ -43,21 +43,7 @@
             }
         });
 
-        document.addEventListener('livewire:initialized', () => {
-            // Initialize Flowbite dropdown
-            const cartDropdownButton = document.getElementById('myCartDropdownButton1');
-            const cartDropdown = document.getElementById('myCartDropdown1');
-
-            if (cartDropdownButton && cartDropdown) {
-                new Dropdown(cartDropdown, cartDropdownButton);
-            }
-
-            // Handle mobile cart
-            Livewire.on('openCart', () => {
-                // Implement mobile cart drawer here
-                alert('Mobile cart view would open here');
-            });
-        });
+        // Pastikan Flowbite diinisialisasi
     </script>
 </body>
 
