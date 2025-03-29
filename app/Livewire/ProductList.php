@@ -164,6 +164,7 @@ class ProductList extends Component
         }
 
         Session::put('cart', $cart);
+        toastr()->success($product->name . ' Successfully added to cart');
         $this->updateCartItemCount();
         $this->dispatch('cartUpdated');
     }

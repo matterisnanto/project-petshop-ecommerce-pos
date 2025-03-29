@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Navigation;
 
+use App\Models\Product;
 use Livewire\Component;
 use Illuminate\Support\Facades\Session;
 
@@ -31,10 +32,20 @@ class MainNavbar extends Component
     {
         $cart = Session::get('cart', []);
         if (isset($cart[$productId])) {
-            $cart[$productId]['quantity']++;
-            Session::put('cart', $cart);
-            $this->updateCart();
+            // Ambil stok produk dari database
+            $product = Product::find($productId);
+
+            // Periksa apakah stok mencukupi
+            if ($cart[$productId]['quantity'] < $product->stock) {
+                $cart[$productId]['quantity']++;
+                Session::put('cart', $cart);
+                $this->updateCart();
+            } else {
+                // Jika stok tidak mencukupi, Anda bisa menambahkan pesan error
+                toastr()->error('Insufficient stock, only available ' . $product->stock);
+            }
         }
+        $this->dispatch('cartUpdated');
     }
 
     public function decrementQuantity($productId)
@@ -50,9 +61,11 @@ class MainNavbar extends Component
     public function removeItem($productId)
     {
         $cart = Session::get('cart', []);
+        $product = Product::find($productId);
         if (isset($cart[$productId])) {
             unset($cart[$productId]);
             Session::put('cart', $cart);
+            toastr()->warning($product->name . ' Has been removed from cart');
             $this->updateCart();
         }
     }
@@ -61,10 +74,21 @@ class MainNavbar extends Component
     {
         $quantity = max(1, (int)$quantity);
         $cart = Session::get('cart', []);
+
         if (isset($cart[$productId])) {
+            // Ambil stok produk dari database
+            $product = Product::find($productId);
+
+            // Pastikan quantity tidak melebihi stok
+            $quantity = min($quantity, $product->stock);
+
             $cart[$productId]['quantity'] = $quantity;
             Session::put('cart', $cart);
             $this->updateCart();
+
+            if ($quantity == $product->stock) {
+                session()->flash('error', 'Jumlah mencapai batas stok tersedia');
+            }
         }
     }
 

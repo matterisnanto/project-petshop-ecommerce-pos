@@ -87,7 +87,7 @@
                             </div>
 
                             <a href="#" title=""
-                                class="flex-1 text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800 flex items-center justify-center ml-2"
+                                class="flex-1 text-white bg-primary-500 hover:bg-primary-600 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800 flex items-center justify-center ml-2"
                                 role="button" onclick="addToCart()">
                                 <svg class="w-5 h-5 -ms-2 me-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                                     width="24" height="24" fill="none" viewBox="0 0 24 24">
@@ -97,12 +97,13 @@
                                 </svg>
                                 Add to cart
                             </a>
+                            <p class="ml-4">Stok : {{ $product->stock }}</p>
                         </div>
                     </div>
-                    <p>Stok : 100</p>
-                    <hr class="my-4 md:my-8 border-gray-500 dark:border-gray-800" />
+
+                    <hr class="my-4 md:my-4 border-gray-500 dark:border-gray-800" />
                     <div class="lg:text-left text-center">
-                        <p class="font-semibold">atau kunjungi toko kami di</p>
+                        <p class="font-semibold text-center">atau kunjungi toko kami di</p>
                         <div class="flex items-center justify-center lg:justify-start gap-2 mt-2">
                             <a href="#" title=""
                                 class="flex-1 text-white bg-orange-500 hover:bg-orange-700 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800 flex items-center justify-center ml-2"
@@ -209,10 +210,10 @@
                             </a>
                         </div>
                     </div>
-                    <hr class="my-6 md:my-8 border-gray-500 dark:border-gray-800" />
+                    <hr class="my-6 md:my-4 border-gray-500 dark:border-gray-800" />
 
                     <p class="text-gray-500 dark:text-gray-400">
-                        Product description goes here.
+                        {{ $product->about }}
                     </p>
                 </div>
             </div>
