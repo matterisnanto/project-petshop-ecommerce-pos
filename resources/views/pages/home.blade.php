@@ -2,7 +2,7 @@
 
     {{-- store front --}}
     <section class="bg-primary-200 py-9 antialiased dark:bg-gray-900 md:py-16">
-        <div class="mx-auto grid max-w-screen-xl px-4 pb-8 md:grid-cols-12 lg:gap-12 lg:pb-16 xl:gap-0">
+        <div class="mx-auto grid max-w-screen-xl  px-4 pb-8 md:grid-cols-12 lg:gap-12 lg:pb-16 xl:gap-0">
             <!-- Gambar untuk layar mobile -->
             <div class="md:hidden mb-6">
                 <img src="{{ url('/img/Catanddog-amico.png') }}" alt="shopping illustration" class="w-full" />
@@ -35,18 +35,17 @@
 
     {{-- card with cta --}}
     <section class="bg-white dark:bg-gray-900">
-        <div class="py-8 lg:py-8 px-4 mx-auto max-w-screen-xl">
+        <div class="py-4 lg:py-8 px-4 mx-auto max-w-screen-xl">
             <h2
                 class="mb-4 text-3xl font-extrabold tracking-tight leading-tight text-center text-gray-900 dark:text-white md:text-4xl">
                 Brand
             </h2>
-            <p
-                class="mb-4 text-base font-light text-center text-gray-500 md:text-xl sm:px-14 md:px-24 lg:px-56 xl:px-72">
+            <p class=" text-base font-light text-center text-gray-500 md:text-xl sm:px-14 md:px-24 lg:px-56 xl:px-72">
                 Kami menjual berbagai macam makanan dan aksesoris peliharaan anda, dari berbagai macam brand ternama
             </p>
 
             <!-- Carousel for Mobile -->
-            <div class="relative md:hidden mt-6" data-carousel="static">
+            <div class="relative md:hidden mt-2" data-carousel="static">
                 <!-- Carousel wrapper -->
                 <div class="relative h-64 overflow-hidden rounded-lg"> <!-- Tinggi carousel disesuaikan -->
                     <!-- Brand Items -->
@@ -346,12 +345,12 @@
                 src="https://www.pethouse.co.id/cfind/source/images/retail/51%20jansen%20petshop.jpg"
                 alt="feature image">
             <div class="text-gray-500 dark:text-gray-400 sm:text-lg">
-                <h2 class="mb-4 text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">Petshop
+                <h2 class="mb-2 text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">Petshop
                 </h2>
-                <p class="mb-8 font-light lg:text-xl">Petshop kami adalah rumah bagi kucing dan anjing. Dengan produk
+                <p class="mb-2 font-light lg:text-xl">Petshop kami adalah rumah bagi kucing dan anjing. Dengan produk
                     terbaik dan layanan lengkap, kami memastikan hewan peliharaan Anda selalu sehat, bahagia, dan
                     terawat.</p>
-                <div class="py-8 mb-6 border-t border-b border-gray-200 dark:border-gray-700">
+                <div class="py-4 mb-2 border-t border-b border-gray-200 dark:border-gray-700">
                     <div class="flex">
                         <div
                             class="flex justify-center items-center mr-4 w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900 shrink-0">
@@ -401,15 +400,15 @@
                             </svg>
                         </div>
                         <div>
-                            <h3 class="mb-2 text-xl font-bold text-gray-900 dark:text-white">Produk Lengkap dan
+                            <h3 class=" text-xl font-bold text-gray-900 dark:text-white">Produk Lengkap dan
                                 Berkualitas Tinggi</h3>
-                            <p class="mb-2 font-light text-gray-500 dark:text-gray-400">Kami menyediakan berbagai
+                            <p class="font-light text-gray-500 dark:text-gray-400">Kami menyediakan berbagai
                                 produk kebutuhan hewan peliharaan, mulai dari makanan premium, perlengkapan, hingga
                                 aksesoris. Semua produk kami dipilih dengan cermat untuk memastikan kualitas terbaik dan
                                 aman untuk hewan peliharaan Anda.</p>
                         </div>
                     </div>
-                    <div class="flex pt-8">
+                    <div class="flex pt-2">
                         <div
                             class="flex justify-center items-center mr-4 w-8 h-8 bg-purple-100 rounded-full dark:bg-purple-900 shrink-0">
                             <svg viewBox="-51.2 -51.2 614.40 614.40" id="Layer_1" version="1.1"
@@ -446,13 +445,16 @@
                             <h3 class="mb-2 text-xl font-bold text-gray-900 dark:text-white">Layanan Profesional dan
                                 Terpercaya</h3>
                             <p class="mb-2 font-light text-gray-500 dark:text-gray-400">Petshop kami didukung oleh tim
-                                ahli yang berpengalaman di bidangnya, mulai dari groomer profesional hingga dokter hewan
-                                bersertifikat. Layanan grooming kami tidak hanya membuat hewan peliharaan Anda tampil
-                                menawan, tetapi juga menjaga kesehatan kulit dan bulu mereka</p>
+                                ahli, dari groomer profesional hingga dokter hewan bersertifikat. Layanan grooming kami
+                                membuat hewan peliharaan tampil menawan sekaligus menjaga kesehatan kulit dan bulunya,
+                                Kami juga menyediakan pet hotel nyaman dengan fasilitas lengkap, pengawasan 24 jam, dan
+                                perawatan penuh kasih. Anabul dapat menikmati akomodasi bersih, makanan berkualitas, dan
+                                aktivitas seru selama menginap. Tenang berpergian, peliharaan Anda dalam tangan ahli!
+                            </p>
 
                         </div>
                     </div>
-                    <div class="flex pt-8">
+                    <div class="flex pt-2">
                         <div
                             class="flex justify-center items-center mr-4 w-8 h-8 bg-teal-100 rounded-full dark:bg-teal-900 shrink-0">
                             <svg viewBox="-51.2 -51.2 614.40 614.40" id="Layer_1" version="1.1"
@@ -499,13 +501,13 @@
                         <div>
                             <h3 class="mb-2 text-xl font-bold text-gray-900 dark:text-white">Layanan Pacak/Kawin yang
                                 Aman dan Terjamin</h3>
-                            <p class="mb-2 font-light text-gray-500 dark:text-gray-400">Kami menyediakan layanan
+                            <p class="font-light text-gray-500 dark:text-gray-400">Kami menyediakan layanan
                                 pacak/kawin untuk kucing dan anjing ras dengan proses yang aman, terpercaya, dan
                                 dikelola oleh ahli.</p>
                         </div>
                     </div>
                 </div>
-                <p class="text-sm">Kami peduli dengan setiap hewan peliharaan seperti keluarga sendiri. Mari
+                <p class="text-sm">Kami peduli dengan setiap hewan peliharaan seperti sahabat sendiri. Mari
                     bersama-sama memberikan yang terbaik untuk mereka!</p>
             </div>
         </div>
@@ -519,7 +521,7 @@
                 <h2 class="mb-4 text-4xl tracking-tight font-extrabold text-gray-900 lg:text-5xl dark:text-white">
                     Penuhi Segala Kebutuhan Hewan Peliharaan Anda dengan Solusi Terlengkap dan Terbaik!</h2>
             </div>
-            <div class="grid gap-6 mt-12 lg:mt-14 lg:gap-12 md:grid-cols-3">
+            <div class="grid gap-6 mt-12 lg:mt-14 lg:gap-12 md:grid-cols-4">
                 <div class="flex mb-2 md:flex-col md:mb-0">
                     <img class="mr-4 w-auto h-36 md:w-full md:h-auto rounded-lg"
                         src="https://img.freepik.com/free-photo/pet-accessories-with-full-food-bowl_23-2148949593.jpg"
@@ -539,6 +541,17 @@
                         <h3 class="text-xl font-bold md:mt-4 mb-2.5 text-gray-900 dark:text-white">Pet Grooming</h3>
                         <p class="text-gray-500 dark:text-gray-400">Bulu Bersih, Hati Senang – Grooming Terbaik untuk
                             Teman Setia Anda.</p>
+                    </div>
+                </div>
+                <div class="flex md:flex-col">
+                    <img class="mr-4 w-auto h-36 md:w-full md:h-auto rounded-lg"
+                        src="https://st2.depositphotos.com/16190484/46850/i/450/depositphotos_468503782-stock-photo-domestic-striped-gray-cat-lie.jpg"
+                        alt="office image 3" />
+                    <div>
+                        <h3 class="text-xl font-bold md:mt-4 mb-2.5 text-gray-900 dark:text-white">Pet Hotel
+                        </h3>
+                        <p class="text-gray-500 dark:text-gray-400">Liburan tanpa khawatir, peliharaan aman dan nyaman!
+                        </p>
                     </div>
                 </div>
                 <div class="flex md:flex-col">

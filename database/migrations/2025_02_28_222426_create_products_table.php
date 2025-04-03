@@ -15,6 +15,7 @@ return new class() extends Migration {
             $table->string('name');
             $table->string('slug')->unique();
             $table->string('barcode')->nullable();
+            $table->string('weight');
             $table->string('thumbnail');
             $table->longText('about')->nullable();
             $table->unsignedBigInteger('purchase_price');

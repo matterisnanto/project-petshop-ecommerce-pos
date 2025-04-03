@@ -234,6 +234,13 @@ class OlshoptransactionResource extends Resource
                             Forms\Components\FileUpload::make('proof')
                                 ->label('Proof of Payment')
                                 ->image()
+                                ->directory('proof-payments') // direktori penyimpanan
+                                ->imagePreviewHeight('250') // tinggi preview
+                                ->openable() // memungkinkan membuka gambar di tab baru
+                                ->downloadable() // memungkinkan download gambar
+                                ->imageEditor() // opsional: tambahkan editor gambar
+                                ->panelAspectRatio('2:1') // rasio panel preview
+                                ->panelLayout('integrated') // tata letak panel
                                 ->required(),
                             Forms\Components\Toggle::make('is_paid')
                                 ->label('Already Paid?')

@@ -157,6 +157,8 @@
                 <!-- Tambahkan lebih banyak produk di sini -->
             </div>
             {{-- end list produk --}}
+
+            <!-- Pagination -->
             <div class="flex justify-center mt-6">
                 <nav aria-label="Pagination" class="shadow-sm rounded-lg overflow-hidden">
                     <ul class="flex items-center gap-2 bg-white p-2 rounded-lg shadow-sm">
@@ -176,8 +178,8 @@
                                 class="px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-200 transition">1</a></li>
                         <li><a href="#"
                                 class="px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-200 transition">2</a></li>
-                        <li><a href="#"
-                                class="px-4 py-2 rounded-lg bg-primary-500 text-white font-semibold shadow-lg">3</a>
+                        <li><a href="#" {{-- class="px-4 py-2 rounded-lg bg-primary-500 text-white font-semibold shadow-lg">3</a> --}}
+                                class="px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-200 transition">3</a></li>
                         </li>
                         <li><a href="#"
                                 class="px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-200 transition">4</a></li>

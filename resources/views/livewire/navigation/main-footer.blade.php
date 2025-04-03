@@ -1,5 +1,5 @@
 <!-- footer start -->
-<footer class="p-2 py-4 bg-primary-100 md:p-2 lg:p-4 dark:bg-gray-800">
+<footer class="p-2 py-4 bg-primary-100 md:p-2 lg:p-4 dark:bg-gray-800 mt-auto">
     <div class="mx-auto max-w-screen-xl text-center">
         <div class="grid lg:grid-cols-3">
             <!-- Logo Petshop (Centered on Mobile) -->
@@ -13,16 +13,16 @@
                 <ul class="flex flex-col items-center space-y-1 text-sm text-gray-500 dark:text-gray-400">
                     <ul class="flex flex-wrap justify-center space-x-4">
                         <li>
-                            <a href="#" class="hover:underline">Home</a>
+                            <a wire:navigate href="/" class="hover:underline">Home</a>
                         </li>
                         <li>
-                            <a href="#" class="hover:underline">Product</a>
+                            <a wire:navigate href="/products" class="hover:underline">Product</a>
                         </li>
                         <li>
-                            <a href="#" class="hover:underline">Trx check</a>
+                            <a wire:navigate href="/trx-check" class="hover:underline">Trx check</a>
                         </li>
                         <li>
-                            <a href="#" class="hover:underline">Contact Us</a>
+                            <a wire:navigate href="/contact-us" class="hover:underline">Contact Us</a>
                         </li>
                     </ul>
                     <ul class="flex flex-wrap justify-center space-x-4">

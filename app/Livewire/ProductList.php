@@ -148,12 +148,24 @@ class ProductList extends Component
     public function addToCart($productId)
     {
         $product = Product::findOrFail($productId);
-
         $cart = Session::get('cart', []);
 
         if (isset($cart[$productId])) {
+            // Check if adding one more would exceed stock
+            if (($cart[$productId]['quantity'] + 1) > $product->stock) {
+                toastr()->error('Cannot add more than available stock. Current in cart: ' .
+                    $cart[$productId]['quantity'] . ', available: ' . $product->stock);
+                return;
+            }
+
             $cart[$productId]['quantity'] += 1;
         } else {
+            // For new item, check if at least 1 is available
+            if ($product->stock < 1) {
+                toastr()->error('Insufficient stock for ' . $product->name);
+                return;
+            }
+
             $cart[$productId] = [
                 'id' => $product->id,
                 'name' => $product->name,
@@ -164,9 +176,9 @@ class ProductList extends Component
         }
 
         Session::put('cart', $cart);
-        toastr()->success($product->name . ' Successfully added to cart');
         $this->updateCartItemCount();
         $this->dispatch('cartUpdated');
+        toastr()->success($product->name . ' successfully added to cart');
     }
 
     protected function updateCartItemCount()

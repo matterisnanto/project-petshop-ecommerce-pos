@@ -95,7 +95,7 @@
                                 </svg>
                                 Add to cart
                             </button>
-                            <p class="ml-4">Stok : {{ $product->stock }}</p>
+                            {{-- <p class="ml-4">Stok : {{ $product->stock }}</p> --}}
                         </div>
                     </div>
 

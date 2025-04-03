@@ -14,7 +14,7 @@
 
 </head>
 
-<body>
+<body class="flex flex-col min-h-screen dark:bg-gray-900">
     @livewire('navigation.main-navbar')
 
     <main>
