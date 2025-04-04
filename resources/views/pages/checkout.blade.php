@@ -35,7 +35,7 @@
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M8.5 11.5 11 14l4-4m6 2a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                     </svg>
-                    Order summary
+                    Payment
                 </li>
             </ol>
 
@@ -67,7 +67,7 @@
                                             Nomor Telepon
                                         </label>
                                         <div class="flex items-center">
-                                            <button id="dropdown-phone-button-3" data-dropdown-toggle="dropdown-phone-3"
+                                            <button
                                                 class="z-10 inline-flex shrink-0 items-center rounded-s-lg border border-gray-300 bg-gray-100 px-4 py-2.5 text-center text-sm font-medium text-gray-900 hover:bg-gray-200 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-700"
                                                 type="button">
                                                 <svg fill="none" aria-hidden="true" class="me-2 h-4 w-4"
@@ -119,13 +119,13 @@
                                                 Provinsi
                                             </label>
                                         </div>
-                                        <select id="select-province-input"
+                                        <select id="select-province-input" wire:model="selectedProvince"
+                                            wire:change="loadCities"
                                             class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500">
-                                            <option selected>United States</option>
-                                            <option value="AS">Australia</option>
-                                            <option value="FR">France</option>
-                                            <option value="ES">Spain</option>
-                                            <option value="UK">United Kingdom</option>
+                                            <option value="">Pilih Provinsi</option>
+                                            @foreach ($provinces as $province)
+                                                <option value="{{ $province['id'] }}">{{ $province['name'] }}</option>
+                                            @endforeach
                                         </select>
                                     </div>
 
@@ -136,13 +136,13 @@
                                                 Kota/Kabupaten
                                             </label>
                                         </div>
-                                        <select id="select-city-input"
+                                        <select id="select-city-input" wire:model="selectedCity"
+                                            wire:change="loadDistricts"
                                             class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500">
-                                            <option selected>San Francisco</option>
-                                            <option value="NY">New York</option>
-                                            <option value="LA">Los Angeles</option>
-                                            <option value="CH">Chicago</option>
-                                            <option value="HU">Houston</option>
+                                            <option value="">Pilih Kota/Kabupaten</option>
+                                            @foreach ($cities as $city)
+                                                <option value="{{ $city['id'] }}">{{ $city['name'] }}</option>
+                                            @endforeach
                                         </select>
                                     </div>
 
@@ -153,13 +153,13 @@
                                                 Kecamatan
                                             </label>
                                         </div>
-                                        <select id="select-district-input"
+                                        <select id="select-district-input" wire:model="selectedDistrict"
+                                            wire:change="loadVillages"
                                             class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500">
-                                            <option selected>San Francisco</option>
-                                            <option value="NY">New York</option>
-                                            <option value="LA">Los Angeles</option>
-                                            <option value="CH">Chicago</option>
-                                            <option value="HU">Houston</option>
+                                            <option value="">Pilih Kecamatan</option>
+                                            @foreach ($districts as $district)
+                                                <option value="{{ $district['id'] }}">{{ $district['name'] }}</option>
+                                            @endforeach
                                         </select>
                                     </div>
 
@@ -170,13 +170,12 @@
                                                 Kelurahan/Desa
                                             </label>
                                         </div>
-                                        <select id="select-subdistrict-input"
+                                        <select id="select-subdistrict-input" wire:model="selectedVillage"
                                             class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500">
-                                            <option selected>San Francisco</option>
-                                            <option value="NY">New York</option>
-                                            <option value="LA">Los Angeles</option>
-                                            <option value="CH">Chicago</option>
-                                            <option value="HU">Houston</option>
+                                            <option value="">Pilih Kelurahan/Desa</option>
+                                            @foreach ($villages as $village)
+                                                <option value="{{ $village['id'] }}">{{ $village['name'] }}</option>
+                                            @endforeach
                                         </select>
                                     </div>
 
@@ -188,7 +187,7 @@
                                         </label>
                                         <input type="text" id="post_code"
                                             class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500"
-                                            placeholder="Flowbite LLC" required />
+                                            placeholder="16321" required />
                                     </div>
 
                                     <div>

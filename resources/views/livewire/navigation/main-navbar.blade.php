@@ -140,8 +140,10 @@
                 </button>
 
                 <!-- Desktop Button -->
-                <button @if (request()->is('shopping-cart*')) wire:navigate href='/shopping-cart' @endif
-                    id="myCartDropdownButton1" data-dropdown-toggle="myCartDropdown1" type="button"
+                <button
+                    @if (request()->is('shopping-cart*')) wire:navigate href='/shopping-cart' @else
+                    id="myCartDropdownButton1" data-dropdown-toggle="myCartDropdown1" @endif
+                    type="button"
                     class="{{ str_starts_with($activeRoute, 'shopping-cart') ? 'text-primary-500' : 'text-gray-900 dark:text-white' }} hidden sm:flex items-center justify-center p-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-900 dark:text-white relative">
                     <span class="sr-only">Cart</span>
                     <!-- Badge Notification -->
