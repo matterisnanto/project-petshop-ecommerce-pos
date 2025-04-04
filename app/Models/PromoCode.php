@@ -10,5 +10,5 @@ class PromoCode extends Model
     use HasFactory;
     protected $table = 'promo_codes';
     //
-    protected $fillable = ['code', 'discount_amount'];
+    protected $fillable = ['code', 'discount_amount', 'start_date', 'end_date'];
 }

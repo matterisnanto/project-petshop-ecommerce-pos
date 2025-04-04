@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('code');
             $table->integer('discount_amount');
+            $table->date('start_date')->useCurrent();
+            $table->date('end_date');
             $table->timestamps();
             $table->softDeletes();
         });

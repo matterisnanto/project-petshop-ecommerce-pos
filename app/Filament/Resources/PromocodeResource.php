@@ -41,6 +41,10 @@ class PromocodeResource extends Resource
                     ->numeric()
                     ->default(0)
                     ->prefix('Rp'),
+                Forms\Components\DatePicker::make('start_date')
+                    ->required(),
+                Forms\Components\DatePicker::make('end_date')
+                    ->required(),
             ]);
     }
 
@@ -52,6 +56,10 @@ class PromocodeResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('discount_amount')
                     ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('start_date')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('end_date')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()

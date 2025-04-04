@@ -27,6 +27,12 @@ Route::get('/trx-check', TrxCheck::class)->name('trx-check');
 
 Route::get('/contact-us', ContactUs::class)->name('contact-us');
 
+Route::get('/debug-cart', function () {
+    return response()->json([
+        'cart' => session('cart'),
+        'cart_totals' => session('cart_totals')
+    ]);
+});
 
 
 Route::get('/download-template', function () {
