@@ -222,7 +222,7 @@
                                             <div class="ms-4 text-sm">
                                                 <label for="dhl"
                                                     class="font-medium leading-none text-gray-900 dark:text-white">
-                                                    $15 - DHL Fast Delivery
+                                                    Ninja xpress
                                                 </label>
                                                 <p id="dhl-text"
                                                     class="mt-1 text-xs font-normal text-gray-500 dark:text-gray-400">
@@ -243,7 +243,7 @@
                                             <div class="ms-4 text-sm">
                                                 <label for="fedex"
                                                     class="font-medium leading-none text-gray-900 dark:text-white">
-                                                    Free Delivery - FedEx
+                                                    J&T
                                                 </label>
                                                 <p id="fedex-text"
                                                     class="mt-1 text-xs font-normal text-gray-500 dark:text-gray-400">
@@ -264,7 +264,7 @@
                                             <div class="ms-4 text-sm">
                                                 <label for="express"
                                                     class="font-medium leading-none text-gray-900 dark:text-white">
-                                                    $49 - Express Delivery
+                                                    Sicepat
                                                 </label>
                                                 <p id="express-text"
                                                     class="mt-1 text-xs font-normal text-gray-500 dark:text-gray-400">

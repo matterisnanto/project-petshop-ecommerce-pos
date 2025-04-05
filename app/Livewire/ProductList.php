@@ -37,7 +37,7 @@ class ProductList extends Component
         $this->selectedBrands = request('brands', []);
         $this->selectedCategories = request('categories', []);
         $this->sortBy = request('sortBy', 'default');
-        Session::forget('cart_totals');
+        // Session::forget('cart_totals');
         $this->updateCartItemCount();
     }
 

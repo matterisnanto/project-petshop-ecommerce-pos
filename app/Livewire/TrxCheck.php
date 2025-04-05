@@ -7,10 +7,10 @@ use Illuminate\Support\Facades\Session;
 
 class TrxCheck extends Component
 {
-    public function mount()
-    {
-        Session::forget('cart_totals');
-    }
+    // public function mount()
+    // {
+    //     Session::forget('cart_totals');
+    // }
     public function render()
     {
         return view('pages.trx-check');

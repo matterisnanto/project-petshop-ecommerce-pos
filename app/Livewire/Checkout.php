@@ -12,7 +12,10 @@ class Checkout extends Component
     public $subtotal = 0;
     public $shippingCost = 0;
     public $total = 0;
+    public $itemCount = 0;
     public $savings = 0;
+    public $totalWeight = 0;
+    public $appliedPromoCode = null;
 
     // Address fields
     public $provinces = [];
@@ -52,6 +55,9 @@ class Checkout extends Component
         $cartTotals = Session::get('cart_totals', []);
         $this->subtotal = $cartTotals['subtotal'] ?? 0;
         $this->savings = $cartTotals['savings'] ?? 0;
+        $this->appliedPromoCode = $cartTotals['appliedPromoCode'] ?? null;
+        $this->totalWeight = $cartTotals['totalWeight'] ?? 0;
+        $this->itemCount = $cartTotals['itemCount'] ?? 0;
 
         $this->calculateTotals();
         $this->loadProvinces();
@@ -63,6 +69,37 @@ class Checkout extends Component
                 $this->$key = $value;
             }
         }
+    }
+
+    protected function calculateCartTotals()
+    {
+        $this->subtotal = 0;
+        $this->totalWeight = 0;
+
+        // Calculate subtotal and total weight from cart items
+        foreach ($this->cartItems as $item) {
+            $this->subtotal += $item['price'] * $item['quantity'];
+            $this->totalWeight += $item['weight'] * $item['quantity'];
+        }
+
+        // Get promo code details from session if exists
+        $cartTotals = Session::get('cart_totals', []);
+        $this->savings = $cartTotals['savings'] ?? 0;
+        $this->appliedPromoCode = $cartTotals['appliedPromoCode'] ?? null;
+        $this->itemCount = array_sum(array_column($this->cartItems, 'quantity'));
+
+        // Calculate shipping and total
+        $this->calculateTotals();
+
+        // Update session with recalculated totals
+        Session::put('cart_totals', [
+            'subtotal' => $this->subtotal,
+            'total' => $this->total,
+            'savings' => $this->savings,
+            'itemCount' => $this->itemCount,
+            'totalWeight' => $this->totalWeight,
+            'appliedPromoCode' => $this->appliedPromoCode
+        ]);
     }
 
     public function dehydrate()
@@ -82,15 +119,6 @@ class Checkout extends Component
         ];
 
         Session::put('checkout_data', $checkoutData);
-
-        // Reset promo code and savings if leaving
-        Session::put('cart_totals', [
-            'subtotal' => $this->subtotal,
-            'total' => $this->subtotal, // Reset total to subtotal
-            'savings' => 0,
-            'itemCount' => Session::get('cart_totals.itemCount', 0),
-            'appliedPromoCode' => null
-        ]);
 
         if (!request()->is('shopping-cart/checkout*')) {
             Session::forget('checkout_data');
@@ -181,6 +209,9 @@ class Checkout extends Component
             'address' => 'required|string|max:500',
             'delivery_method' => 'required',
         ]);
+
+        // Recalculate totals to ensure accuracy before proceeding
+        $this->calculateCartTotals();
 
         // Save the complete order data to session
         $orderData = [
