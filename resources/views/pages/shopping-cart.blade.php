@@ -43,10 +43,12 @@
                                                 </svg>
                                             </button>
                                             <input type="text"
+                                                wire:model.lazy="cartItems.{{ $item['id'] }}.quantity"
                                                 wire:change="updateItemQuantity('{{ $productId }}', $event.target.value)"
                                                 class="w-10 shrink-0 border-0 bg-transparent text-center text-sm font-medium text-gray-900 focus:outline-none focus:ring-0 dark:text-white"
                                                 value="{{ $item['quantity'] }}" />
-                                            <button wire:click="incrementQuantity('{{ $productId }}')" type="button"
+                                            <button wire:click="incrementQuantity('{{ $productId }}')"
+                                                type="button"
                                                 class="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-gray-300 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700">
                                                 <svg class="h-2.5 w-2.5 text-gray-900 dark:text-white"
                                                     aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
@@ -122,7 +124,7 @@
                                     <input wire:model="promoCode" type="text" id="voucher"
                                         @if ($appliedPromoCode) readonly @endif
                                         class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500 @if ($appliedPromoCode) bg-gray-100 cursor-not-allowed dark:bg-gray-600 @endif"
-                                        placeholder="Enter promo code" />
+                                        placeholder="{{ $appliedPromoCode ? $promoCode : 'Enter promo code' }}" />
                                 </div>
 
                                 @if (!$appliedPromoCode)
@@ -184,4 +186,5 @@
             </div>
         </div>
     </section>
+
 </div>

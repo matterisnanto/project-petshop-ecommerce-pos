@@ -11,6 +11,7 @@ class MainNavbar extends Component
     public $cartItems = [];
     public $total = 0;
     public $itemCount = 0;
+    public $totalWeight = 0;
     public $activeRoute = '';
 
     protected $listeners = ['cartUpdated' => 'updateCart'];
@@ -26,6 +27,16 @@ class MainNavbar extends Component
         $this->cartItems = Session::get('cart', []);
         $this->calculateTotal();
         $this->itemCount = array_sum(array_column($this->cartItems, 'quantity'));
+        $this->totalWeight = $this->calculateTotalWeight();
+    }
+
+    protected function calculateTotalWeight()
+    {
+        $totalWeight = 0;
+        foreach ($this->cartItems as $item) {
+            $totalWeight += $item['weight'] * $item['quantity'];
+        }
+        return $totalWeight;
     }
 
     public function incrementQuantity($productId)
@@ -38,6 +49,7 @@ class MainNavbar extends Component
             // Periksa apakah stok mencukupi
             if ($cart[$productId]['quantity'] < $product->stock) {
                 $cart[$productId]['quantity']++;
+                $cart[$productId]['total_weight'] = $cart[$productId]['quantity'] * $product->weight;
                 Session::put('cart', $cart);
                 $this->updateCart();
             } else {
@@ -51,10 +63,15 @@ class MainNavbar extends Component
     public function decrementQuantity($productId)
     {
         $cart = Session::get('cart', []);
-        if (isset($cart[$productId]) && $cart[$productId]['quantity'] > 1) {
-            $cart[$productId]['quantity']--;
-            Session::put('cart', $cart);
-            $this->updateCart();
+        if (isset($cart[$productId])) {
+            $product = Product::find($productId);
+
+            if ($cart[$productId]['quantity'] > 1) {
+                $cart[$productId]['quantity']--;
+                $cart[$productId]['total_weight'] = $cart[$productId]['quantity'] * $product->weight; // Update berat
+                Session::put('cart', $cart);
+                $this->updateCart();
+            }
         }
     }
 
@@ -65,6 +82,11 @@ class MainNavbar extends Component
         if (isset($cart[$productId])) {
             unset($cart[$productId]);
             Session::put('cart', $cart);
+
+            if (empty($cart)) {
+                Session::forget('cart_totals');
+            }
+
             toastr()->warning($product->name . ' Has been removed from cart');
             $this->updateCart();
         }
@@ -83,6 +105,7 @@ class MainNavbar extends Component
             $quantity = min($quantity, $product->stock);
 
             $cart[$productId]['quantity'] = $quantity;
+            $cart[$productId]['total_weight'] = $quantity * $product->weight;
             Session::put('cart', $cart);
             $this->updateCart();
 

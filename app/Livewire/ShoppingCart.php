@@ -17,6 +17,7 @@ class ShoppingCart extends Component
     public $savings = 0;
     public $promoCode = '';
     public $appliedPromoCode = null;
+    public $totalWeight = 0;
 
     protected $listeners = ['cartUpdated' => 'updateCart'];
 
@@ -27,6 +28,7 @@ class ShoppingCart extends Component
 
         $this->updateCart();
 
+
         // If totals exist in session, use them
         if (!empty($cartTotals)) {
             $this->subtotal = $cartTotals['subtotal'] ?? 0;
@@ -34,6 +36,7 @@ class ShoppingCart extends Component
             $this->savings = $cartTotals['savings'] ?? 0;
             $this->itemCount = $cartTotals['itemCount'] ?? 0;
             $this->appliedPromoCode = $cartTotals['appliedPromoCode'] ?? null;
+            $this->totalWeight = $cartTotals['totalWeight'] ?? 0;
 
             // If coming back from checkout, reset promo code input
             if (!$this->appliedPromoCode) {
@@ -47,6 +50,7 @@ class ShoppingCart extends Component
         $this->cartItems = Session::get('cart', []);
         $this->calculateTotals();
         $this->itemCount = array_sum(array_column($this->cartItems, 'quantity'));
+        $this->totalWeight = $this->calculateTotalWeight();
 
         // Store the calculated totals in session
         Session::put('cart_totals', [
@@ -54,8 +58,18 @@ class ShoppingCart extends Component
             'total' => $this->total,
             'savings' => $this->savings,
             'itemCount' => $this->itemCount,
+            'totalWeight' => $this->totalWeight,
             'appliedPromoCode' => $this->appliedPromoCode
         ]);
+    }
+
+    protected function calculateTotalWeight()
+    {
+        $totalWeight = 0;
+        foreach ($this->cartItems as $item) {
+            $totalWeight += $item['weight'] * $item['quantity'];
+        }
+        return $totalWeight;
     }
 
     public function incrementQuantity($productId)
@@ -66,6 +80,7 @@ class ShoppingCart extends Component
 
             if ($cart[$productId]['quantity'] < $product->stock) {
                 $cart[$productId]['quantity']++;
+                $cart[$productId]['total_weight'] = $cart[$productId]['quantity'] * $product->weight;
                 Session::put('cart', $cart);
                 $this->updateCart();
                 $this->dispatch('cartUpdated');
@@ -81,19 +96,19 @@ class ShoppingCart extends Component
         $cart = Session::get('cart', []);
 
         if (isset($cart[$productId])) {
+            $product = Product::find($productId); // Tambahkan ini untuk mendapatkan data produk
+
             if ($cart[$productId]['quantity'] > 1) {
                 $cart[$productId]['quantity']--;
+                $cart[$productId]['total_weight'] = $cart[$productId]['quantity'] * $product->weight; // Update berat
                 Session::put('cart', $cart);
                 $this->updateCart();
                 $this->dispatch('cartUpdated');
-
-                // Optional: Add success message
                 toastr()->success('Quantity decreased successfully');
             } else {
                 $this->removeItem($productId);
             }
         } else {
-            // Optional: Add error message if product not found in cart
             toastr()->error('Product not found in cart');
         }
     }
@@ -126,13 +141,15 @@ class ShoppingCart extends Component
             $quantity = min($quantity, $product->stock);
 
             $cart[$productId]['quantity'] = $quantity;
+            $cart[$productId]['total_weight'] = $quantity * $product->weight;
             Session::put('cart', $cart);
             $this->updateCart();
-            toastr()->success('Quantity has been updated');
             $this->dispatch('cartUpdated');
 
             if ($quantity == $product->stock) {
                 toastr()->error('Quantity reached available stock limit');
+            } else {
+                toastr()->success('Quantity updated successfully');
             }
         }
     }
@@ -182,6 +199,7 @@ class ShoppingCart extends Component
             'total' => $this->total,
             'savings' => $this->savings,
             'itemCount' => $this->itemCount,
+            'totalWeight' => $this->totalWeight,
             'appliedPromoCode' => $this->appliedPromoCode
         ]);
     }
@@ -191,6 +209,7 @@ class ShoppingCart extends Component
     //     // Implement your checkout logic here
     //     return redirect()->route('/shopping-cart/checkout');
     // }
+
 
     public function render()
     {

@@ -20,6 +20,7 @@ class ProductList extends Component
     public $maxPrice = 5000000;
     public $showFilters = false;
     public $cartItemCount = 0;
+    public $cartTotalWeight = 0;
 
     protected $queryString = [
         'sortBy' => ['except' => 'default'],
@@ -36,6 +37,7 @@ class ProductList extends Component
         $this->selectedBrands = request('brands', []);
         $this->selectedCategories = request('categories', []);
         $this->sortBy = request('sortBy', 'default');
+        Session::forget('cart_totals');
         $this->updateCartItemCount();
     }
 
@@ -159,6 +161,7 @@ class ProductList extends Component
             }
 
             $cart[$productId]['quantity'] += 1;
+            $cart[$productId]['total_weight'] = $cart[$productId]['quantity'] * $product->weight;
         } else {
             // For new item, check if at least 1 is available
             if ($product->stock < 1) {
@@ -171,7 +174,9 @@ class ProductList extends Component
                 'name' => $product->name,
                 'price' => $product->selling_price,
                 'image' => $product->image_url ?: 'https://via.placeholder.com/300',
-                'quantity' => 1
+                'weight' => $product->weight,
+                'quantity' => 1,
+                'total_weight' => $product->weight // Tambahkan total_weight per item
             ];
         }
 
@@ -185,5 +190,6 @@ class ProductList extends Component
     {
         $cart = Session::get('cart', []);
         $this->cartItemCount = array_sum(array_column($cart, 'quantity'));
+        $this->cartTotalWeight = array_sum(array_column($cart, 'total_weight'));
     }
 }

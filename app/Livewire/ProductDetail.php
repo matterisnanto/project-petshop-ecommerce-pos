@@ -51,13 +51,16 @@ class ProductDetail extends Component
             }
 
             $cart[$this->product->id]['quantity'] = $newQuantity;
+            $cart[$this->product->id]['total_weight'] = $newQuantity * $this->product->weight;
         } else {
             $cart[$this->product->id] = [
                 'id' => $this->product->id,
                 'name' => $this->product->name,
                 'price' => $this->product->selling_price,
                 'image' => $this->product->image_url ?: 'https://via.placeholder.com/300',
-                'quantity' => $this->quantity
+                'weight' => $this->product->weight,
+                'quantity' => $this->quantity,
+                'total_weight' => $this->quantity * $this->product->weight
             ];
         }
 
@@ -79,6 +82,6 @@ class ProductDetail extends Component
 
         return view('pages.product-detail', [
             'product' => $this->product
-        ])->layout('components.layouts.app');
+        ]);
     }
 }

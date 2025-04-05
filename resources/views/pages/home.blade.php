@@ -764,20 +764,5 @@
     </section>
     <!-- Block end -->
     <!-- testimonial end -->
-    @script
-        <script>
-            // Inisialisasi pertama kali
-            document.addEventListener('livewire:initialized', () => {
-                initFlowbite();
-            });
 
-            // Setelah navigasi
-            document.addEventListener('livewire:navigated', () => {
-                // Delay sedikit untuk memastikan DOM sudah terupdate
-                setTimeout(() => {
-                    initFlowbite();
-                }, 50);
-            });
-        </script>
-    @endscript
 </div>
