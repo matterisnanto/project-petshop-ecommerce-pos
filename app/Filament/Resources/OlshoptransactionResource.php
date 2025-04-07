@@ -114,111 +114,92 @@ class OlshoptransactionResource extends Resource
                                         ->label('Province')
                                         ->required()
                                         ->options(function () {
-                                            // Fetch data Provinsi dari API
                                             $response = file_get_contents('https://matterisnanto.github.io/api-wilayah-indonesia/api/provinces.json');
                                             $provinces = json_decode($response, true);
-
-                                            // Format data untuk options
-                                            $options = [];
-                                            foreach ($provinces as $province) {
-                                                $options[$province['id']] = $province['name'];
-                                            }
-
-                                            return $options;
+                                            return collect($provinces)->pluck('name', 'id');
                                         })
                                         ->searchable()
-                                        ->reactive(),
+                                        ->reactive()
+                                        ->afterStateUpdated(function (Get $get, Set $set) {
+                                            $set('city_regency', null);
+                                            $set('district', null);
+                                            $set('vilage_subdistrict', null);
+                                            $set('complete_address', self::generateCompleteAddress($get));
+                                        }),
+
                                     Forms\Components\Select::make('city_regency')
                                         ->label('City/Regency')
                                         ->required()
                                         ->options(function (callable $get) {
-                                            // Ambil province_id yang dipilih
-                                            $province = $get('province');
-
-                                            // Jika province_id belum dipilih, kembalikan array kosong
-                                            if (!$province) {
-                                                return [];
-                                            }
-
-                                            // Fetch data Kabupaten/Kota berdasarkan province_id
-                                            $response = file_get_contents("https://matterisnanto.github.io/api-wilayah-indonesia/api/regencies/{$province}.json");
+                                            if (!$get('province')) return [];
+                                            $response = file_get_contents("https://matterisnanto.github.io/api-wilayah-indonesia/api/regencies/{$get('province')}.json");
                                             $regencies = json_decode($response, true);
-
-                                            // Format data untuk options
-                                            $options = [];
-                                            foreach ($regencies as $regency) {
-                                                $options[$regency['id']] = $regency['name'];
-                                            }
-
-                                            return $options;
+                                            return collect($regencies)->pluck('name', 'id');
                                         })
                                         ->searchable()
-                                        ->reactive(),
+                                        ->reactive()
+                                        ->afterStateUpdated(function (Get $get, Set $set) {
+                                            $set('district', null);
+                                            $set('vilage_subdistrict', null);
+                                            $set('complete_address', self::generateCompleteAddress($get));
+                                        }),
+
                                     Forms\Components\Select::make('district')
                                         ->label('District')
                                         ->required()
                                         ->options(function (callable $get) {
-                                            // Ambil regency_id yang dipilih
-                                            $regency = $get('city_regency');
-
-                                            // Jika regency_id belum dipilih, kembalikan array kosong
-                                            if (!$regency) {
-                                                return [];
-                                            }
-
-                                            // Fetch data Kecamatan berdasarkan regency_id
-                                            $response = file_get_contents("https://matterisnanto.github.io/api-wilayah-indonesia/api/districts/{$regency}.json");
+                                            if (!$get('city_regency')) return [];
+                                            $response = file_get_contents("https://matterisnanto.github.io/api-wilayah-indonesia/api/districts/{$get('city_regency')}.json");
                                             $districts = json_decode($response, true);
-
-                                            // Format data untuk options
-                                            $options = [];
-                                            foreach ($districts as $district) {
-                                                $options[$district['id']] = $district['name'];
-                                            }
-
-                                            return $options;
+                                            return collect($districts)->pluck('name', 'id');
                                         })
                                         ->searchable()
-                                        ->reactive(),
+                                        ->reactive()
+                                        ->afterStateUpdated(function (Get $get, Set $set) {
+                                            $set('vilage_subdistrict', null);
+                                            $set('complete_address', self::generateCompleteAddress($get));
+                                        }),
+
                                     Forms\Components\Select::make('vilage_subdistrict')
                                         ->label('Village/Subdistrict')
                                         ->required()
                                         ->options(function (callable $get) {
-                                            // Ambil district_id yang dipilih
-                                            $district = $get('district');
-
-                                            // Jika district_id belum dipilih, kembalikan array kosong
-                                            if (!$district) {
-                                                return [];
-                                            }
-
-                                            // Fetch data Kelurahan/Desa berdasarkan district_id
-                                            $response = file_get_contents("https://matterisnanto.github.io/api-wilayah-indonesia/api/villages/{$district}.json");
+                                            if (!$get('district')) return [];
+                                            $response = file_get_contents("https://matterisnanto.github.io/api-wilayah-indonesia/api/villages/{$get('district')}.json");
                                             $villages = json_decode($response, true);
-
-                                            // Format data untuk options
-                                            $options = [];
-                                            foreach ($villages as $village) {
-                                                $options[$village['id']] = $village['name'];
-                                            }
-
-                                            return $options;
+                                            return collect($villages)->pluck('name', 'id');
                                         })
                                         ->searchable()
-                                        ->reactive(),
+                                        ->reactive()
+                                        ->afterStateUpdated(function (Get $get, Set $set) {
+                                            $set('complete_address', self::generateCompleteAddress($get));
+                                        }),
+
                                     Forms\Components\TextInput::make('post_code')
                                         ->label('Post Code')
                                         ->required()
-                                        ->numeric(),
+                                        ->numeric()
+                                        ->reactive()
+                                        ->afterStateUpdated(function (Get $get, Set $set) {
+                                            $set('complete_address', self::generateCompleteAddress($get));
+                                        }),
+
                                     Forms\Components\TextInput::make('address')
                                         ->label('Address')
                                         ->required()
                                         ->maxLength(255)
-                                        ->placeholder('Enter RT/RW, street/alley name, and landmarks'),
+                                        ->placeholder('Enter RT/RW, street/alley name, and landmarks')
+                                        ->reactive()
+                                        ->afterStateUpdated(function (Get $get, Set $set) {
+                                            $set('complete_address', self::generateCompleteAddress($get));
+                                        }),
+
                                     Forms\Components\TextInput::make('complete_address')
                                         ->label('Complete Address')
                                         ->required()
-                                        ->columnSpanFull(),
+                                        ->columnSpanFull()
+                                        ->disabled()
+                                        ->dehydrated(),
                                 ])
                                 ->columns(2),
                         ]),
@@ -381,6 +362,42 @@ class OlshoptransactionResource extends Resource
         }, 0);
 
         $set('sub_total_amount', $total);
+    }
+
+    private static function generateCompleteAddress(Get $get): string
+    {
+        $province = self::getSelectedRegionName($get('province'), 'https://matterisnanto.github.io/api-wilayah-indonesia/api/provinces.json');
+        $regency = self::getSelectedRegionName($get('city_regency'), "https://matterisnanto.github.io/api-wilayah-indonesia/api/regencies/{$get('province')}.json");
+        $district = self::getSelectedRegionName($get('district'), "https://matterisnanto.github.io/api-wilayah-indonesia/api/districts/{$get('city_regency')}.json");
+        $village = self::getSelectedRegionName($get('vilage_subdistrict'), "https://matterisnanto.github.io/api-wilayah-indonesia/api/villages/{$get('district')}.json");
+
+        $address = $get('address');
+        $postCode = $get('post_code');
+
+        return implode(', ', array_filter([
+            $address,
+            $village,
+            $district,
+            $regency,
+            $province,
+            $postCode ? "Kode Pos: {$postCode}" : null
+        ]));
+    }
+
+    private static function getSelectedRegionName($id, $url): ?string
+    {
+        if (!$id) return null;
+
+        $response = file_get_contents($url);
+        $regions = json_decode($response, true);
+
+        foreach ($regions as $region) {
+            if ($region['id'] == $id) {
+                return $region['name'];
+            }
+        }
+
+        return null;
     }
     public static function getRelations(): array
     {
