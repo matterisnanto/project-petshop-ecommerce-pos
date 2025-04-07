@@ -23,13 +23,10 @@ class ShoppingCart extends Component
 
     public function mount()
     {
-        // When component mounts, check if there are totals in session
+        $this->updateCart(); // Pindahkan ke atas sebelum memeriksa cart_totals
+
         $cartTotals = Session::get('cart_totals', []);
 
-        $this->updateCart();
-
-
-        // If totals exist in session, use them
         if (!empty($cartTotals)) {
             $this->subtotal = $cartTotals['subtotal'] ?? 0;
             $this->total = $cartTotals['total'] ?? 0;
@@ -38,9 +35,9 @@ class ShoppingCart extends Component
             $this->appliedPromoCode = $cartTotals['appliedPromoCode'] ?? null;
             $this->totalWeight = $cartTotals['totalWeight'] ?? 0;
 
-            // If coming back from checkout, reset promo code input
-            if (!$this->appliedPromoCode) {
-                $this->promoCode = '';
+            // Set promoCode hanya jika appliedPromoCode ada dan promoCode kosong
+            if ($this->appliedPromoCode && empty($this->promoCode)) {
+                $this->promoCode = $this->appliedPromoCode;
             }
         }
     }
