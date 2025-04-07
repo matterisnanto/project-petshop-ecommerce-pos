@@ -68,10 +68,7 @@ class OlshoptransactionResource extends Resource
                                         ->default(0)
                                         ->readOnly()
                                         ->numeric(), // Menempati 1 kolom
-                                    Forms\Components\TextInput::make('grand_total_amount')
-                                        ->required()
-                                        ->numeric()
-                                        ->columnSpanFull(),
+
                                 ]),
                             // Menempati semua kolom (full width)
                         ]),
@@ -210,6 +207,34 @@ class OlshoptransactionResource extends Resource
                                 ->label('Booking Trx Number')
                                 ->required()
                                 ->maxLength(255),
+                            Forms\Components\TextInput::make('weight_total')
+                                ->label('Total Weight (gram)')
+                                ->required()
+                                ->numeric()
+                                ->default(0)
+                                ->readOnly(),
+                            Forms\Components\Select::make('courier')
+                                ->label('Courier Service')
+                                ->required()
+                                ->options([
+                                    'jne' => 'JNE',
+                                    'tiki' => 'TIKI',
+                                    'pos' => 'POS Indonesia',
+                                ])
+                                ->live()
+                                ->afterStateUpdated(function (Get $get, Set $set) {
+                                    self::calculateShippingCost($get, $set);
+                                }),
+                            Forms\Components\TextInput::make('shipping_cost')
+                                ->label('Shipping Cost')
+                                ->required()
+                                ->numeric()
+                                ->default(0)
+                                ->readOnly(),
+                            Forms\Components\TextInput::make('grand_total_amount')
+                                ->required()
+                                ->numeric()
+                                ->columnSpanFull(),
                             Forms\Components\FileUpload::make('proof')
                                 ->label('Proof of Payment')
                                 ->image()
@@ -288,6 +313,8 @@ class OlshoptransactionResource extends Resource
             ])
             ->afterStateUpdated(function (Get $get, Set $set) {
                 self::updateSubTotalAmount($get, $set);
+                self::calculateTotalWeight($get, $set);
+                self::calculateShippingCost($get, $set);
             })
             ->schema([
                 Forms\Components\Select::make('product_id')
@@ -362,6 +389,18 @@ class OlshoptransactionResource extends Resource
         }, 0);
 
         $set('sub_total_amount', $total);
+        self::updateGrandTotal($get, $set);
+    }
+
+    protected static function updateGrandTotal(Get $get, Set $set): void
+    {
+        $subTotal = $get('sub_total_amount') ?? 0;
+        $discount = $get('discount_amount') ?? 0;
+        $shipping = $get('shipping_cost') ?? 0;
+
+        $grandTotal = $subTotal - $discount + $shipping;
+
+        $set('grand_total_amount', max(0, $grandTotal));
     }
 
     private static function generateCompleteAddress(Get $get): string
@@ -398,6 +437,52 @@ class OlshoptransactionResource extends Resource
         }
 
         return null;
+    }
+
+    protected static function calculateTotalWeight(Get $get, Set $set): void
+    {
+        $selectedProducts = collect($get('order'))
+            ->filter(fn($item) => !empty($item['product_id']) && !empty($item['quantity']));
+
+        $products = Product::find($selectedProducts->pluck('product_id'));
+
+        $totalWeight = 0;
+
+        foreach ($selectedProducts as $item) {
+            $product = $products->firstWhere('id', $item['product_id']);
+            $totalWeight += ($product->weight ?? 0) * $item['quantity'];
+        }
+
+        $set('weight_total', $totalWeight);
+    }
+
+    protected static function calculateShippingCost(Get $get, Set $set): void
+    {
+        $totalWeight = $get('weight_total');
+        $courier = $get('courier');
+        $cityId = $get('city_regency');
+
+        if (!$totalWeight || !$courier || !$cityId) {
+            $set('shipping_cost', 0);
+            return;
+        }
+
+        // This is a simplified calculation - in a real app you'd use a shipping API
+        $baseCost = 10000; // Base cost
+        $weightCost = ceil($totalWeight / 1000) * 5000; // 5000 per kg
+
+        // Different couriers have different base rates
+        $courierMultiplier = match ($courier) {
+            'jne' => 1.0,
+            'tiki' => 1.2,
+            'pos' => 1.1,
+            default => 1.0,
+        };
+
+        $shippingCost = ($baseCost + $weightCost) * $courierMultiplier;
+
+        $set('shipping_cost', $shippingCost);
+        self::updateGrandTotal($get, $set);
     }
     public static function getRelations(): array
     {

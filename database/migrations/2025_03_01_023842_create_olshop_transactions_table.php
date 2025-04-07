@@ -30,6 +30,9 @@ return new class extends Migration
             $table->string('complete_address');
             $table->boolean('is_paid');
             $table->string('trx_id');
+            $table->string('courier');
+            $table->bigInteger('weight_total');
+            $table->bigInteger('shipping_cost');
             $table->string('proof');
             $table->softDeletes();
             $table->timestamps();
