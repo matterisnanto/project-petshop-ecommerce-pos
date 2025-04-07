@@ -11,7 +11,7 @@ class OlshopTransaction extends Model
 {
     protected $table = 'olshop_transactions';
     //
-    protected $fillable = ['name', 'phone', 'email', 'promo_code_id', 'sub_total_amount', 'grand_total_amount', 'discount_amount', 'province', 'city_regency', 'district', 'vilage_subdistrict', 'post_code', 'address', 'city', 'is_paid', 'trx_id', 'proof'];
+    protected $fillable = ['name', 'phone', 'email', 'promo_code_id', 'sub_total_amount', 'grand_total_amount', 'discount_amount', 'province', 'city_regency', 'district', 'vilage_subdistrict', 'post_code', 'address', 'complete_address', 'city', 'is_paid', 'trx_id', 'proof'];
 
 
     public function order(): HasMany

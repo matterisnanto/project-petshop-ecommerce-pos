@@ -27,6 +27,7 @@ return new class extends Migration
             $table->string('vilage_subdistrict');
             $table->string('post_code');
             $table->string('address');
+            $table->string('complete_address');
             $table->boolean('is_paid');
             $table->string('trx_id');
             $table->string('proof');

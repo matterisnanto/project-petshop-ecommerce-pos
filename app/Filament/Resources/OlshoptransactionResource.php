@@ -127,8 +127,7 @@ class OlshoptransactionResource extends Resource
                                             return $options;
                                         })
                                         ->searchable()
-                                        ->reactive()
-                                        ->columnSpanFull(),
+                                        ->reactive(),
                                     Forms\Components\Select::make('city_regency')
                                         ->label('City/Regency')
                                         ->required()
@@ -154,8 +153,7 @@ class OlshoptransactionResource extends Resource
                                             return $options;
                                         })
                                         ->searchable()
-                                        ->reactive()
-                                        ->columnSpanFull(),
+                                        ->reactive(),
                                     Forms\Components\Select::make('district')
                                         ->label('District')
                                         ->required()
@@ -181,8 +179,7 @@ class OlshoptransactionResource extends Resource
                                             return $options;
                                         })
                                         ->searchable()
-                                        ->reactive()
-                                        ->columnSpanFull(),
+                                        ->reactive(),
                                     Forms\Components\Select::make('vilage_subdistrict')
                                         ->label('Village/Subdistrict')
                                         ->required()
@@ -208,18 +205,19 @@ class OlshoptransactionResource extends Resource
                                             return $options;
                                         })
                                         ->searchable()
-                                        ->reactive()
-                                        ->columnSpanFull(),
+                                        ->reactive(),
                                     Forms\Components\TextInput::make('post_code')
                                         ->label('Post Code')
                                         ->required()
-                                        ->numeric()
-                                        ->columnSpanFull(),
+                                        ->numeric(),
                                     Forms\Components\TextInput::make('address')
                                         ->label('Address')
                                         ->required()
                                         ->maxLength(255)
-                                        ->placeholder('Enter RT/RW, street/alley name, and landmarks')
+                                        ->placeholder('Enter RT/RW, street/alley name, and landmarks'),
+                                    Forms\Components\TextInput::make('complete_address')
+                                        ->label('Complete Address')
+                                        ->required()
                                         ->columnSpanFull(),
                                 ])
                                 ->columns(2),
