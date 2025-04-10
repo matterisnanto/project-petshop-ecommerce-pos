@@ -45,9 +45,11 @@ class ProductResource extends Resource
                             })
                             ->required()
                             ->live(onBlur: true)
-                            ->maxLength(255),
+                            ->maxLength(255)
+                            ->columnSpanFull(),
                         Forms\Components\TextInput::make('slug')
                             ->required()
+                            ->readOnly()
                             ->maxLength(255),
                         Forms\Components\TextInput::make('barcode')
                             ->maxLength(255)
@@ -55,7 +57,11 @@ class ProductResource extends Resource
                         Forms\Components\TextInput::make('stock')
                             ->required()
                             ->numeric()
+                            ->prefix('Qty')
                             ->default(1),
+                        Forms\Components\TextInput::make('weight')
+                            ->required()
+                            ->prefix('gram'),
                         Forms\Components\Textarea::make('about')
                             ->columnSpanFull(),
                         Forms\Components\FileUpload::make('thumbnail')
@@ -179,8 +185,8 @@ class ProductResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\ImageColumn::make('thumbnail')
-                ->label('Foto Produk')
-                ->square(),
+                    ->label('Foto Produk')
+                    ->square(),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('brand.name')

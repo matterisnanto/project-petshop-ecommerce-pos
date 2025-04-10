@@ -60,7 +60,6 @@ class Checkout extends Component
         $this->itemCount = $cartTotals['itemCount'] ?? 0;
 
         $this->calculateTotals();
-        $this->loadProvinces();
 
         // Load saved form data if exists
         $checkoutData = Session::get('checkout_data', []);
@@ -111,8 +110,6 @@ class Checkout extends Component
             'email' => $this->email,
             'selectedProvince' => $this->selectedProvince,
             'selectedCity' => $this->selectedCity,
-            'selectedDistrict' => $this->selectedDistrict,
-            'selectedVillage' => $this->selectedVillage,
             'post_code' => $this->post_code,
             'address' => $this->address,
             'delivery_method' => $this->delivery_method,
@@ -138,58 +135,6 @@ class Checkout extends Component
         $this->total = $this->subtotal + $this->shippingCost - $this->savings;
     }
 
-    public function loadProvinces()
-    {
-        try {
-            $response = Http::get('https://matterisnanto.github.io/api-wilayah-indonesia/api/provinces.json');
-            $this->provinces = $response->json();
-        } catch (\Exception $e) {
-            $this->provinces = [];
-        }
-    }
-
-    public function loadCities()
-    {
-        $this->reset(['cities', 'districts', 'villages', 'selectedCity', 'selectedDistrict', 'selectedVillage']);
-
-        if (!empty($this->selectedProvince)) {
-            try {
-                $response = Http::get("https://matterisnanto.github.io/api-wilayah-indonesia/api/regencies/{$this->selectedProvince}.json");
-                $this->cities = $response->json();
-            } catch (\Exception $e) {
-                $this->cities = [];
-            }
-        }
-    }
-
-    public function loadDistricts()
-    {
-        $this->reset(['districts', 'villages', 'selectedDistrict', 'selectedVillage']);
-
-        if (!empty($this->selectedCity)) {
-            try {
-                $response = Http::get("https://matterisnanto.github.io/api-wilayah-indonesia/api/districts/{$this->selectedCity}.json");
-                $this->districts = $response->json();
-            } catch (\Exception $e) {
-                $this->districts = [];
-            }
-        }
-    }
-
-    public function loadVillages()
-    {
-        $this->reset(['villages', 'selectedVillage']);
-
-        if (!empty($this->selectedDistrict)) {
-            try {
-                $response = Http::get("https://matterisnanto.github.io/api-wilayah-indonesia/api/villages/{$this->selectedDistrict}.json");
-                $this->villages = $response->json();
-            } catch (\Exception $e) {
-                $this->villages = [];
-            }
-        }
-    }
-
     public function updatedDeliveryMethod()
     {
         $this->calculateTotals();
@@ -203,8 +148,6 @@ class Checkout extends Component
             'email' => 'required|email|max:255',
             'selectedProvince' => 'required',
             'selectedCity' => 'required',
-            'selectedDistrict' => 'required',
-            'selectedVillage' => 'required',
             'post_code' => 'required|numeric',
             'address' => 'required|string|max:500',
             'delivery_method' => 'required',
@@ -222,8 +165,6 @@ class Checkout extends Component
                 'address' => [
                     'province' => $this->selectedProvince,
                     'city' => $this->selectedCity,
-                    'district' => $this->selectedDistrict,
-                    'village' => $this->selectedVillage,
                     'post_code' => $this->post_code,
                     'detail' => $this->address,
                 ],

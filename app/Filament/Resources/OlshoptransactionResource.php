@@ -97,6 +97,10 @@ class OlshoptransactionResource extends Resource
                                 ->columns(2),
                             Forms\Components\Section::make('Address Information')
                                 ->description('')
+                                ->afterStateHydrated(function (Set $set, Get $get) {
+                                    // Trigger shipping cost calculation when loading edit form
+                                    self::calculateShippingCost($get, $set);
+                                })
                                 ->schema([
                                     Forms\Components\Select::make('province')
                                         ->label('Province')
@@ -151,6 +155,10 @@ class OlshoptransactionResource extends Resource
                         ]),
                     Forms\Components\Wizard\Step::make('Transaction Details')
                         ->description('')
+                        ->afterStateHydrated(function (Set $set, Get $get) {
+                            // Trigger shipping cost calculation when loading edit form
+                            self::calculateShippingCost($get, $set);
+                        })
                         ->schema([
                             Forms\Components\TextInput::make('trx_id')
                                 ->label('Booking Trx Number')
@@ -183,28 +191,49 @@ class OlshoptransactionResource extends Resource
                                 ->options(function (Get $get) {
                                     $options = $get('shipping_service_options') ?? [];
 
-                                    // Debug the options
-                                    Log::debug('Shipping Service Options:', $options);
+                                    // If in edit mode and current value not in options, add it
+                                    $currentValue = $get('shipping_service');
+                                    if ($currentValue && !array_key_exists($currentValue, $options)) {
+                                        try {
+                                            $data = json_decode($currentValue, true);
+                                            if ($data) {
+                                                $options[$currentValue] = self::formatShippingServiceDisplay($data);
+                                            }
+                                        } catch (\Exception $e) {
+                                            // Ignore if invalid JSON
+                                        }
+                                    }
 
                                     return $options;
+                                })
+                                ->getOptionLabelUsing(function ($value) {
+                                    try {
+                                        $data = json_decode($value, true);
+                                        if ($data) {
+                                            return self::formatShippingServiceDisplay($data);
+                                        }
+                                        return $value;
+                                    } catch (\Exception $e) {
+                                        return $value;
+                                    }
                                 })
                                 ->live()
                                 ->afterStateUpdated(function ($state, Get $get, Set $set) {
                                     try {
                                         $serviceData = json_decode($state, true);
-                                        if (json_last_error() === JSON_ERROR_NONE) {
+                                        if ($serviceData) {
                                             $set('shipping_cost', $serviceData['cost'] ?? 0);
                                             $set('estimated_delivery', $serviceData['etd'] ?? '1-2');
                                         }
                                     } catch (\Exception $e) {
-                                        Log::error('Error parsing shipping service data: ' . $e->getMessage());
+                                        Log::error('Error parsing shipping service: ' . $e->getMessage());
                                     }
                                     self::updateGrandTotal($get, $set);
                                 })
                                 ->searchable()
                                 ->columnSpanFull()
                                 ->required()
-                                ->helperText('Select the desired delivery service'),
+                                ->helperText('Select delivery service'),
                             Forms\Components\Hidden::make('estimated_delivery'),
                             Forms\Components\TextInput::make('promo_code_input')
                                 ->label('Promo Code')
@@ -391,117 +420,101 @@ class OlshoptransactionResource extends Resource
         $destination = $get('city_regency');
         $weight = max(1, $get('weight_total'));
         $courier = $get('courier');
-
-        // Debug input values
-        Log::debug('Shipping Cost Calculation Input:', [
-            'origin' => $origin,
-            'destination' => $destination,
-            'weight' => $weight,
-            'courier' => $courier,
-        ]);
-
-        // Reset fields
-        $set('shipping_service', null);
-        $set('shipping_cost', 0);
-        $set('estimated_delivery', null);
-        $set('shipping_service_options', []);
+        $currentService = $get('shipping_service');
 
         // Validate required fields
-        if (empty($origin)) {
-            Log::error('Origin city not configured');
-            return;
-        }
-
-        if (empty($destination)) {
-            Log::error('Destination city not selected');
-            return;
-        }
-
-        if (empty($weight)) {
-            Log::error('Weight not calculated');
-            return;
-        }
-
-        if (empty($courier)) {
-            Log::error('Courier not selected');
+        if (empty($origin) || empty($destination) || empty($weight) || empty($courier)) {
             return;
         }
 
         try {
+            // Get fresh shipping options regardless of current service
             $response = RajaOngkirService::getShippingCost($origin, $destination, $weight, $courier);
-
-            // Debug raw response
-            Log::debug('Raw Shipping Cost Response:', $response);
 
             if (empty($response['data'])) {
                 Notification::make()
-                    ->title('Tidak ada layanan pengiriman tersedia')
-                    ->body('Kurir tidak tersedia untuk rute ini')
+                    ->title('No shipping services available')
+                    ->body('Courier not available for this route')
                     ->warning()
                     ->send();
                 return;
             }
 
             $serviceOptions = [];
+            $foundCurrentService = false;
 
             foreach ($response['data'] as $courierData) {
                 if (empty($courierData['costs'])) continue;
 
                 foreach ($courierData['costs'] as $service) {
                     $costValue = $service['cost'][0]['value'] ?? 0;
-                    $etd = $service['cost'][0]['etd'] ?? '1-2';
+                    $etd = str_replace([' HARI', 'HARI'], '', $service['cost'][0]['etd'] ?? '1-2');
 
-                    // Clean ETD
-                    $etd = str_replace([' HARI', 'HARI'], '', $etd);
-
-                    $optionValue = json_encode([
+                    $serviceData = [
                         'courier' => $courierData['code'],
                         'service' => $service['service'],
                         'description' => $service['description'] ?? '',
                         'cost' => $costValue,
                         'etd' => $etd
-                    ]);
+                    ];
 
-                    $displayText = sprintf(
-                        "%s %s - Rp %s (Estimasi: %s hari) %s",
-                        strtoupper($courierData['code']),
-                        $service['service'],
-                        number_format($costValue, 0, ',', '.'),
-                        $etd,
-                        $service['description'] ?? ''
-                    );
+                    $optionValue = json_encode($serviceData);
+                    $displayText = self::formatShippingServiceDisplay($serviceData);
 
                     $serviceOptions[$optionValue] = $displayText;
-                }
-            }
 
-            if (empty($serviceOptions)) {
-                Notification::make()
-                    ->title('Layanan pengiriman tidak tersedia')
-                    ->body('Tidak ada layanan yang tersedia untuk kurir dan rute ini')
-                    ->warning()
-                    ->send();
-                return;
+                    // Check if this matches current service during edit
+                    if ($currentService) {
+                        try {
+                            $currentData = json_decode($currentService, true);
+                            if (
+                                $currentData && $currentData['service'] === $serviceData['service']
+                                && $currentData['courier'] === $serviceData['courier']
+                            ) {
+                                $foundCurrentService = true;
+                            }
+                        } catch (\Exception $e) {
+                            continue;
+                        }
+                    }
+                }
             }
 
             $set('shipping_service_options', $serviceOptions);
 
-            // Auto-select the first option
-            $firstOption = array_key_first($serviceOptions);
-            $serviceData = json_decode($firstOption, true);
-            $set('shipping_service', $firstOption);
-            $set('shipping_cost', $serviceData['cost']);
-            $set('estimated_delivery', $serviceData['etd']);
+            // During edit, preserve the current service if it exists in new options
+            if ($currentService && $foundCurrentService) {
+                // No need to change the current service
+            } else if (!empty($serviceOptions)) {
+                // Select first option if no current service or not found
+                $firstOption = array_key_first($serviceOptions);
+                $serviceData = json_decode($firstOption, true);
+                $set('shipping_service', $firstOption);
+                $set('shipping_cost', $serviceData['cost']);
+                $set('estimated_delivery', $serviceData['etd']);
+            }
         } catch (\Exception $e) {
-            Log::error('Shipping cost calculation error: ' . $e->getMessage());
+            Log::error('Shipping cost error: ' . $e->getMessage());
             Notification::make()
-                ->title('Gagal menghitung ongkir')
+                ->title('Failed to calculate shipping')
                 ->body($e->getMessage())
                 ->danger()
                 ->send();
         }
 
         self::updateGrandTotal($get, $set);
+    }
+
+    protected static function formatShippingServiceDisplay(array $serviceData): string
+    {
+        return sprintf(
+            "%s %s - Rp %s (Est: %s days) %s",
+            strtoupper($serviceData['courier']),
+            $serviceData['service'],
+            number_format($serviceData['cost'], 0, ',', '.'),
+            $serviceData['etd'],
+            $serviceData['description'] ?? ''
+        );
     }
 
 
