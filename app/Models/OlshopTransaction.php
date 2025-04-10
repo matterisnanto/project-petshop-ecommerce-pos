@@ -11,7 +11,7 @@ class OlshopTransaction extends Model
 {
     protected $table = 'olshop_transactions';
     //
-    protected $fillable = ['name', 'phone', 'email', 'promo_code_id', 'sub_total_amount', 'grand_total_amount', 'discount_amount', 'province', 'city_regency', 'district', 'vilage_subdistrict', 'post_code', 'address', 'complete_address', 'city', 'is_paid', 'trx_id', 'courier', 'weight_total', 'shipping_cost', 'proof'];
+    protected $fillable = ['name', 'phone', 'email', 'promo_code_id', 'sub_total_amount', 'grand_total_amount', 'discount_amount', 'province', 'city_regency', 'post_code', 'complete_address', 'is_paid', 'trx_id', 'courier', 'shipping_service', 'weight_total', 'shipping_cost', 'estimated_delivery', 'proof'];
 
 
     public function order(): HasMany
@@ -36,20 +36,4 @@ class OlshopTransaction extends Model
             set: fn($value) => ltrim($value, '+62 ') // Menghindari duplikasi +62
         );
     }
-
-
-    // public function subtotalamount() {
-    //     return $this->belongsTo(SubTotalAmount::class);
-    // }
-
-
-    // public function grandtotalamount() {
-    //     return $this->belongsTo(GrandTotalAmount::class);
-    // }
-
-
-    // public function discountamount() {
-    //     return $this->belongsTo(DiscountAmount::class);
-    // }
-
 }
