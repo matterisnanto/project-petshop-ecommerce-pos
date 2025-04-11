@@ -347,19 +347,26 @@
                                     Payment Method
                                 </label>
                             </div>
-                            <select id="select-payment-method"
+                            <select id="select-payment-method" wire:model="selectedPaymentMethod"
+                                wire:change="onPaymentMethodSelected($event.target.value)"
                                 class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500">
                                 <option value="">Select Payment Method</option>
-
+                                @foreach ($paymentMethods as $method)
+                                    <option value="{{ $method->id }}">{{ $method->name }}</option>
+                                @endforeach
                             </select>
+                            @error('selectedPaymentMethod')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
                         </div>
                         <div>
                             <label for="account_number"
                                 class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">
                                 Account Number
                             </label>
-                            <input id="account_number" readonly
-                                class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500" />
+                            <input id="account_number" wire:model="accountNumber" readonly
+                                class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500"
+                                value="{{ $accountNumber }}" />
                         </div>
                         {{-- <div>
                             <label for="total_paid"

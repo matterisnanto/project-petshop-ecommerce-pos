@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use Livewire\Component;
+use App\Models\PaymentMethod;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Session;
@@ -24,6 +25,10 @@ class Checkout extends Component
 
     public $selectedProvince = null;
     public $selectedCity = null;
+
+    public $paymentMethods = [];
+    public $selectedPaymentMethod = null;
+    public $accountNumber = '';
 
     // Form fields
     public $name = '';
@@ -67,6 +72,7 @@ class Checkout extends Component
         }
 
         $this->loadProvinces();
+        $this->loadPaymentMethods();
     }
 
     public function loadProvinces()
@@ -112,8 +118,31 @@ class Checkout extends Component
         }
     }
 
-    // Di dalam class Checkout
-    // Di dalam class Checkout
+    public function loadCities()
+    {
+        $this->reset(['cities', 'selectedCity', 'postalCode']);
+
+        if (empty($this->selectedProvince)) {
+            return;
+        }
+
+        try {
+            $response = Http::withHeaders([
+                'key' => config('services.rajaongkir.key')
+            ])->get('https://api.rajaongkir.com/starter/city', [
+                'province' => $this->selectedProvince
+            ]);
+
+            if ($response->successful()) {
+                $data = $response->json();
+                $this->cities = $data['rajaongkir']['results'] ?? [];
+            }
+        } catch (\Exception $e) {
+            Log::error('Error loading cities: ' . $e->getMessage());
+            $this->cities = [];
+        }
+    }
+
     public function updatedSelectedCity($cityId)
     {
         if (!$cityId) {
@@ -155,31 +184,6 @@ class Checkout extends Component
         }
     }
 
-    public function loadCities()
-    {
-        $this->reset(['cities', 'selectedCity', 'postalCode']);
-
-        if (empty($this->selectedProvince)) {
-            return;
-        }
-
-        try {
-            $response = Http::withHeaders([
-                'key' => config('services.rajaongkir.key')
-            ])->get('https://api.rajaongkir.com/starter/city', [
-                'province' => $this->selectedProvince
-            ]);
-
-            if ($response->successful()) {
-                $data = $response->json();
-                $this->cities = $data['rajaongkir']['results'] ?? [];
-            }
-        } catch (\Exception $e) {
-            Log::error('Error loading cities: ' . $e->getMessage());
-            $this->cities = [];
-        }
-    }
-
     public function loadPostalCode($cityId)
     {
         $this->selectedCity = $cityId; // Update property terlebih dahulu
@@ -199,6 +203,23 @@ class Checkout extends Component
 
         // Jika tidak ditemukan, ambil dari API
         $this->fetchPostalCodeFromApi($cityId);
+    }
+
+    public function loadPaymentMethods()
+    {
+        $this->paymentMethods = PaymentMethod::where('olshop_transaction', true)->get();
+    }
+
+    public function onPaymentMethodSelected($value)
+    {
+        $this->accountNumber = '';
+
+        if ($value) {
+            $method = PaymentMethod::find($value);
+            if ($method) {
+                $this->accountNumber = $method->account_number;
+            }
+        }
     }
 
     protected function saveCheckoutData()
@@ -247,7 +268,6 @@ class Checkout extends Component
             'appliedPromoCode' => $this->appliedPromoCode
         ]);
     }
-
 
     protected function calculateTotals()
     {

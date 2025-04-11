@@ -106,17 +106,17 @@ class PaymentmethodResource extends Resource
                             ->success()
                             ->send();
                     }),
-                Tables\Columns\ToggleColumn::make('is_cash')
-                    ->label('Cash Payment')
-                    ->onColor('success')
-                    ->offColor('danger')
-                    ->afterStateUpdated(function ($record, $state) {
-                        Notification::make()
-                            ->title('Cash Payment Status Updated')
-                            ->body("Cash Payment status changed to " . ($state ? 'Active' : 'Inactive'))
-                            ->success()
-                            ->send();
-                    }),
+                // Tables\Columns\ToggleColumn::make('is_cash')
+                //     ->label('Cash Payment')
+                //     ->onColor('success')
+                //     ->offColor('danger')
+                //     ->afterStateUpdated(function ($record, $state) {
+                //         Notification::make()
+                //             ->title('Cash Payment Status Updated')
+                //             ->body("Cash Payment status changed to " . ($state ? 'Active' : 'Inactive'))
+                //             ->success()
+                //             ->send();
+                //     }),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
