@@ -32,6 +32,10 @@ return new class extends Migration
             $table->bigInteger('weight_total');
             $table->bigInteger('shipping_cost');
             $table->string('estimated_delivery');
+            $table->foreignId('payment_method_id')
+                ->nullable()
+                ->constrained('payment_methods')
+                ->nullOnDelete();
             $table->string('proof');
             $table->softDeletes();
             $table->timestamps();

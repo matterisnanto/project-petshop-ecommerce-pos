@@ -11,7 +11,7 @@ class OlshopTransaction extends Model
 {
     protected $table = 'olshop_transactions';
     //
-    protected $fillable = ['name', 'phone', 'email', 'promo_code_id', 'sub_total_amount', 'grand_total_amount', 'discount_amount', 'province', 'city_regency', 'post_code', 'complete_address', 'is_paid', 'trx_id', 'courier', 'shipping_service', 'weight_total', 'shipping_cost', 'estimated_delivery', 'proof'];
+    protected $fillable = ['name', 'phone', 'email', 'promo_code_id', 'sub_total_amount', 'grand_total_amount', 'discount_amount', 'province', 'city_regency', 'post_code', 'complete_address', 'is_paid', 'trx_id', 'courier', 'shipping_service', 'weight_total', 'shipping_cost', 'estimated_delivery', 'payment_method_id', 'proof'];
 
 
     public function order(): HasMany
@@ -27,6 +27,11 @@ class OlshopTransaction extends Model
     public function promocode()
     {
         return $this->belongsTo(PromoCode::class, 'promo_code_id');
+    }
+
+    public function paymentmethod()
+    {
+        return $this->belongsTo(PaymentMethod::class, 'payment_method_id');
     }
 
     protected function phone(): Attribute

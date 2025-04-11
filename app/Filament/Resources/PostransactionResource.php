@@ -79,6 +79,10 @@ class PostransactionResource extends Resource
                                         Forms\Components\Select::make('payment_method_id')
                                             ->relationship('paymentMethod', 'name')
                                             ->reactive()
+                                            ->options(function () {
+                                                return PaymentMethod::where('pos_transaction', true) // Filter yang pos_transaction = true
+                                                    ->pluck('name', 'id');
+                                            })
                                             ->afterStateUpdated(function ($state, Set $set, Get $get) {
                                                 $paymentMethod = PaymentMethod::find($state);
                                                 $set('is_cash', $paymentMethod->is_cash ?? false);

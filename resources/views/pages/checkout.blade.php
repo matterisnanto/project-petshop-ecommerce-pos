@@ -215,9 +215,12 @@
                                             Courier
                                         </label>
                                     </div>
-                                    <select id="select-courier" wire:model="selectedCity" wire:change="loadDistricts"
+                                    <select id="select-courier"
                                         class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500">
                                         <option value="">Select Courier</option>
+                                        <option value="jne">JNE</option>
+                                        <option value="tiki">TIKI</option>
+                                        <option value="pos">POS Indonesia</option>
 
                                     </select>
                                 </div>
@@ -339,12 +342,12 @@
                         <p class="text-xl font-semibold text-gray-900 dark:text-white">Payment</p>
                         <div>
                             <div class="mb-2 flex items-center gap-2">
-                                <label for="select-city-input"
+                                <label for="select-payment-method"
                                     class="block text-sm font-medium text-gray-900 dark:text-white">
                                     Payment Method
                                 </label>
                             </div>
-                            <select id="select-city-input" wire:model="selectedCity" wire:change="loadDistricts"
+                            <select id="select-payment-method"
                                 class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500">
                                 <option value="">Select Payment Method</option>
 

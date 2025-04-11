@@ -14,8 +14,11 @@ return new class extends Migration
         Schema::create('payment_methods', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('account_number');
             $table->string('image');
-            $table->boolean('is_cash')->default(true);
+            $table->boolean('olshop_transaction')->default(false);
+            $table->boolean('pos_transaction')->default(false);
+            $table->boolean('is_cash')->default(false);
             $table->timestamps();
             $table->softDeletes();
         });

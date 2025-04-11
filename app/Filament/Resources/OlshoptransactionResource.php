@@ -11,6 +11,7 @@ use Filament\Forms\Form;
 use App\Models\PromoCode;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
+use App\Models\PaymentMethod;
 use Filament\Resources\Resource;
 use App\Models\Olshoptransaction;
 use App\Services\RajaOngkirService;
@@ -235,6 +236,28 @@ class OlshoptransactionResource extends Resource
                                 ->required()
                                 ->helperText('Select delivery service'),
                             Forms\Components\Hidden::make('estimated_delivery'),
+                            Forms\Components\Select::make('payment_method_id')
+                                ->label('Payment Method')
+                                ->required()
+                                ->relationship('paymentmethod', 'name')
+                                ->options(function () {
+                                    return PaymentMethod::where('olshop_transaction', true)
+                                        ->pluck('name', 'id');
+                                })
+                                ->live()
+                                ->afterStateUpdated(function ($state, Set $set) {
+                                    $paymentMethod = PaymentMethod::find($state);
+                                    if ($paymentMethod) {
+                                        $set('payment_method_account_number', $paymentMethod->account_number);
+                                    }
+                                })
+                                ->columnSpanFull(),
+
+                            Forms\Components\TextInput::make('payment_method_account_number')
+                                ->label('Account Number')
+                                ->readOnly()
+                                ->columnSpanFull()
+                                ->visible(fn(Get $get): bool => filled($get('payment_method_id'))),
                             Forms\Components\TextInput::make('promo_code_input')
                                 ->label('Promo Code')
                                 ->placeholder('Enter promo code')
@@ -564,9 +587,9 @@ class OlshoptransactionResource extends Resource
         self::updateGrandTotal($get, $set);
     }
 
-    protected static function validateAndApplyPromoCode(Get $get, Set $set, string $promoCode): void
+    protected static function validateAndApplyPromoCode(Get $get, Set $set, ?string $promoCode): void
     {
-        // Reset promo code jika input kosong
+        // Reset promo code if input is empty
         if (empty($promoCode)) {
             $set('discount_amount', 0);
             $set('promo_code_id', null);
@@ -578,7 +601,7 @@ class OlshoptransactionResource extends Resource
             return;
         }
 
-        // Cari promo code yang valid
+        // Find valid promo code
         $promo = PromoCode::where('code', $promoCode)
             ->active()
             ->first();
@@ -623,31 +646,6 @@ class OlshoptransactionResource extends Resource
 
         $set('grand_total_amount', max(0, $grandTotal));
     }
-
-    private static function getSelectedRegionName($id, $type): ?string
-    {
-        if (!$id) return null;
-
-        $response = RajaOngkirService::getDomesticDestinations($type, $type === 'province' ? null : $id);
-
-        if (!$response || !isset($response['data'])) {
-            return null;
-        }
-
-        $keyMap = [
-            'province' => 'province_id',
-            'city' => 'city_id',
-        ];
-
-        $nameMap = [
-            'province' => 'province',
-            'city' => 'city_name',
-        ];
-
-        return collect($response['data'])
-            ->firstWhere($keyMap[$type], $id)[$nameMap[$type]] ?? null;
-    }
-
 
     protected static function calculateTotalWeight(Get $get, Set $set): void
     {

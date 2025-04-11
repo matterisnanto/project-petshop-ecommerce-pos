@@ -29,6 +29,7 @@ class Pos extends Component implements HasForms
     public $gender = '';
     public $payment_method_id = 0;
     public $payment_methods;
+    public $payment_method_account_number = '';
     public $order_items = [];
     public $total_price;
     public $paid_amount;
@@ -53,7 +54,6 @@ class Pos extends Component implements HasForms
                 Forms\Components\Section::make('Form Checkout')
                     ->schema([
                         Forms\Components\TextInput::make('name_customer')
-                            ->required()
                             ->maxLength(255)
                             ->default(fn() => $this->name_customer),
                         Forms\Components\Select::make('gender')
@@ -70,28 +70,44 @@ class Pos extends Component implements HasForms
                         Forms\Components\Select::make('payment_method_id')
                             ->required()
                             ->label('Payment Method')
-                            ->options(PaymentMethod::pluck('name', 'id')->toArray())
-                            ->default($this->payment_method_id)
+                            ->options(
+                                PaymentMethod::where('pos_transaction', true)
+                                    ->pluck('name', 'id')
+                                    ->toArray()
+                            )
+                            ->default(fn() => $this->payment_method_id)
                             ->reactive()
                             ->afterStateUpdated(function ($state, Set $set, Get $get) {
+                                if (!$state) {
+                                    return;
+                                }
+
                                 $paymentMethod = PaymentMethod::find($state);
                                 $isCash = $paymentMethod->is_cash ?? false;
+                                $isOlshop = $paymentMethod->olshop_transaction ?? false;
+
                                 $set('is_cash', $isCash);
+                                $set('is_olshop', $isOlshop);
+                                $set('payment_method_account_number', $paymentMethod->account_number); // Simpan account number
 
                                 if (!$isCash) {
-                                    // Jika is_cash = false, set paid_amount = total_price
                                     $set('paid_amount', $get('total_price'));
                                     $set('change_amount', 0);
                                 } else {
-                                    // Jika is_cash = true, reset paid_amount dan change_amount
-                                    $set('paid_amount', 0);
                                     $set('change_amount', 0);
                                 }
                             }),
-                            Forms\Components\Hidden::make('is_cash')
+                        Forms\Components\Hidden::make('is_cash')
                             ->dehydrated()
                             ->default(fn() => $this->is_cash),
-                        
+                        Forms\Components\Hidden::make('is_olshop')
+                            ->dehydrated()
+                            ->default(false),
+                        Forms\Components\TextInput::make('payment_method_account_number')
+                            ->label('Account Number')
+                            ->disabled()
+                            ->default(fn() => $this->payment_method_account_number) // Tambahkan ini
+                            ->visible(fn(Get $get): bool => $get('is_olshop') == true),
                         Forms\Components\TextInput::make('paid_amount')
                             ->numeric()
                             ->reactive()
@@ -261,7 +277,7 @@ class Pos extends Component implements HasForms
             'payment_method_id' => $this->payment_method_id,
             'paid_amount' => $formState['paid_amount'], // Ambil nilai paid_amount dari form
             'change_amount' => $formState['change_amount'], // Ambil nilai change_amount dari form
-            'is_cash' => $this->is_cash,//Tambah ini
+            'is_cash' => $this->is_cash, //Tambah ini
         ]);
 
         // Simpan detail order ke Order
