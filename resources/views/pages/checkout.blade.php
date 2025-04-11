@@ -118,13 +118,28 @@
                                                 class="block text-sm font-medium text-gray-900 dark:text-white">
                                                 Province
                                             </label>
+                                            @if ($provinces === [])
+                                                <span class="text-xs text-red-500">
+                                                    @if (session()->has('error'))
+                                                        (Error: {{ session('error') }})
+                                                    @else
+                                                        (Sedang memuat...)
+                                                    @endif
+                                                </span>
+                                            @endif
                                         </div>
                                         <select id="select-province-input" wire:model="selectedProvince"
                                             wire:change="loadCities"
                                             class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500">
-                                            <option value="">Select Province</option>
-
+                                            <option value="">Select province</option>
+                                            @foreach ($provinces as $province)
+                                                <option value="{{ $province['province_id'] }}">
+                                                    {{ $province['province'] }}</option>
+                                            @endforeach
                                         </select>
+                                        @if (session()->has('error'))
+                                            <p class="mt-1 text-sm text-red-600">{{ session('error') }}</p>
+                                        @endif
                                     </div>
 
                                     <div>
@@ -133,12 +148,26 @@
                                                 class="block text-sm font-medium text-gray-900 dark:text-white">
                                                 City/Regency
                                             </label>
+                                            @if ($selectedProvince && empty($cities))
+                                                <span class="text-xs text-red-500">
+                                                    @if (session()->has('error'))
+                                                        ({{ session('error') }})
+                                                    @else
+                                                        (Memuat data...)
+                                                    @endif
+                                                </span>
+                                            @endif
                                         </div>
                                         <select id="select-city-input" wire:model="selectedCity"
-                                            wire:change="loadDistricts"
-                                            class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500">
+                                            wire:loading.attr="disabled"
+                                            class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500"
+                                            {{ empty($cities) ? 'disabled' : '' }}>
                                             <option value="">Select City/Regency</option>
-
+                                            @foreach ($cities as $city)
+                                                <option value="{{ $city['city_id'] }}">
+                                                    {{ $city['type'] }} {{ $city['city_name'] }}
+                                                </option>
+                                            @endforeach
                                         </select>
                                     </div>
 
@@ -162,7 +191,7 @@
                                         </label>
                                         <input type="text" id="detail-address"
                                             class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500"
-                                            placeholder="Example : 8-11 Islington Grn, London N1 2XR, Inggris Raya"
+                                            placeholder="Example : 8-11 Islington Grn, London N1 2XR, United Kingdom"
                                             required />
                                     </div>
                                 </div>

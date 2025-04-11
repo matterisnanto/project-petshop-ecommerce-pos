@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use Livewire\Component;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Session;
 
@@ -20,20 +21,16 @@ class Checkout extends Component
     // Address fields
     public $provinces = [];
     public $cities = [];
-    public $districts = [];
-    public $villages = [];
 
     public $selectedProvince = null;
     public $selectedCity = null;
-    public $selectedDistrict = null;
-    public $selectedVillage = null;
 
     // Form fields
     public $name = '';
     public $phone = '';
     public $email = '';
     public $post_code = '';
-    public $address = '';
+    public $complete_address = '';
     public $delivery_method = 'dhl';
 
     public function mount()
@@ -68,7 +65,93 @@ class Checkout extends Component
                 $this->$key = $value;
             }
         }
+
+        $this->loadProvinces();
     }
+
+    public function loadProvinces()
+    {
+        try {
+            $apiKey = config('services.rajaongkir.key');
+
+            // Validasi khusus paket starter
+            if (strpos(config('services.rajaongkir.base_url'), 'starter') === false) {
+                throw new \Exception('Base URL harus mengarah ke paket starter');
+            }
+
+            $response = Http::withHeaders([
+                'key' => $apiKey
+            ])->get('https://api.rajaongkir.com/starter/province');
+
+            // Debugging response
+            Log::debug('RajaOngkir Response:', [
+                'status' => $response->status(),
+                'body' => $response->body()
+            ]);
+
+            if ($response->status() === 401) {
+                throw new \Exception('API Key tidak valid untuk paket starter');
+            }
+
+            if ($response->status() === 404) {
+                throw new \Exception('Pastikan menggunakan endpoint /starter/');
+            }
+
+            $data = $response->json();
+
+            if (!isset($data['rajaongkir']['results'])) {
+                throw new \Exception('Format response tidak sesuai paket starter');
+            }
+
+            $this->provinces = $data['rajaongkir']['results'];
+        } catch (\Exception $e) {
+            $errorMsg = 'Paket Starter Error: ' . $e->getMessage();
+            Log::error($errorMsg);
+            session()->flash('error', $errorMsg);
+            $this->provinces = [];
+        }
+    }
+
+    public function loadCities()
+    {
+        $this->reset(['cities', 'selectedCity']); // Reset data kota sebelumnya
+
+        if (empty($this->selectedProvince)) {
+            return;
+        }
+
+        try {
+            $response = Http::withHeaders([
+                'key' => config('services.rajaongkir.key')
+            ])->get('https://api.rajaongkir.com/starter/city', [
+                'province' => $this->selectedProvince
+            ]);
+
+            // Debugging
+            Log::debug('RajaOngkir City Response:', [
+                'status' => $response->status(),
+                'body' => $response->body()
+            ]);
+
+            if ($response->successful()) {
+                $data = $response->json();
+                $this->cities = $data['rajaongkir']['results'] ?? [];
+
+                if (empty($this->cities)) {
+                    throw new \Exception('Tidak ada kota/kabupaten untuk provinsi ini');
+                }
+            } else {
+                throw new \Exception('Gagal memuat kota. Status: ' . $response->status());
+            }
+        } catch (\Exception $e) {
+            $errorMsg = 'Error memuat kota: ' . $e->getMessage();
+            Log::error($errorMsg);
+            session()->flash('error', $errorMsg);
+            $this->cities = [];
+        }
+    }
+
+
 
     protected function calculateCartTotals()
     {
@@ -101,26 +184,6 @@ class Checkout extends Component
         ]);
     }
 
-    public function dehydrate()
-    {
-        // Save form data when leaving the page
-        $checkoutData = [
-            'name' => $this->name,
-            'phone' => $this->phone,
-            'email' => $this->email,
-            'selectedProvince' => $this->selectedProvince,
-            'selectedCity' => $this->selectedCity,
-            'post_code' => $this->post_code,
-            'address' => $this->address,
-            'delivery_method' => $this->delivery_method,
-        ];
-
-        Session::put('checkout_data', $checkoutData);
-
-        if (!request()->is('shopping-cart/checkout*')) {
-            Session::forget('checkout_data');
-        }
-    }
 
     protected function calculateTotals()
     {
@@ -140,50 +203,6 @@ class Checkout extends Component
         $this->calculateTotals();
     }
 
-    public function proceedToPayment()
-    {
-        $this->validate([
-            'name' => 'required|string|max:255',
-            'phone' => 'required|string|max:20',
-            'email' => 'required|email|max:255',
-            'selectedProvince' => 'required',
-            'selectedCity' => 'required',
-            'post_code' => 'required|numeric',
-            'address' => 'required|string|max:500',
-            'delivery_method' => 'required',
-        ]);
-
-        // Recalculate totals to ensure accuracy before proceeding
-        $this->calculateCartTotals();
-
-        // Save the complete order data to session
-        $orderData = [
-            'customer' => [
-                'name' => $this->name,
-                'phone' => $this->phone,
-                'email' => $this->email,
-                'address' => [
-                    'province' => $this->selectedProvince,
-                    'city' => $this->selectedCity,
-                    'post_code' => $this->post_code,
-                    'detail' => $this->address,
-                ],
-            ],
-            'delivery_method' => $this->delivery_method,
-            'cart' => $this->cartItems,
-            'totals' => [
-                'subtotal' => $this->subtotal,
-                'shipping' => $this->shippingCost,
-                'savings' => $this->savings,
-                'total' => $this->total,
-            ],
-        ];
-
-        Session::put('order_data', $orderData);
-
-        // Redirect to payment page
-        return redirect()->to('/payment');
-    }
 
     public function resetCheckoutData()
     {
