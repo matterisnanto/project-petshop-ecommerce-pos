@@ -159,7 +159,7 @@
                                             @endif
                                         </div>
                                         <select id="select-city-input" wire:model="selectedCity"
-                                            wire:loading.attr="disabled"
+                                            wire:change="loadPostalCode($event.target.value)"
                                             class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500"
                                             {{ empty($cities) ? 'disabled' : '' }}>
                                             <option value="">Select City/Regency</option>
@@ -177,11 +177,15 @@
                                     <div>
                                         <label for="post_code"
                                             class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">
-                                            post code
+                                            Post Code
                                         </label>
-                                        <input type="text" id="post_code"
+                                        <input type="text" id="post_code" wire:model="postalCode"
                                             class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500"
-                                            placeholder="16321" required />
+                                            placeholder="@if ($selectedCity && empty($postalCode)) Loading... @elseif(!$selectedCity) Select city first @endif"
+                                            readonly />
+                                        <div wire:loading wire:target="selectedCity" class="text-sm text-gray-500">
+                                            Loading postal code...
+                                        </div>
                                     </div>
 
                                     <div class="sm:col-span-2">
@@ -418,4 +422,11 @@
             </div>
         </form>
     </section>
+    {{-- <script>
+        document.addEventListener('livewire:init', () => {
+            Livewire.on('postalCodeUpdated', (postalCode) => {
+                // Lakukan sesuatu dengan postalCode jika diperlukan
+            });
+        });
+    </script> --}}
 </div>

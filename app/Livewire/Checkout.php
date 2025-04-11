@@ -29,7 +29,7 @@ class Checkout extends Component
     public $name = '';
     public $phone = '';
     public $email = '';
-    public $post_code = '';
+    public $postalCode = '';
     public $complete_address = '';
     public $delivery_method = 'dhl';
 
@@ -112,9 +112,52 @@ class Checkout extends Component
         }
     }
 
+    // Di dalam class Checkout
+    // Di dalam class Checkout
+    public function updatedSelectedCity($cityId)
+    {
+        if (!$cityId) {
+            $this->postalCode = '';
+            return;
+        }
+
+        // Cari postal code dari data kota yang sudah dimuat
+        foreach ($this->cities as $city) {
+            if ($city['city_id'] == $cityId) {
+                $this->postalCode = $city['postal_code'] ?? '';
+                return;
+            }
+        }
+
+        // Jika tidak ditemukan, ambil dari API
+        $this->fetchPostalCodeFromApi($cityId);
+    }
+
+    protected function fetchPostalCodeFromApi($cityId)
+    {
+        try {
+            $response = Http::withHeaders([
+                'key' => config('services.rajaongkir.key')
+            ])->get('https://api.rajaongkir.com/starter/city', [
+                'id' => $cityId
+            ]);
+
+            if ($response->successful()) {
+                $data = $response->json();
+                $city = $data['rajaongkir']['results'] ?? null;
+
+                if ($city && isset($city['postal_code'])) {
+                    $this->postalCode = $city['postal_code'];
+                }
+            }
+        } catch (\Exception $e) {
+            Log::error("Error fetching postal code: " . $e->getMessage());
+        }
+    }
+
     public function loadCities()
     {
-        $this->reset(['cities', 'selectedCity']); // Reset data kota sebelumnya
+        $this->reset(['cities', 'selectedCity', 'postalCode']);
 
         if (empty($this->selectedProvince)) {
             return;
@@ -127,31 +170,52 @@ class Checkout extends Component
                 'province' => $this->selectedProvince
             ]);
 
-            // Debugging
-            Log::debug('RajaOngkir City Response:', [
-                'status' => $response->status(),
-                'body' => $response->body()
-            ]);
-
             if ($response->successful()) {
                 $data = $response->json();
                 $this->cities = $data['rajaongkir']['results'] ?? [];
-
-                if (empty($this->cities)) {
-                    throw new \Exception('Tidak ada kota/kabupaten untuk provinsi ini');
-                }
-            } else {
-                throw new \Exception('Gagal memuat kota. Status: ' . $response->status());
             }
         } catch (\Exception $e) {
-            $errorMsg = 'Error memuat kota: ' . $e->getMessage();
-            Log::error($errorMsg);
-            session()->flash('error', $errorMsg);
+            Log::error('Error loading cities: ' . $e->getMessage());
             $this->cities = [];
         }
     }
 
+    public function loadPostalCode($cityId)
+    {
+        $this->selectedCity = $cityId; // Update property terlebih dahulu
 
+        if (!$cityId) {
+            $this->postalCode = '';
+            return;
+        }
+
+        // Cari postal code dari data kota yang sudah dimuat
+        foreach ($this->cities as $city) {
+            if ($city['city_id'] == $cityId) {
+                $this->postalCode = $city['postal_code'] ?? '';
+                return;
+            }
+        }
+
+        // Jika tidak ditemukan, ambil dari API
+        $this->fetchPostalCodeFromApi($cityId);
+    }
+
+    protected function saveCheckoutData()
+    {
+        $checkoutData = [
+            'name' => $this->name,
+            'phone' => $this->phone,
+            'email' => $this->email,
+            'selectedProvince' => $this->selectedProvince,
+            'selectedCity' => $this->selectedCity,
+            'postalCode' => $this->postalCode,
+            'complete_address' => $this->complete_address,
+            'delivery_method' => $this->delivery_method
+        ];
+
+        Session::put('checkout_data', $checkoutData);
+    }
 
     protected function calculateCartTotals()
     {
