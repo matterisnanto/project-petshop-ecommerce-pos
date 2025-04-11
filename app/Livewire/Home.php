@@ -13,6 +13,6 @@ class Home extends Component
     // }
     public function render()
     {
-        return view('pages.home');
+        return view('livewire.pages.home');
     }
 }

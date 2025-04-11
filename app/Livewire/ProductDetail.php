@@ -80,7 +80,7 @@ class ProductDetail extends Component
     {
         $this->product->load('photos');
 
-        return view('pages.product-detail', [
+        return view('livewire.pages.product-detail', [
             'product' => $this->product
         ]);
     }

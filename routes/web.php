@@ -9,6 +9,7 @@ use App\Livewire\ProductList;
 use App\Livewire\ShoppingCart;
 use App\Exports\TemplateExport;
 use App\Livewire\Checkout;
+use App\Livewire\OrderConfirmation;
 use App\Livewire\ProductDetail;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Route;
@@ -22,6 +23,8 @@ Route::get('/products/{product:slug}', ProductDetail::class)->name('products.sho
 Route::get('/shopping-cart', ShoppingCart::class)->name('shoppingcart');
 
 Route::get('/shopping-cart/checkout', Checkout::class)->name('checkout');
+
+Route::get('/shopping-cart/checkout/order-confirmation', OrderConfirmation::class)->name('order-confirmation');
 
 Route::get('/trx-check', TrxCheck::class)->name('trx-check');
 

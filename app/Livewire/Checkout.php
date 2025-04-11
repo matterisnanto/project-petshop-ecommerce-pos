@@ -22,9 +22,12 @@ class Checkout extends Component
     // Address fields
     public $provinces = [];
     public $cities = [];
+    public $shippingServices = [];
 
     public $selectedProvince = null;
     public $selectedCity = null;
+    public $selectedCourier = null;
+    public $selectedService = null;
 
     public $paymentMethods = [];
     public $selectedPaymentMethod = null;
@@ -36,7 +39,6 @@ class Checkout extends Component
     public $email = '';
     public $postalCode = '';
     public $complete_address = '';
-    public $delivery_method = 'dhl';
 
     public function mount()
     {
@@ -120,7 +122,7 @@ class Checkout extends Component
 
     public function loadCities()
     {
-        $this->reset(['cities', 'selectedCity', 'postalCode']);
+        $this->reset(['cities', 'selectedCity', 'postalCode', 'shippingServices']);
 
         if (empty($this->selectedProvince)) {
             return;
@@ -205,6 +207,61 @@ class Checkout extends Component
         $this->fetchPostalCodeFromApi($cityId);
     }
 
+    public function onUpdatedSelectedCourier()
+    {
+        $this->getShippingCosts();
+    }
+
+    public function getShippingCosts()
+    {
+        $this->shippingServices = [];
+        $this->selectedService = null;
+        $this->shippingCost = 0;
+
+        if (empty($this->selectedCity) || empty($this->selectedCourier)) {
+            return;
+        }
+
+        // Ensure minimum weight of 1 gram
+        $weight = max(1, $this->totalWeight);
+
+        try {
+            $response = Http::withHeaders([
+                'key' => config('services.rajaongkir.key')
+            ])->post(config('services.rajaongkir.base_url') . '/cost', [
+                'origin' => config('services.rajaongkir.origin_city'),
+                'destination' => $this->selectedCity,
+                'weight' => $weight,
+                'courier' => $this->selectedCourier
+            ]);
+
+            if ($response->successful()) {
+                $data = $response->json();
+                Log::debug('Shipping API Response:', $data);
+
+                if (isset($data['rajaongkir']['results'][0]['costs'])) {
+                    $this->shippingServices = $data['rajaongkir']['results'][0]['costs'];
+                } else {
+                    session()->flash('error', 'No shipping options available for this destination');
+                }
+            } else {
+                session()->flash('error', 'Failed to get shipping options: ' . $response->status());
+            }
+        } catch (\Exception $e) {
+            Log::error("Error fetching shipping costs: " . $e->getMessage());
+            session()->flash('error', 'Failed to load shipping options. Please try again.');
+        }
+    }
+
+    public function updatedSelectedService($serviceKey)
+    {
+        if (isset($this->shippingServices[$serviceKey])) {
+            $service = $this->shippingServices[$serviceKey];
+            $this->shippingCost = $service['cost'][0]['value'];
+            $this->calculateTotals();
+        }
+    }
+
     public function loadPaymentMethods()
     {
         $this->paymentMethods = PaymentMethod::where('olshop_transaction', true)->get();
@@ -232,7 +289,8 @@ class Checkout extends Component
             'selectedCity' => $this->selectedCity,
             'postalCode' => $this->postalCode,
             'complete_address' => $this->complete_address,
-            'delivery_method' => $this->delivery_method
+            'selectedCourier' => $this->selectedCourier,
+            'selectedService' => $this->selectedService
         ];
 
         Session::put('checkout_data', $checkoutData);
@@ -271,22 +329,8 @@ class Checkout extends Component
 
     protected function calculateTotals()
     {
-        // Update shipping cost based on selected method
-        $this->shippingCost = match ($this->delivery_method) {
-            'dhl' => 15000,
-            'fedex' => 0,
-            'express' => 49000,
-            default => 15000,
-        };
-
         $this->total = $this->subtotal + $this->shippingCost - $this->savings;
     }
-
-    public function updatedDeliveryMethod()
-    {
-        $this->calculateTotals();
-    }
-
 
     public function resetCheckoutData()
     {
@@ -295,6 +339,6 @@ class Checkout extends Component
 
     public function render()
     {
-        return view('pages.checkout');
+        return view('livewire.pages.checkout');
     }
 }

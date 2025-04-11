@@ -13,6 +13,6 @@ class TrxCheck extends Component
     // }
     public function render()
     {
-        return view('pages.trx-check');
+        return view('livewire.pages.trx-check');
     }
 }

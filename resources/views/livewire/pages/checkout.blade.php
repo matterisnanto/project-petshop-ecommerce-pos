@@ -137,9 +137,6 @@
                                                     {{ $province['province'] }}</option>
                                             @endforeach
                                         </select>
-                                        @if (session()->has('error'))
-                                            <p class="mt-1 text-sm text-red-600">{{ session('error') }}</p>
-                                        @endif
                                     </div>
 
                                     <div>
@@ -215,86 +212,59 @@
                                             Courier
                                         </label>
                                     </div>
-                                    <select id="select-courier"
+                                    <select id="select-courier" wire:model="selectedCourier"
+                                        wire:change="onUpdatedSelectedCourier"
                                         class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500">
                                         <option value="">Select Courier</option>
                                         <option value="jne">JNE</option>
                                         <option value="tiki">TIKI</option>
                                         <option value="pos">POS Indonesia</option>
-
                                     </select>
+                                    @if (session()->has('error'))
+                                        <p class="mt-1 text-sm text-red-600">{{ session('error') }}</p>
+                                    @endif
                                 </div>
 
-                                <div class="mb-2 flex items-center gap-2">
-                                    <label for="shipping-service"
-                                        class="block text-sm font-medium text-gray-900 dark:text-white">Shipping
-                                        Service</label>
-                                </div>
-                                <div id="select-shipping-service" class="grid grid-cols-1 gap-4 md:grid-cols-3">
-                                    <div
-                                        class="rounded-lg border border-gray-200 bg-gray-50 p-4 ps-4 dark:border-gray-700 dark:bg-gray-800">
-                                        <div class="flex items-start">
-                                            <div class="flex h-5 items-center">
-                                                <input id="dhl" aria-describedby="dhl-text" type="radio"
-                                                    name="delivery-method" value=""
-                                                    class="h-4 w-4 border-gray-300 bg-white text-primary-600 focus:ring-2 focus:ring-primary-600 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-primary-600"
-                                                    checked />
-                                            </div>
-                                            <div class="ms-4 text-sm">
-                                                <label for="dhl"
-                                                    class="font-medium leading-none text-gray-900 dark:text-white">
-                                                    Ninja xpress
-                                                </label>
-                                                <p id="dhl-text"
-                                                    class="mt-1 text-xs font-normal text-gray-500 dark:text-gray-400">
-                                                    Get it by Tomorrow
-                                                </p>
-                                            </div>
-                                        </div>
+                                @if (!empty($shippingServices))
+                                    <div class="mb-2 flex items-center gap-2">
+                                        <label for="shipping-service"
+                                            class="block text-sm font-medium text-gray-900 dark:text-white">
+                                            Shipping Service
+                                        </label>
                                     </div>
-
-                                    <div
-                                        class="rounded-lg border border-gray-200 bg-gray-50 p-4 ps-4 dark:border-gray-700 dark:bg-gray-800">
-                                        <div class="flex items-start">
-                                            <div class="flex h-5 items-center">
-                                                <input id="fedex" aria-describedby="fedex-text" type="radio"
-                                                    name="delivery-method" value=""
-                                                    class="h-4 w-4 border-gray-300 bg-white text-primary-600 focus:ring-2 focus:ring-primary-600 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-primary-600" />
+                                    <div id="select-shipping-service" class="grid grid-cols-1 gap-4 md:grid-cols-3">
+                                        @foreach ($shippingServices as $index => $service)
+                                            <div
+                                                class="rounded-lg border border-gray-200 bg-gray-50 p-4 ps-4 dark:border-gray-700 dark:bg-gray-800">
+                                                <div class="flex items-start">
+                                                    <div class="flex h-5 items-center">
+                                                        <input id="service-{{ $index }}"
+                                                            wire:model="selectedService" value="{{ $index }}"
+                                                            type="radio" name="delivery-method"
+                                                            class="h-4 w-4 border-gray-300 bg-white text-primary-600 focus:ring-2 focus:ring-primary-600 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-primary-600" />
+                                                    </div>
+                                                    <div class="ms-4 text-sm">
+                                                        <label for="service-{{ $index }}"
+                                                            class="font-medium leading-none text-gray-900 dark:text-white">
+                                                            {{ $service['service'] }}
+                                                        </label>
+                                                        <p
+                                                            class="mt-1 text-xs font-normal text-gray-500 dark:text-gray-400">
+                                                            {{ $service['description'] }}
+                                                        </p>
+                                                        <p
+                                                            class="mt-1 text-sm font-medium text-gray-900 dark:text-white">
+                                                            {{ format_currency($service['cost'][0]['value']) }}
+                                                            <span class="text-xs text-gray-500 dark:text-gray-400">
+                                                                (ETA: {{ $service['cost'][0]['etd'] }} days)
+                                                            </span>
+                                                        </p>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div class="ms-4 text-sm">
-                                                <label for="fedex"
-                                                    class="font-medium leading-none text-gray-900 dark:text-white">
-                                                    J&T
-                                                </label>
-                                                <p id="fedex-text"
-                                                    class="mt-1 text-xs font-normal text-gray-500 dark:text-gray-400">
-                                                    Get it by Friday, 13 Dec 2023
-                                                </p>
-                                            </div>
-                                        </div>
+                                        @endforeach
                                     </div>
-
-                                    <div
-                                        class="rounded-lg border border-gray-200 bg-gray-50 p-4 ps-4 dark:border-gray-700 dark:bg-gray-800">
-                                        <div class="flex items-start">
-                                            <div class="flex h-5 items-center">
-                                                <input id="express" aria-describedby="express-text" type="radio"
-                                                    name="delivery-method" value=""
-                                                    class="h-4 w-4 border-gray-300 bg-white text-primary-600 focus:ring-2 focus:ring-primary-600 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-primary-600" />
-                                            </div>
-                                            <div class="ms-4 text-sm">
-                                                <label for="express"
-                                                    class="font-medium leading-none text-gray-900 dark:text-white">
-                                                    Sicepat
-                                                </label>
-                                                <p id="express-text"
-                                                    class="mt-1 text-xs font-normal text-gray-500 dark:text-gray-400">
-                                                    Get it today
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -325,7 +295,7 @@
                                     <dt class="text-base font-normal text-gray-500 dark:text-gray-400">Shipping cost
                                     </dt>
                                     <dd class="text-base font-medium text-gray-900 dark:text-white">
-                                    </dd>
+                                        {{ format_currency($this->shippingCost) }}</dd>
                                 </dl>
                             </div>
 
@@ -425,7 +395,7 @@
                                 </label>
                             </div>
                         </div>
-                        <button wire:navigate href='/shopping-cart/checkout'
+                        <button wire:navigate href='/shopping-cart/checkout/order-confirmation'
                             class="mt-4 flex w-full items-center justify-center rounded-lg bg-primary-500 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-600 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
                             Proceed Order
                         </button>

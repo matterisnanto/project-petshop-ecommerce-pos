@@ -14,10 +14,11 @@ class ShoppingCart extends Component
     public $total = 0;
     public $itemCount = 0;
     public $subtotal = 0;
-    public $savings = 0;
     public $promoCode = '';
+    public $savings = 0;
     public $appliedPromoCode = null;
     public $totalWeight = 0;
+    public $shippingCost = 0;
 
     protected $listeners = ['cartUpdated' => 'updateCart'];
 
@@ -29,8 +30,8 @@ class ShoppingCart extends Component
 
         if (!empty($cartTotals)) {
             $this->subtotal = $cartTotals['subtotal'] ?? 0;
-            $this->total = $cartTotals['total'] ?? 0;
             $this->savings = $cartTotals['savings'] ?? 0;
+            $this->total = $cartTotals['total'] ?? 0;
             $this->itemCount = $cartTotals['itemCount'] ?? 0;
             $this->appliedPromoCode = $cartTotals['appliedPromoCode'] ?? null;
             $this->totalWeight = $cartTotals['totalWeight'] ?? 0;
@@ -52,11 +53,12 @@ class ShoppingCart extends Component
         // Store the calculated totals in session
         Session::put('cart_totals', [
             'subtotal' => $this->subtotal,
-            'total' => $this->total,
+            'appliedPromoCode' => $this->appliedPromoCode,
             'savings' => $this->savings,
             'itemCount' => $this->itemCount,
             'totalWeight' => $this->totalWeight,
-            'appliedPromoCode' => $this->appliedPromoCode
+            'shipping_cost' => $this->shippingCost,
+            'total' => $this->total
         ]);
     }
 
@@ -210,6 +212,6 @@ class ShoppingCart extends Component
 
     public function render()
     {
-        return view('pages.shopping-cart');
+        return view('livewire.pages.shopping-cart');
     }
 }

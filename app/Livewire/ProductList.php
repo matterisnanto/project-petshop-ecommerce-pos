@@ -81,7 +81,7 @@ class ProductList extends Component
             ->orderBy('name')
             ->get();
 
-        return view('pages.product-list', [
+        return view('livewire.pages.product-list', [
             'products' => $products,
             'brands' => $brands,
             'categories' => $categories,

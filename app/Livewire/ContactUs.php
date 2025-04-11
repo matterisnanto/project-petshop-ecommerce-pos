@@ -13,6 +13,6 @@ class ContactUs extends Component
     // }
     public function render()
     {
-        return view('pages.contact-us');
+        return view('livewire.pages.contact-us');
     }
 }
