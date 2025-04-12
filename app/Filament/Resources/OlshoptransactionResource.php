@@ -367,7 +367,7 @@ class OlshoptransactionResource extends Resource
     public static function getItemsRepeater(): Repeater
     {
         return Forms\Components\Repeater::make('order')
-            ->relationship('order')
+            ->relationship('orders')
             ->live()
             ->columns([
                 'md' => 10,

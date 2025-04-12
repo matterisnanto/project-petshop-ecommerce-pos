@@ -2,14 +2,20 @@
 
 namespace App\Livewire;
 
+use App\Models\Order;
+use App\Models\Product;
 use Livewire\Component;
 use App\Models\PaymentMethod;
+use Livewire\WithFileUploads;
+use App\Models\OlshopTransaction;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Session;
 
 class Checkout extends Component
 {
+    use WithFileUploads;
+
     public $cartItems = [];
     public $subtotal = 0;
     public $shippingCost = 0;
@@ -32,6 +38,9 @@ class Checkout extends Component
     public $paymentMethods = [];
     public $selectedPaymentMethod = null;
     public $accountNumber = '';
+    public $paymentProof;
+    public $paymentProofPath;
+    public $isUploading = false;
 
     // Form fields
     public $name = '';
@@ -49,7 +58,8 @@ class Checkout extends Component
         'selectedCity' => 'required',
         'selectedCourier' => 'required',
         'selectedService' => 'required',
-        'selectedPaymentMethod' => 'required'
+        'selectedPaymentMethod' => 'required',
+        'paymentProof' => 'required|image|max:2048'
     ];
 
     protected $messages = [
@@ -455,6 +465,7 @@ class Checkout extends Component
             'complete_address' => $this->complete_address,
             'selectedCourier' => $this->selectedCourier,
             'selectedPaymentMethod' => $this->selectedPaymentMethod,
+            'payment_proof_path' => $this->paymentProofPath,
         ];
 
         // Jika ada selected service, tambahkan ke data
@@ -508,6 +519,31 @@ class Checkout extends Component
         $this->total = $cartTotals['total'];
     }
 
+    public function updatedPaymentProof()
+    {
+        $this->isUploading = true;
+
+        $this->validateOnly('paymentProof');
+
+        try {
+            // Store the file and get the path
+            $path = $this->paymentProof->store('payment-proofs', 'public');
+
+            // Save the path to session
+            $checkoutData = Session::get('checkout_data', []);
+            $checkoutData['payment_proof_path'] = $path;
+            Session::put('checkout_data', $checkoutData);
+
+            $this->paymentProofPath = $path;
+            $this->isUploading = false;
+
+            session()->flash('payment_upload_success', 'Payment proof uploaded successfully!');
+        } catch (\Exception $e) {
+            $this->isUploading = false;
+            session()->flash('payment_upload_error', 'Failed to upload payment proof: ' . $e->getMessage());
+        }
+    }
+
     public function resetCheckoutData()
     {
         Session::forget('checkout_data');
@@ -515,6 +551,70 @@ class Checkout extends Component
         $cartTotals = Session::get('cart_totals', []);
         unset($cartTotals['shipping_cost']);
         Session::put('cart_totals', $cartTotals);
+    }
+
+    public function proceedOrder()
+    {
+        $this->validate();
+
+        try {
+            $checkoutData = Session::get('checkout_data', []);
+            $cartTotals = Session::get('cart_totals', []);
+            $cartItems = Session::get('cart', []);
+
+            // Prepare shipping service details as JSON
+            $shippingServiceDetails = json_encode([
+                'courier' => $this->selectedCourier,
+                'service' => $this->shippingServices[$this->selectedService]['service'] ?? null,
+                'description' => $this->shippingServices[$this->selectedService]['description'] ?? null,
+                'cost' => $this->shippingCost,
+                'etd' => $this->shippingServices[$this->selectedService]['cost'][0]['etd'] ?? null
+            ]);
+
+            // Create transaction with exact field structure as in your example
+            $transaction = OlshopTransaction::create([
+                'name' => $this->name,
+                'phone' => $this->phone,
+                'email' => $this->email,
+                'sub_total_amount' => $cartTotals['subtotal'],
+                'promo_code_id' => $cartTotals['appliedPromoCode'] ?? null,
+                'discount_amount' => $cartTotals['savings'] ?? 0,
+                'grand_total_amount' => $cartTotals['total'],
+                'province' => $this->selectedProvince,
+                'city_regency' => $this->selectedCity,
+                'post_code' => $this->postalCode,
+                'complete_address' => $this->complete_address,
+                'is_paid' => false,
+                'trx_id' => 'TRX-' . date('Ymd') . '-' . strtoupper(uniqid()),
+                'package_resi_number' => 'Being Processed',
+                'courier' => $this->selectedCourier,
+                'shipping_service' => $shippingServiceDetails,
+                'weight_total' => $this->totalWeight,
+                'shipping_cost' => $this->shippingCost,
+                'estimated_delivery' => $this->shippingServices[$this->selectedService]['cost'][0]['etd'] ?? null,
+                'payment_method_id' => $this->selectedPaymentMethod,
+                'proof' => $this->paymentProofPath,
+            ]);
+
+            // Create order items
+            foreach ($cartItems as $items) {
+                Order::create([
+                    'olshop_transaction_id' => $transaction->id,
+                    'product_id' => $items['id'],
+                    'quantity' => $items['quantity'],
+                    'unit_price' => $items['price'],
+                ]);
+            }
+
+            // Clear session
+            Session::forget(['cart', 'cart_totals', 'checkout_data']);
+            toastr()->success('order successfully created');
+            // Redirect to confirmation page
+            return redirect()->route('order-confirmation', ['transaction_id' => $transaction->trx_id]);
+        } catch (\Exception $e) {
+            Log::error('Error processing order: ' . $e->getMessage());
+            $this->addError('order_error', 'Terjadi kesalahan saat memproses order. Silakan coba lagi.');
+        }
     }
 
     public function render()

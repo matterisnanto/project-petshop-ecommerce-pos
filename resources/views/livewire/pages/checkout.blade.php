@@ -17,7 +17,7 @@
                 </li>
 
                 <li
-                    class="after:border-1 flex items-center text-primary-700 after:mx-6 after:hidden after:h-1 after:w-full after:border-b after:border-gray-400 dark:text-primary-500 dark:after:border-gray-700 sm:after:inline-block sm:after:content-[''] md:w-full xl:after:mx-10">
+                    class="after:border-1 flex items-center after:mx-6 after:hidden after:h-1 after:w-full after:border-b after:border-gray-400 dark:text-primary-500 dark:after:border-gray-700 sm:after:inline-block sm:after:content-[''] md:w-full xl:after:mx-10">
                     <span
                         class="flex items-center after:mx-2 after:text-gray-400 after:content-['/'] dark:after:text-gray-500 sm:after:hidden">
                         <svg class="me-2 h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
@@ -249,8 +249,6 @@
 
 
                                 </div>
-
-                                {{-- @if (!empty($shippingServices)) --}}
                                 <div class="mb-2 flex items-center gap-2">
                                     <label for="shipping-service"
                                         class="block text-sm font-medium text-gray-900 dark:text-white">
@@ -269,11 +267,15 @@
                                             select a
                                             courier to see
                                             available shipping options</p>
+                                        <p wire:loading wire:target="selectedCourier"
+                                            class="sm:mt-2 text-sm sm:text-xl text-gray-600 dark:text-gray-400">
+                                            Loading Shipping Service...</p>
+                                    </div>
+                                @else
+                                    <div wire:loading wire:target="selectedCourier" class="text-sm text-gray-500">
+                                        Loading Shipping Service...
                                     </div>
                                 @endif
-                                <div wire:loading wire:target="selectedCourier" class="text-sm text-gray-500">
-                                    Loading Shipping Service...
-                                </div>
                                 <div id="select-shipping-service" class="grid grid-cols-1 gap-4 md:grid-cols-3">
                                     @foreach ($shippingServices as $index => $service)
                                         <div
@@ -309,7 +311,6 @@
                                 @error('selectedService')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
-                                {{-- @endif --}}
                             </div>
                         </div>
                     </div>
@@ -416,37 +417,64 @@
                             <label class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">
                                 Payment Proof
                             </label>
-                            {{-- <input
-                                class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 file:bg-primary-300 hover:file:bg-primary-400"
-                                id="payment_proof" type="file"> --}}
-                            <div class="flex items-center justify-center w-full">
+                            <div class="flex w-full items-center justify-center">
                                 <label for="dropzone-file"
-                                    class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
-                                    <div class="flex flex-col items-center justify-center pt-5 pb-6">
-                                        <svg class="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" aria-hidden="true"
-                                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
-                                            <path stroke="currentColor" stroke-linecap="round"
-                                                stroke-linejoin="round" stroke-width="2"
-                                                d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2" />
-                                        </svg>
-                                        <p class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span
-                                                class="font-semibold">Click to upload</span> or drag and drop</p>
-                                        {{-- <p class="text-xs text-gray-500 dark:text-gray-400">SVG, PNG, JPG or GIF (MAX.
-                                            800x400px)</p> --}}
-                                        <p class="text-xs text-gray-500 dark:text-gray-400">Upload screenshot payment
-                                            proof</p>
+                                    class="dark:hover:bg-bray-800 flex h-64 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+                                    <div class="flex flex-col items-center justify-center pb-6 pt-5">
+                                        @if ($paymentProofPath)
+                                            <img src="{{ Storage::url($paymentProofPath) }}"
+                                                alt="Payment proof preview" class="mb-4 h-32 object-contain">
+                                            <p class="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                                                <span class="font-semibold">Payment proof uploaded</span>
+                                            </p>
+                                            <p class="text-xs text-gray-500 dark:text-gray-400">Click to change</p>
+                                        @else
+                                            <svg class="mb-4 h-8 w-8 text-gray-500 dark:text-gray-400"
+                                                aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                                viewBox="0 0 20 16">
+                                                <path stroke="currentColor" stroke-linecap="round"
+                                                    stroke-linejoin="round" stroke-width="2"
+                                                    d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2" />
+                                            </svg>
+                                            <p class="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                                                <span class="font-semibold">Click to upload</span> or drag and drop
+                                            </p>
+                                            <p class="text-xs text-gray-500 dark:text-gray-400">
+                                                PNG, JPG (MAX. 2MB)
+                                            </p>
+                                        @endif
                                     </div>
-                                    <input id="dropzone-file" type="file" class="hidden" />
+                                    <input id="dropzone-file" type="file" class="hidden"
+                                        wire:model="paymentProof" accept="image/*" />
                                 </label>
                             </div>
+
+                            @error('paymentProof')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+
+                            @if ($isUploading)
+                                <div class="mt-2 text-sm text-blue-600">Uploading payment proof...</div>
+                            @endif
+
+                            @if (session('payment_upload_success'))
+                                <div class="mt-2 text-sm text-green-600">{{ session('payment_upload_success') }}</div>
+                            @endif
+
+                            @if (session('payment_upload_error'))
+                                <div class="mt-2 text-sm text-red-600">{{ session('payment_upload_error') }}</div>
+                            @endif
                         </div>
                         {{-- <div class="g-recaptcha" data-sitekey="6LciExQrAAAAAJDe051H5IMiz2Po0cm-I2yCSQgR"></div>
                         @error('g-recaptcha-response')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror --}}
-                        <button wire:navigate href='/shopping-cart/checkout/order-confirmation'
+                        <button wire:click="proceedOrder" wire:loading.attr="disabled"
                             class="mt-4 flex w-full items-center justify-center rounded-lg bg-primary-500 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-600 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
-                            Proceed Order
+                            <span wire:loading.remove>Proceed Order</span>
+                            <span wire:loading>
+                                Processing...
+                            </span>
                         </button>
                     </div>
                 </div>
