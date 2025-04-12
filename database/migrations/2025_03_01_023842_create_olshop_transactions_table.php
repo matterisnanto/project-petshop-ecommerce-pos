@@ -24,7 +24,7 @@ return new class extends Migration
             $table->string('city_regency');
             $table->string('post_code');
             $table->string('complete_address');
-            $table->boolean('is_paid');
+            $table->boolean('is_paid')->default(false);
             $table->string('trx_id');
             $table->string('package_resi_number')->default('Being Processed');
             $table->string('courier');

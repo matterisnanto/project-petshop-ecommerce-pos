@@ -55,9 +55,13 @@
                                         <label for="your_name"
                                             class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">
                                             Name</label>
-                                        <input type="text" id="your_name"
+                                        <input type="text" id="your_name" wire:model.blur="name"
+                                            wire:keydown.debounce.500ms="saveField('name')"
                                             class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500"
                                             placeholder="James Bowen" required />
+                                        @error('name')
+                                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                        @enderror
                                     </div>
 
                                     <!-- Phone Field -->
@@ -92,12 +96,16 @@
                                                 +62
                                             </button>
                                             <div class="relative w-full">
-                                                <input type="text" id="phone-input"
+                                                <input type="text" id="phone-input" wire:model.blur="phone"
+                                                    wire:keydown.debounce.500ms="saveField('phone')"
                                                     class="z-20 block w-full rounded-e-lg border border-s-0 border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:border-s-gray-700 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500"
                                                     pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" placeholder="123-456-7890"
                                                     required />
                                             </div>
                                         </div>
+                                        @error('phone')
+                                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                        @enderror
                                     </div>
 
                                     <!-- Email Field -->
@@ -106,9 +114,13 @@
                                             class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">
                                             Email
                                         </label>
-                                        <input type="email" id="your_email"
+                                        <input type="email" id="your_email" wire:model.blur="email"
+                                            wire:keydown.debounce.500ms="saveField('email')"
                                             class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500"
                                             placeholder="jamesbowen@mail.com" required />
+                                        @error('email')
+                                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                        @enderror
                                     </div>
 
                                     <!-- Address Fields -->
@@ -137,6 +149,9 @@
                                                     {{ $province['province'] }}</option>
                                             @endforeach
                                         </select>
+                                        @error('selectedProvince')
+                                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                        @enderror
                                     </div>
 
                                     <div>
@@ -166,11 +181,15 @@
                                                 </option>
                                             @endforeach
                                         </select>
+                                        @error('selectedCity')
+                                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                        @enderror
+                                        <div wire:loading wire:target="selectedProvince"
+                                            class="text-sm text-gray-500">
+                                            Loading City/Regency...
+                                        </div>
                                     </div>
 
-
-
-                                    <!-- Post Code and Address Details -->
                                     <div>
                                         <label for="post_code"
                                             class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">
@@ -190,10 +209,14 @@
                                             class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">
                                             Complete Address
                                         </label>
-                                        <input type="text" id="detail-address"
+                                        <input type="text" id="detail-address" wire:model.blur="complete_address"
+                                            wire:keydown.debounce.500ms="saveField('complete_address')"
                                             class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500"
                                             placeholder="Example : 8-11 Islington Grn, London N1 2XR, United Kingdom"
                                             required />
+                                        @error('complete_address')
+                                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                        @enderror
                                     </div>
                                 </div>
                             </div>
@@ -220,51 +243,73 @@
                                         <option value="tiki">TIKI</option>
                                         <option value="pos">POS Indonesia</option>
                                     </select>
-                                    @if (session()->has('error'))
-                                        <p class="mt-1 text-sm text-red-600">{{ session('error') }}</p>
-                                    @endif
+                                    @error('selectedCourier')
+                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                    @enderror
+
+
                                 </div>
 
-                                @if (!empty($shippingServices))
-                                    <div class="mb-2 flex items-center gap-2">
-                                        <label for="shipping-service"
-                                            class="block text-sm font-medium text-gray-900 dark:text-white">
-                                            Shipping Service
-                                        </label>
-                                    </div>
-                                    <div id="select-shipping-service" class="grid grid-cols-1 gap-4 md:grid-cols-3">
-                                        @foreach ($shippingServices as $index => $service)
-                                            <div
-                                                class="rounded-lg border border-gray-200 bg-gray-50 p-4 ps-4 dark:border-gray-700 dark:bg-gray-800">
-                                                <div class="flex items-start">
-                                                    <div class="flex h-5 items-center">
-                                                        <input id="service-{{ $index }}"
-                                                            wire:model="selectedService" value="{{ $index }}"
-                                                            type="radio" name="delivery-method"
-                                                            class="h-4 w-4 border-gray-300 bg-white text-primary-600 focus:ring-2 focus:ring-primary-600 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-primary-600" />
-                                                    </div>
-                                                    <div class="ms-4 text-sm">
-                                                        <label for="service-{{ $index }}"
-                                                            class="font-medium leading-none text-gray-900 dark:text-white">
-                                                            {{ $service['service'] }}
-                                                        </label>
-                                                        <p
-                                                            class="mt-1 text-xs font-normal text-gray-500 dark:text-gray-400">
-                                                            {{ $service['description'] }}
-                                                        </p>
-                                                        <p
-                                                            class="mt-1 text-sm font-medium text-gray-900 dark:text-white">
-                                                            {{ format_currency($service['cost'][0]['value']) }}
-                                                            <span class="text-xs text-gray-500 dark:text-gray-400">
-                                                                (ETA: {{ $service['cost'][0]['etd'] }} days)
-                                                            </span>
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        @endforeach
+                                {{-- @if (!empty($shippingServices)) --}}
+                                <div class="mb-2 flex items-center gap-2">
+                                    <label for="shipping-service"
+                                        class="block text-sm font-medium text-gray-900 dark:text-white">
+                                        Shipping Service
+                                    </label>
+                                </div>
+                                @if (empty($shippingServices))
+                                    <div class="flex flex-col items-center justify-center">
+                                        <img class="h-30 sm:h-48 w-auto" src="{{ asset('img/cat-on-box.png') }}"
+                                            alt="No courier selected">
+                                        <h1
+                                            class="mt-2 sm:mt-4 text-lg sm:text-2xl font-bold text-gray-800 dark:text-gray-200">
+                                            No Courier
+                                            Selected Yet</h1>
+                                        <p class="sm:mt-2 text-sm sm:text-xl text-gray-600 dark:text-gray-400">Please
+                                            select a
+                                            courier to see
+                                            available shipping options</p>
                                     </div>
                                 @endif
+                                <div wire:loading wire:target="selectedCourier" class="text-sm text-gray-500">
+                                    Loading Shipping Service...
+                                </div>
+                                <div id="select-shipping-service" class="grid grid-cols-1 gap-4 md:grid-cols-3">
+                                    @foreach ($shippingServices as $index => $service)
+                                        <div
+                                            class="rounded-lg border border-gray-200 bg-gray-50 p-4 ps-4 dark:border-gray-700 dark:bg-gray-800">
+                                            <div class="flex items-start">
+                                                <div class="flex h-5 items-center">
+                                                    <input id="service-{{ $index }}"
+                                                        wire:model="selectedService" value="{{ $index }}"
+                                                        wire:change="onUpdatedSelectedService('{{ $index }}')"
+                                                        type="radio" name="delivery-method"
+                                                        class="h-4 w-4 border-gray-300 bg-white text-primary-600 focus:ring-2 focus:ring-primary-600 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-primary-600" />
+                                                </div>
+                                                <div class="ms-4 text-sm">
+                                                    <label for="service-{{ $index }}"
+                                                        class="font-medium leading-none text-gray-900 dark:text-white">
+                                                        {{ $service['service'] }}
+                                                    </label>
+                                                    <p
+                                                        class="mt-1 text-xs font-normal text-gray-500 dark:text-gray-400">
+                                                        {{ $service['description'] }}
+                                                    </p>
+                                                    <p class="mt-1 text-sm font-medium text-gray-900 dark:text-white">
+                                                        {{ format_currency($service['cost'][0]['value']) }}
+                                                        <span class="text-xs text-gray-500 dark:text-gray-400">
+                                                            (ETA: {{ $service['cost'][0]['etd'] }} days)
+                                                        </span>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                                @error('selectedService')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                                {{-- @endif --}}
                             </div>
                         </div>
                     </div>
@@ -395,6 +440,10 @@
                                 </label>
                             </div>
                         </div>
+                        {{-- <div class="g-recaptcha" data-sitekey="6LciExQrAAAAAJDe051H5IMiz2Po0cm-I2yCSQgR"></div>
+                        @error('g-recaptcha-response')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror --}}
                         <button wire:navigate href='/shopping-cart/checkout/order-confirmation'
                             class="mt-4 flex w-full items-center justify-center rounded-lg bg-primary-500 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-600 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
                             Proceed Order

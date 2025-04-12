@@ -26,6 +26,7 @@
 
     @livewireScripts
     <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <script>
         // Set initial theme based on browser preference
         if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
