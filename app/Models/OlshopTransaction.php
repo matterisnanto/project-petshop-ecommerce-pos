@@ -42,4 +42,8 @@ class OlshopTransaction extends Model
             set: fn($value) => ltrim($value, '+62 ') // Menghindari duplikasi +62
         );
     }
+
+    protected $casts = [
+        'shipping_service' => 'array', // jika kolom ini yang menyimpan JSON
+    ];
 }

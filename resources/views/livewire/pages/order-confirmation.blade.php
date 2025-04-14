@@ -74,6 +74,12 @@
                                             #{{ $transaction->trx_id }}</dd>
                                     </div>
                                     <div class="flex items-center justify-between">
+                                        <dt class="text-sm sm:text-base text-gray-500 dark:text-gray-400">Resi Number
+                                        </dt>
+                                        <dd class="text-sm sm:text-base font-medium text-gray-900 dark:text-white">
+                                            {{ $transaction->package_resi_number }}</dd>
+                                    </div>
+                                    <div class="flex items-center justify-between">
                                         <dt class="text-sm sm:text-base text-gray-500 dark:text-gray-400">Date</dt>
                                         <dd class="text-sm sm:text-base font-medium text-gray-900 dark:text-white">
                                             {{ $transaction->created_at->format('d M Y') }}</dd>
@@ -114,6 +120,18 @@
                                         <dt class="text-sm sm:text-base text-gray-500 dark:text-gray-400">Address</dt>
                                         <dd class="text-sm sm:text-base font-medium text-gray-900 dark:text-white">
                                             {{ $transaction->complete_address }}</dd>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <dt class="text-sm sm:text-base text-gray-500 dark:text-gray-400">Courier</dt>
+                                        <dd class="text-sm sm:text-base font-medium text-gray-900 dark:text-white">
+                                            {{ Str::upper($transaction->courier) }}
+                                        </dd>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <dt class="text-sm sm:text-base text-gray-500 dark:text-gray-400">Estimated
+                                            Delivery</dt>
+                                        <dd class="text-sm sm:text-base font-medium text-gray-900 dark:text-white">
+                                            {{ $transaction->estimated_delivery }} day</dd>
                                     </div>
                                 </dl>
                             </div>
@@ -168,8 +186,16 @@
                                 <div class="flex items-center justify-between">
                                     <dt class="text-sm sm:text-base text-gray-500 dark:text-gray-400">Subtotal</dt>
                                     <dd class="text-sm sm:text-base font-medium text-gray-900 dark:text-white">
-                                        {{ format_currency($transaction->subtotal_amount) }}</dd>
+                                        {{ format_currency($transaction->sub_total_amount) }}</dd>
                                 </div>
+                                @if ($transaction->discount_amount > 1)
+                                    <div class="flex items-center justify-between">
+                                        <dt class="text-sm sm:text-base text-gray-500 dark:text-gray-400">Savings</dt>
+                                        <dd
+                                            class="text-sm sm:text-base font-medium text-gray-900 dark:text-white text-green-600">
+                                            -{{ format_currency($transaction->discount_amount) }}</dd>
+                                    </div>
+                                @endif
                                 <div class="flex items-center justify-between">
                                     <dt class="text-sm sm:text-base text-gray-500 dark:text-gray-400">Shipping</dt>
                                     <dd class="text-sm sm:text-base font-medium text-gray-900 dark:text-white">
@@ -197,8 +223,7 @@
                                     class="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Processing</span>
                             </div>
                             <p class="mt-2 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
-                                Your order will be processed within 24 hours during working days. We will notify you by
-                                email once your order has been shipped.
+                                Your order will be processed within 24 hours during working days.
                             </p>
                         </div>
                     </div>

@@ -22,7 +22,7 @@
                                     $product = App\Models\Product::find($productId);
                                 @endphp
                                 <div
-                                    class="relative rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition-all duration-200 hover:shadow-md dark:border-gray-700 dark:bg-gray-800 dark:hover:border-gray-600 md:p-5">
+                                    class="relative rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition-all duration-200 hover:shadow-md dark:border-gray-700 dark:bg-gray-800 dark:hover:border-gray-600 md:p-3">
                                     <!-- Remove button -->
                                     <button wire:click="removeItem('{{ $productId }}')" type="button"
                                         class="absolute right-3 top-3 inline-flex h-5 w-5 items-center justify-center rounded-full bg-gray-100 text-gray-500 transition-colors duration-200 hover:bg-red-100 hover:text-red-600 focus:outline-none focus:ring-2 focus:ring-red-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-red-900 dark:hover:text-red-300">
@@ -50,7 +50,7 @@
                                         <div class="flex-1 min-w-0 space-y-1 sm:space-y-2">
                                             <div>
                                                 <a wire:navigate href="/products/{{ $product->slug }}"
-                                                    class="text-sm sm:text-xl font-medium text-gray-900 line-clamp-2 hover:text-primary-600 hover:underline dark:text-white dark:hover:text-primary-400 sm:text-base">
+                                                    class="text-sm sm:text-sm font-medium text-gray-900 line-clamp-2 hover:text-primary-600 hover:underline dark:text-white dark:hover:text-primary-400 sm:text-base">
                                                     {{ $product->name }}
                                                 </a>
                                                 <div class="mt-1 flex flex-wrap gap-1">
@@ -75,14 +75,13 @@
 
                                         <!-- Quantity controls and total price - stacked vertically on mobile -->
                                         <div
-                                            class="flex w-full items-center justify-between sm:w-auto sm:flex-row sm:items-center sm:gap-4">
-
+                                            class="flex w-full items-center justify-between sm:w-auto sm:flex-row sm:items-center sm:gap-6">
                                             <!-- Quantity selector -->
                                             <div
                                                 class="flex items-center rounded-lg border border-gray-200 bg-gray-50 dark:border-gray-600 dark:bg-gray-700">
                                                 <button wire:click="decrementQuantity('{{ $productId }}')"
                                                     type="button"
-                                                    class="h-8 w-8 rounded-l-lg border-r border-gray-200 bg-gray-100 text-gray-600 transition-colors duration-200 hover:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600">
+                                                    class="h-6 w-6 sm:h-8 sm:w-8 rounded-l-lg border-r border-gray-200 bg-gray-100 text-gray-600 transition-colors duration-200 hover:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600">
                                                     <svg class="mx-auto h-3 w-3" aria-hidden="true"
                                                         xmlns="http://www.w3.org/2000/svg" fill="none"
                                                         viewBox="0 0 18 2">
@@ -94,12 +93,12 @@
                                                 <input type="text"
                                                     wire:model.lazy="cartItems.{{ $item['id'] }}.quantity"
                                                     wire:change="updateItemQuantity('{{ $productId }}', $event.target.value)"
-                                                    class="h-8 w-12 border-0 bg-transparent text-center text-sm font-medium text-gray-900 focus:outline-none focus:ring-0 dark:text-white"
+                                                    class="h-6 w-10 sm:h-8 sm:w-12 border-0 bg-transparent text-center text-sm font-medium text-gray-900 focus:outline-none focus:ring-0 dark:text-white"
                                                     value="{{ $item['quantity'] }}" />
 
                                                 <button wire:click="incrementQuantity('{{ $productId }}')"
                                                     type="button"
-                                                    class="h-8 w-8 rounded-r-lg border-l border-gray-200 bg-gray-100 text-gray-600 transition-colors duration-200 hover:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600">
+                                                    class="h-6 w-6 sm:h-8 sm:w-8 rounded-r-lg border-l border-gray-200 bg-gray-100 text-gray-600 transition-colors duration-200 hover:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600">
                                                     <svg class="mx-auto h-3 w-3" aria-hidden="true"
                                                         xmlns="http://www.w3.org/2000/svg" fill="none"
                                                         viewBox="0 0 18 18">
@@ -110,12 +109,13 @@
                                                 </button>
                                             </div>
 
-                                            <!-- Total price -->
-                                            <p class="text-sm font-bold text-gray-900 dark:text-white sm:text-base">
-                                                {{ format_currency($item['price'] * $item['quantity']) }}
-                                            </p>
+                                            <!-- Price with fixed width -->
+                                            <div class="w-30 sm:w-30 text-right">
+                                                <p class="text-sm font-bold text-gray-900 dark:text-white sm:text-base">
+                                                    {{ format_currency($item['price'] * $item['quantity']) }}
+                                                </p>
+                                            </div>
                                         </div>
-
                                     </div>
                                 </div>
                             @endforeach
