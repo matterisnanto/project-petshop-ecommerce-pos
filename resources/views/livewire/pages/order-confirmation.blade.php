@@ -124,7 +124,13 @@
                                     <div class="flex items-center justify-between">
                                         <dt class="text-sm sm:text-base text-gray-500 dark:text-gray-400">Courier</dt>
                                         <dd class="text-sm sm:text-base font-medium text-gray-900 dark:text-white">
-                                            {{ Str::upper($transaction->courier) }}
+                                            @php
+                                                $shippingService = is_array($transaction->shipping_service)
+                                                    ? $transaction->shipping_service
+                                                    : json_decode($transaction->shipping_service, true);
+                                            @endphp
+                                            {{ Str::upper($shippingService['courier'] ?? $transaction->courier) }}
+                                            ({{ $shippingService['description'] ?? 'N/A' }})
                                         </dd>
                                     </div>
                                     <div class="flex items-center justify-between">

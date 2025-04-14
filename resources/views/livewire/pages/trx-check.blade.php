@@ -162,7 +162,7 @@
                                                 : json_decode($transaction->shipping_service, true);
                                         @endphp
 
-                                        {{ $shippingService['courier'] ?? $transaction->courier }}
+                                        {{ Str::upper($shippingService['courier'] ?? $transaction->courier) }}
                                         ({{ $shippingService['description'] ?? 'N/A' }})
                                     </dd>
                                 </div>
