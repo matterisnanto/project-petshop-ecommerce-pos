@@ -8,6 +8,6 @@ class PetHotel extends Component
 {
     public function render()
     {
-        return view('livewire.pet-hotel');
+        return view('livewire.pages.pet-hotel');
     }
 }

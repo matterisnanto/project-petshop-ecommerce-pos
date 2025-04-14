@@ -10,6 +10,8 @@ use App\Livewire\ShoppingCart;
 use App\Exports\TemplateExport;
 use App\Livewire\Checkout;
 use App\Livewire\OrderConfirmation;
+use App\Livewire\PetGrooming;
+use App\Livewire\PetHotel;
 use App\Livewire\ProductDetail;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Route;
@@ -26,6 +28,10 @@ Route::get('/shopping-cart/checkout', Checkout::class)->name('checkout');
 
 Route::get('/order-confirmation/{transaction_id}', OrderConfirmation::class)
     ->name('order-confirmation');
+
+Route::get('/pet-grooming', PetGrooming::class)->name('pet-grooming');
+
+Route::get('/pet-hotel', PetHotel::class)->name('pet-hotel');
 
 Route::get('/trx-check', TrxCheck::class)->name('trx-check');
 

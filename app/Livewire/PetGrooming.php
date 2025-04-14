@@ -8,6 +8,6 @@ class PetGrooming extends Component
 {
     public function render()
     {
-        return view('livewire.pet-grooming');
+        return view('livewire.pages.pet-grooming');
     }
 }

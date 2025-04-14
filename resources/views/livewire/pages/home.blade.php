@@ -521,7 +521,7 @@
                 <h2 class="mb-4 text-4xl tracking-tight font-extrabold text-gray-900 lg:text-5xl dark:text-white">
                     Penuhi Segala Kebutuhan Hewan Peliharaan Anda dengan Solusi Terlengkap dan Terbaik!</h2>
             </div>
-            <div class="grid gap-6 mt-12 lg:mt-14 lg:gap-12 md:grid-cols-4">
+            <div class="grid gap-6 mt-12 lg:mt-14 lg:gap-12 md:grid-cols-3">
                 <div class="flex mb-2 md:flex-col md:mb-0">
                     <img class="mr-4 w-auto h-36 md:w-full md:h-auto rounded-lg"
                         src="https://img.freepik.com/free-photo/pet-accessories-with-full-food-bowl_23-2148949593.jpg"
@@ -554,7 +554,7 @@
                         </p>
                     </div>
                 </div>
-                <div class="flex md:flex-col">
+                {{-- <div class="flex md:flex-col">
                     <img class="mr-4 w-auto h-36 md:w-full md:h-auto rounded-lg"
                         src="https://i.pinimg.com/originals/d8/00/17/d80017ad22c34882a52a6110975703ee.jpg"
                         alt="office image 3" />
@@ -564,7 +564,7 @@
                         <p class="text-gray-500 dark:text-gray-400">Karena Mereka Bagian dari Keluarga – Berikan yang
                             Terbaik untuk Kesehatan Peliharaan Anda.</p>
                     </div>
-                </div>
+                </div> --}}
             </div>
         </div>
     </section>

@@ -19,6 +19,12 @@
                             Home
                         </a>
                     </li>
+                    <li>
+                        <a wire:navigate href="/" title=""
+                            class="{{ $activeRoute === '/Animals' ? 'text-primary-500' : 'text-gray-900 dark:text-white' }} flex text-sm font-medium  hover:text-primary-700  dark:hover:text-primary-500">
+                            Animals
+                        </a>
+                    </li>
                     <li class="shrink-0">
                         <a wire:navigate href="/products" title=""
                             class="{{ str_starts_with($activeRoute, 'products') ? 'text-primary-500' : 'text-gray-900 dark:text-white' }} flex text-sm font-medium  hover:text-primary-700  dark:hover:text-primary-500">
@@ -27,7 +33,8 @@
                     </li>
                     <li>
                         <button type="button" id="dropdown-button" data-dropdown-toggle="dropdown"
-                            class="{{ $activeRoute === 'trx-check' ? 'text-primary-500' : 'text-gray-900 dark:text-white' }} flex text-sm font-medium  hover:text-primary-700  dark:hover:text-primary-500">Service
+                            class="{{ in_array($activeRoute, ['pet-grooming', 'pet-hotel', 'pet-clinic']) ? 'text-primary-500' : 'text-gray-900 dark:text-white' }} flex text-sm font-medium hover:text-primary-700 dark:hover:text-primary-500">
+                            Service
                             <svg class="pt-1 w-5 h-5 lg:w-4 lg:h-4" fill="currentColor" viewBox="0 0 20 20"
                                 xmlns="http://www.w3.org/2000/svg">
                                 <path fill-rule="evenodd"
@@ -39,8 +46,8 @@
                             <ul class="py-1 text-sm font-light text-gray-500 dark:text-gray-400"
                                 aria-labelledby="dropdown-button">
                                 <li>
-                                    <a href="#"
-                                        class="flex items-center py-2 px-4 w-full hover:text-primary-600 dark:hover:text-primary-500">
+                                    <a wire:navigate href="/pet-grooming"
+                                        class="{{ $activeRoute === 'pet-grooming' ? 'text-primary-500' : 'text-gray-900 dark:text-white' }} flex items-center py-2 px-4 w-full hover:text-primary-600 dark:hover:text-primary-500">
                                         <svg class="mr-2 w-4 h-4" fill="currentColor" version="1.1" id="Capa_1"
                                             xmlns="http://www.w3.org/2000/svg"
                                             xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 98.538 98.538"
@@ -73,7 +80,7 @@
                                         </svg>Pet Grooming</a>
                                 </li>
                                 <li>
-                                    <a href="#"
+                                    <a wire:navigate href="/pet-hotel"
                                         class="flex items-center py-2 px-4 w-full hover:text-primary-600 dark:hover:text-primary-500">
 
                                         <svg class="mr-2 w-4 h-4" fill="currentColor" viewBox="0 0 50 50"
@@ -171,7 +178,8 @@
                             <!-- Product on cart -->
                             @if (count($cartItems) > 0)
                                 @foreach ($cartItems as $item)
-                                    <div class="flex items-center gap-4 p-1" wire:key="cart-item-{{ $item['id'] }}">
+                                    <div class="flex items-center gap-4 p-1"
+                                        wire:key="cart-item-{{ $item['id'] }}">
                                         <img src="{{ $item['image'] }}" alt="{{ $item['name'] }}"
                                             class="w-16 h-16 rounded-lg shadow-md">
                                         <div class="flex-1 min-w-0">
