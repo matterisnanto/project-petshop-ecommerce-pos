@@ -6,12 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class AnimalsPhoto extends Model
 {
-    protected $table = 'animalsphotos';
+    protected $table = 'animals_photos';
     //
     protected $fillable = ['photo', 'animals_id'];
-    
-    public function animals() {
+
+    public function animals()
+    {
         return $this->belongsTo(Animals::class);
     }
-
 }

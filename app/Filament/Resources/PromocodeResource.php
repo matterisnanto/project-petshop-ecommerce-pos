@@ -28,7 +28,7 @@ class PromocodeResource extends Resource
 
     protected static ?string $navigationGroup = 'Offers & Payments';
 
-    protected static ?int $navigationSort = 6;
+    protected static ?int $navigationSort = 10;
 
     public static function form(Form $form): Form
     {

@@ -28,7 +28,7 @@ class PaymentmethodResource extends Resource
 
     protected static ?string $navigationGroup = 'Offers & Payments';
 
-    protected static ?int $navigationSort = 7;
+    protected static ?int $navigationSort = 11;
 
 
     public static function form(Form $form): Form

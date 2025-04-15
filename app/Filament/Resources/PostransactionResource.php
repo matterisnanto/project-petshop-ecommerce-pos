@@ -23,6 +23,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use App\Filament\Resources\PostransactionResource\Pages;
+use App\Models\Animals;
 
 class PostransactionResource extends Resource
 {
@@ -31,7 +32,7 @@ class PostransactionResource extends Resource
     protected static ?string $modelLabel = 'POS Transaction';
     protected static ?string $pluralModelLabel = 'POS Transactions';
     protected static ?string $navigationGroup = 'Transactions';
-    protected static ?int $navigationSort = 0;
+    protected static ?int $navigationSort = 1;
     protected static ?string $navigationIcon = 'heroicon-o-building-storefront';
 
     public static function form(Form $form): Form
@@ -57,7 +58,6 @@ class PostransactionResource extends Resource
                             ->schema([
                                 self::getItemsRepeater(),
                             ]),
-
                         Forms\Components\Group::make()
                             ->columns(2) // Membuat layout 2 kolom
                             ->schema([

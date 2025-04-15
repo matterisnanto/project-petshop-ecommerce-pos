@@ -15,14 +15,15 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('slug');
-            $table->foreignId('category_animal_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignId('category_animals_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('breeds_id')->nullable()->constrained()->nullOnDelete();
             $table->string('age');
             $table->string('weight');
-            $table->enum('gender', ['jantan', 'betina', 'unknown'])->default('unknown');
+            $table->enum('gender', ['male', 'female', 'unknown'])->default('unknown');
             $table->string('health_status');
             $table->boolean('vaccination_status')->default(false);
             $table->string('description');
+            $table->integer('stock')->default();
             $table->unsignedBigInteger('purchase_price');
             $table->unsignedBigInteger('selling_price');
             $table->boolean('is_active')->default(true);

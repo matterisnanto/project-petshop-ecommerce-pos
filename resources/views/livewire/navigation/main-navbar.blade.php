@@ -96,7 +96,7 @@
                                             </g>
                                         </svg>Pet Hotel</a>
                                 </li>
-                                <li>
+                                {{-- <li>
                                     <a href="#"
                                         class="flex items-center py-2 px-4 w-full hover:text-primary-600 dark:hover:text-primary-500">
                                         <svg class="mr-2 w-4 h-4" fill="currentColor" viewBox="0 -32 576 576"
@@ -110,7 +110,7 @@
                                                 </path>
                                             </g>
                                         </svg>Pet Clinic</a>
-                                </li>
+                                </li> --}}
                             </ul>
                         </div>
                     </li>
@@ -348,11 +348,11 @@
                                 class="{{ request()->is('pet-hotel*') ? 'text-primary-500' : 'text-gray-900 dark:text-white' }} block px-4 py-2 hover:text-primary-700 dark:hover:text-primary-500">Pet
                                 Hotel</a>
                         </li>
-                        <li>
+                        {{-- <li>
                             <a wire:navigate href="/pet-clinic" @click="open = false"
                                 class="{{ request()->is('pet-clinic*') ? 'text-primary-500' : 'text-gray-900 dark:text-white' }} block px-4 py-2 hover:text-primary-700 dark:hover:text-primary-500">Pet
                                 Clinic</a>
-                        </li>
+                        </li> --}}
                     </ul>
                 </li>
                 <li>

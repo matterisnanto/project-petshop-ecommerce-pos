@@ -29,7 +29,7 @@ class ProductResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Product';
 
-    protected static ?int $navigationSort = 5;
+    protected static ?int $navigationSort = 6;
 
     protected static ?string $navigationGroup = 'Product Resource';
 
@@ -185,7 +185,7 @@ class ProductResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\ImageColumn::make('thumbnail')
-                    ->label('Foto Produk')
+                    ->label('Product Photo')
                     ->square(),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),

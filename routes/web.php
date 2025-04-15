@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', Home::class)->name('home');
 
 Route::get('/products', ProductList::class)->name('products');
-Route::get('/products/{product:slug}', ProductDetail::class)->name('products.show');
+Route::get('/products/{product:slug}', ProductDetail::class)->name('products-show');
 
 Route::get('/shopping-cart', ShoppingCart::class)->name('shoppingcart');
 
