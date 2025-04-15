@@ -47,7 +47,7 @@
                                 aria-labelledby="dropdown-button">
                                 <li>
                                     <a wire:navigate href="/pet-grooming"
-                                        class="{{ $activeRoute === 'pet-grooming' ? 'text-primary-500' : 'text-gray-900 dark:text-white' }} flex items-center py-2 px-4 w-full hover:text-primary-600 dark:hover:text-primary-500">
+                                        class="{{ $activeRoute === 'pet-grooming' ? 'text-primary-500' : 'text-gray-500 dark:text-white' }} flex items-center py-2 px-4 w-full hover:text-primary-600 dark:hover:text-primary-500">
                                         <svg class="mr-2 w-4 h-4" fill="currentColor" version="1.1" id="Capa_1"
                                             xmlns="http://www.w3.org/2000/svg"
                                             xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 98.538 98.538"

@@ -15,7 +15,7 @@ class Order extends Model
 
     protected $table = 'order';
 
-    protected $fillable = ['pos_transaction_id', 'olshop_transaction_id', 'product_id', 'quantity', 'unit_price'];
+    protected $fillable = ['pos_transaction_id', 'olshop_transaction_id', 'product_id', 'animals_id', 'quantity', 'unit_price'];
 
 
     public function posTransaction(): BelongsTo
