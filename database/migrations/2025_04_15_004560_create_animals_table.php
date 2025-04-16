@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('animals', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('slug');
+            $$table->string('slug')->unique();
             $table->foreignId('category_animals_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('breeds_id')->nullable()->constrained()->nullOnDelete();
             $table->string('age');
@@ -22,7 +22,8 @@ return new class extends Migration
             $table->enum('gender', ['male', 'female', 'unknown'])->default('unknown');
             $table->string('health_status');
             $table->boolean('vaccination_status')->default(false);
-            $table->string('description');
+            $table->string('thumbnail');
+            $table->longText('description')->nullable();
             $table->integer('stock')->default();
             $table->unsignedBigInteger('purchase_price');
             $table->unsignedBigInteger('selling_price');

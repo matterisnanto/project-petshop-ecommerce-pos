@@ -1,37 +1,62 @@
 <div class="grid grid-cols-1 dark:bg-gray-900 md:grid-cols-3 gap-4">
     <div class="md:col-span-2 bg-white dark:bg-gray-800 shadow-md rounded-lg p-6">
         <div class="mb-4 flex gap-2">
-            <input wire:model.live.debounce.300ms='search' type="text" placeholder="Cari produk..."
+            <input wire:model.live.debounce.300ms='search' type="text"
+                placeholder="Search {{ $activeTab === 'products' ? 'Product' : 'Animal' }}..."
                 class="w-full p-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
             <x-filament::button x-data="" x-on:click="$dispatch('toggle-scanner')" color="primary">
                 Scan Barcode
             </x-filament::button>
             <livewire:scanner-modal-component />
         </div>
+
+        <!-- Tabs for Products/Animals -->
+        <div class="flex border-b border-gray-200 dark:border-gray-700 mb-4">
+            <button wire:click="switchTab('products')"
+                class="py-2 px-4 font-medium text-sm border-b-2 {{ $activeTab === 'products' ? 'border-primary-500 text-primary-600 dark:text-primary-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300' }}">
+                Products
+            </button>
+            <button wire:click="switchTab('animals')"
+                class="py-2 px-4 font-medium text-sm border-b-2 {{ $activeTab === 'animals' ? 'border-primary-500 text-primary-600 dark:text-primary-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300' }}">
+                Animals
+            </button>
+        </div>
+
         <div class="flex-grow">
             <div class="grid grid-cols-8 sm:grid-cols-3 md:grid-cols-8 lg:grid-cols-4 gap-4">
-
-                @foreach ($products as $item)
-                    <div wire:click="addToOrder({{ $item->id }})"
-                        class="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg shadow cursor-pointer">
-                        <img src="{{ asset($item['thumbnail'] ? 'storage/' . $item['thumbnail'] : 'images/default.png') }}"
-                            alt="Product Image" class="w-full h-32 object-cover rounded-md"
-                            onerror="this.onerror=null; this.src='{{ asset('images/default.png') }}';">
-
-
-                        <h3 class="text-sm font-semibold">{{ $item->name }}</h3>
-                        <p class="text-gray-600 dark:text-gray-400 text-xs">Rp.
-                            {{ number_format($item->selling_price, 0, ',', '.') }}</p>
-                        <p class="text-gray-600 dark:text-gray-400 text-xs">Stok: {{ $item->stock }}</p>
-                    </div>
-                @endforeach
-
+                @if ($activeTab === 'products')
+                    @foreach ($products as $item)
+                        <div wire:click="addToOrder({{ $item->id }})"
+                            class="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg shadow cursor-pointer">
+                            <img src="{{ asset($item['thumbnail'] ? 'storage/' . $item['thumbnail'] : 'images/default.png') }}"
+                                alt="Product Image" class="w-full h-32 object-cover rounded-md"
+                                onerror="this.onerror=null; this.src='{{ asset('images/default.png') }}';">
+                            <h3 class="text-sm font-semibold">{{ $item->name }}</h3>
+                            <p class="text-gray-600 dark:text-gray-400 text-xs">Rp.
+                                {{ number_format($item->selling_price, 0, ',', '.') }}</p>
+                            <p class="text-gray-600 dark:text-gray-400 text-xs">Stok: {{ $item->stock }}</p>
+                        </div>
+                    @endforeach
+                @else
+                    @foreach ($animals as $item)
+                        <div wire:click="addToOrder({{ $item->id }})"
+                            class="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg shadow cursor-pointer">
+                            <img src="{{ asset($item['thumbnail'] ? 'storage/' . $item['thumbnail'] : 'images/default.png') }}"
+                                alt="Animal Image" class="w-full h-32 object-cover rounded-md"
+                                onerror="this.onerror=null; this.src='{{ asset('images/default.png') }}';">
+                            <h3 class="text-sm font-semibold">{{ $item->name }}</h3>
+                            <p class="text-gray-600 dark:text-gray-400 text-xs">Rp.
+                                {{ number_format($item->selling_price, 0, ',', '.') }}</p>
+                            <p class="text-gray-600 dark:text-gray-400 text-xs">Stok: {{ $item->stock }}</p>
+                            <p class="text-gray-600 dark:text-gray-400 text-xs">Jenis: {{ $item->breeds->name ?? '-' }}
+                            </p>
+                        </div>
+                    @endforeach
+                @endif
             </div>
             <div class="py-4">
-                {{ $products->links() }}
-
+                {{ $activeTab === 'products' ? $products->links() : $animals->links() }}
             </div>
-
         </div>
     </div>
     <div class="md:col-span-1 bg-white dark:bg-gray-800 shadow-md rounded-lg p-6">
@@ -41,41 +66,38 @@
                 </h3>
             </div>
         @endif
-        @foreach ($order_items as $item)
+
+        @foreach ($order_items as $key => $item)
             <div class="mb-4">
                 <div class="flex justify-between items-center bg-gray-100 dark:bg-gray-700 p-4 rounded-lg shadow">
                     <div class="flex items-center">
-                        <img src="{{ asset($item['thumbnail'] ? 'storage/' . $item['thumbnail'] : 'images/default.png') }}"
-                            alt="Product Image" class="w-16 h-16 object-cover rounded-md"
+                        <img src="{{ $item['thumbnail'] ? asset('storage/' . $item['thumbnail']) : asset('images/default.png') }}"
+                            alt="{{ $item['name'] }}" class="w-16 h-16 object-cover rounded-md"
                             onerror="this.onerror=null; this.src='{{ asset('images/default.png') }}';">
-
                         <div class="px-2">
                             <h3 class="text-sm font-semibold">{{ $item['name'] }}</h3>
                             <p class="text-gray-600 dark:text-gray-400 text-xs">Rp
                                 {{ number_format($item['selling_price'], 0, ',', '.') }}</p>
+                            <p class="text-gray-600 dark:text-gray-400 text-xs">
+                                {{ $item['type'] === 'product' ? 'Produk' : 'Hewan' }}</p>
                         </div>
                     </div>
                     <div class="flex items-center">
                         <x-filament::button color="warning"
-                            wire:click="decreaseQuantity({{ $item['product_id'] }})">-</x-filament::button>
+                            wire:click="decreaseQuantity({{ $key }})">-</x-filament::button>
                         <span class="px-4">{{ $item['quantity'] }}</span>
                         <x-filament::button color="success"
-                            wire:click="increaseQuantity({{ $item['product_id'] }})">+</x-filament::button>
+                            wire:click="increaseQuantity({{ $key }})">+</x-filament::button>
                     </div>
                 </div>
             </div>
         @endforeach
+
         <form wire:submit="checkout">
             {{ $this->form }}
             <x-filament::button type="submit"
                 class="w-full bg-red-500 mt-3 text-white py-2 rounded">Checkout</x-filament::button>
-
-
         </form>
-
-        <div class="mt-2">
-
-        </div>
     </div>
 </div>
 <script src="https://unpkg.com/html5-qrcode"></script>

@@ -211,7 +211,7 @@
                     <hr class="my-6 md:my-4 border-gray-500 dark:border-gray-800" />
 
                     <p class="text-gray-500 dark:text-gray-400">
-                        {{ $product->about }}
+                        {{ $product->description }}
                     </p>
                 </div>
             </div>

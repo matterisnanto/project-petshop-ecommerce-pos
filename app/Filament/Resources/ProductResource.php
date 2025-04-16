@@ -62,7 +62,7 @@ class ProductResource extends Resource
                         Forms\Components\TextInput::make('weight')
                             ->required()
                             ->prefix('gram'),
-                        Forms\Components\Textarea::make('about')
+                        Forms\Components\Textarea::make('description')
                             ->columnSpanFull(),
                         Forms\Components\FileUpload::make('thumbnail')
                             ->image()

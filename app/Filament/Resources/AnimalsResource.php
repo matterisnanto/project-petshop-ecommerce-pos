@@ -99,6 +99,10 @@ class AnimalsResource extends Resource
                             ])
                             ->columnSpan(1)
                             ->default(null),
+                        Forms\Components\FileUpload::make('thumbnail')
+                            ->image()
+                            ->required()
+                            ->columnSpanFull(),
                         Forms\Components\Repeater::make('photos')
                             ->relationship('animalsPhotos')
                             ->schema([

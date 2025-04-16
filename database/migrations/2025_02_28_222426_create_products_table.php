@@ -17,7 +17,7 @@ return new class() extends Migration {
             $table->string('barcode')->nullable();
             $table->string('weight');
             $table->string('thumbnail');
-            $table->longText('about')->nullable();
+            $table->longText('description')->nullable();
             $table->unsignedBigInteger('purchase_price');
             $table->unsignedBigInteger('selling_price');
             $table->boolean('is_active')->default(true);

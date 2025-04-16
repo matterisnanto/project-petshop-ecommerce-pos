@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('photo');
             $table->foreignId('animals_id')->constrained('animals')->cascadeOnDelete();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

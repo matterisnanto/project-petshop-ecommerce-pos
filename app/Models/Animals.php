@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Support\Str;
 use App\Models\AnimalsPhoto;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -13,7 +14,7 @@ class Animals extends Model
     use HasFactory;
     protected $table = 'animals';
     //
-    protected $fillable = ['name', 'slug', 'category_animals_id', 'breeds_id', 'age', 'weight', 'stock', 'gender', 'health_status', 'vaccination_status', 'description', 'purchase_price', 'selling_price', 'is_active'];
+    protected $fillable = ['name', 'slug', 'category_animals_id', 'breeds_id', 'age', 'weight', 'stock', 'gender', 'health_status', 'vaccination_status', 'thumbnail', 'description', 'purchase_price', 'selling_price', 'is_active'];
 
     public function categoryAnimals()
     {
@@ -41,5 +42,20 @@ class Animals extends Model
             $counter++;
         }
         return $slug;
+    }
+
+    public function scopeSearch(Builder $query, string $search = null): Builder
+    {
+        if (!$search) {
+            return $query;
+        }
+
+        return $query->where(function ($query) use ($search) {
+            $query->where('name', 'like', "%{$search}%")
+                ->orWhere('description', 'like', "%{$search}%")
+                ->orWhereHas('breeds', function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%");
+                });
+        });
     }
 }

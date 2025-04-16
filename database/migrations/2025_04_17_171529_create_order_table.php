@@ -15,8 +15,10 @@ return new class extends Migration
             $table->id();
             $table->foreignId('pos_transaction_id')->nullable()->constrained('pos_transactions')->cascadeOnDelete();
             $table->foreignId('olshop_transaction_id')->nullable()->constrained('olshop_transactions')->cascadeOnDelete();
+            $table->string('type')->nullable();
             $table->foreignId('product_id')->nullable()->constrained('products')->nullOnDelete();
             $table->foreignId('animals_id')->nullable()->constrained('animals')->nullOnDelete();
+            $table->foreignId('grooming_id')->nullable()->constrained('groomings')->nullOnDelete();
             $table->integer('quantity');
             $table->integer('unit_price');
             $table->timestamps();

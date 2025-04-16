@@ -13,6 +13,7 @@ class PosTransaction extends Model
     //
     protected $fillable = [
         'name',
+        'phone',
         'email',
         'gender',
         'total_price',

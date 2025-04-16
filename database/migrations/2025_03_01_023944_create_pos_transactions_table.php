@@ -14,6 +14,7 @@ return new class() extends Migration {
         Schema::create('pos_transactions', function (Blueprint $table) {
             $table->id();
             $table->string('name')->nullable();
+            $table->string('phone')->nullable();
             $table->string('email')->nullable();
             $table->enum('gender', ['male', 'female']);
             $table->integer('total_price');
@@ -35,6 +36,6 @@ return new class() extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('p_o_s_transactions');
+        Schema::dropIfExists('pos_transactions');
     }
 };

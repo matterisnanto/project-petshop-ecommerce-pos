@@ -11,12 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('categories', function (Blueprint $table) {
+        Schema::create('groomings', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->string('slug')->unique();
+            $table->foreignId('category_animals_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignId('category_grooming_id')->nullable()->constrained('category_groomings')->nullOnDelete();
+            $table->string('photo')->nullable();
             $table->longText('description')->nullable();
-            $table->string('icon')->nullable();
+            $table->string('stock');
+            $table->unsignedBigInteger('purchase_price')->nullable();
+            $table->unsignedBigInteger('selling_price');
+            $table->boolean('is_active')->default(false);
             $table->timestamps();
             $table->softDeletes();
         });
@@ -27,6 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('categories');
+        Schema::dropIfExists('groomings');
     }
 };
