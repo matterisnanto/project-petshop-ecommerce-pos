@@ -90,8 +90,9 @@
                     <div
                         class="w-full rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 md:p-6">
                         <div class="h-30 w-full md:h-56">
-                            <a href="{{ route('products.show', $product->slug) }}" wire:navigate>
-                                <img class="mx-auto h-full dark:hidden"
+                            <a wire:navigate href="/products/{{ $product->slug }}">
+                                <img class="mx-auto
+                                h-full dark:hidden"
                                     src="{{ $product->image_url ?: 'https://via.placeholder.com/300' }} "
                                     alt="" />
                                 <img class="mx-auto hidden h-full dark:block"
@@ -100,7 +101,7 @@
                             </a>
                         </div>
                         <div class="pt-2 md:pt-6">
-                            <a href="#"
+                            <a wire:navigate href="/products/{{ $product->slug }}"
                                 class="block text-sm font-semibold leading-tight text-gray-900 hover:underline dark:text-white md:text-lg whitespace-nowrap overflow-hidden text-ellipsis">
                                 {{ $product->name }}
                             </a>

@@ -44,7 +44,6 @@ class PaymentmethodResource extends Resource
                             ->columnSpan(['md' => 2]),
                         Forms\Components\TextInput::make('account_number')
                             ->label('Account Number')
-                            ->required()
                             ->maxLength(50)
                             ->columnSpan(['md' => 2]),
                         Forms\Components\FileUpload::make('image')
@@ -59,7 +58,7 @@ class PaymentmethodResource extends Resource
                             ->inline(false)
                             ->required(),
                         Forms\Components\Toggle::make('pos_transaction')
-                            ->label('this is online payment?')
+                            ->label('this is offline payment?')
                             ->inline(false)
                             ->required(),
                         Forms\Components\Toggle::make('is_cash')

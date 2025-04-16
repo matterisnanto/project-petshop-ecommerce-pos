@@ -600,6 +600,7 @@ class Checkout extends Component
             foreach ($cartItems as $items) {
                 Order::create([
                     'olshop_transaction_id' => $transaction->id,
+                    'type' => 'product',
                     'product_id' => $items['id'],
                     'quantity' => $items['quantity'],
                     'unit_price' => $items['price'],
@@ -608,7 +609,6 @@ class Checkout extends Component
 
             // Clear session
             Session::forget(['cart', 'cart_totals', 'checkout_data']);
-            toastr()->success('order successfully created');
             // Redirect to confirmation page
             return redirect()->route('order-confirmation', ['transaction_id' => $transaction->trx_id]);
         } catch (\Exception $e) {

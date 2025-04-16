@@ -44,7 +44,7 @@ class PostransactionResource extends Resource
                     ->schema([
                         Forms\Components\Section::make('Main Information')
                             ->schema([
-                                Forms\Components\TextInput::make('name')->required()->maxLength(255),
+                                Forms\Components\TextInput::make('name')->maxLength(255),
                                 Forms\Components\TextInput::make('email')->email()->maxLength(255)->default(null),
                                 Forms\Components\Select::make('gender')
                                     ->options([
@@ -54,9 +54,107 @@ class PostransactionResource extends Resource
                                     ->required(),
                             ])
                             ->columnSpanFull(),
-                        Forms\Components\Section::make('Ordered Products')
+                        Section::make('Ordered Items')
                             ->schema([
-                                self::getItemsRepeater(),
+                                Repeater::make('order')
+                                    ->relationship()
+                                    ->live()
+                                    ->statePath('orderItems') // Pastikan ini ada
+                                    ->columns(['md' => 10])
+                                    ->afterStateUpdated(function (Get $get, Set $set) {
+                                        self::updateTotalPrice($get, $set);
+                                    })
+                                    ->schema([
+                                        Select::make('type')
+                                            ->options([
+                                                'product' => 'Product',
+                                                'animal' => 'Animal',
+                                            ])
+                                            ->required()
+                                            ->live() // Tambahkan live()
+                                            ->columnSpan(2)
+                                            ->afterStateUpdated(function ($state, Set $set, Get $get) {
+                                                $set('product_id', null);
+                                                $set('animals_id', null);
+                                                $set('unit_price', 0);
+                                                $set('quantity', 1);
+                                                self::updateTotalPrice($get, $set); // Panggil updateTotalPrice
+                                            }),
+
+                                        Select::make('product_id')
+                                            ->label('Product')
+                                            ->live(debounce: 500)
+                                            ->options(Product::query()->where('stock', '>', 0)->pluck('name', 'id'))
+                                            ->columnSpan(4)
+                                            ->required(fn(Get $get): bool => $get('type') === 'product')
+                                            ->visible(fn(Get $get): bool => $get('type') === 'product') // Tambahkan live()
+                                            ->afterStateUpdated(function ($state, Set $set, Get $get) {
+                                                if ($state) {
+                                                    $product = Product::find($state);
+                                                    $set('unit_price', $product->selling_price ?? 0);
+                                                    $set('stock', $product->stock ?? 0);
+                                                }
+                                                self::updateTotalPrice($get, $set); // Panggil updateTotalPrice
+                                            }),
+
+                                        Select::make('animals_id')
+                                            ->label('Animal')
+                                            ->options(Animals::query()->where('is_active', true)->where('stock', '>', 0)->pluck('name', 'id'))
+                                            ->columnSpan(4)
+                                            ->required(fn(Get $get): bool => $get('type') === 'animal')
+                                            ->visible(fn(Get $get): bool => $get('type') === 'animal')
+                                            ->live() // Tambahkan live()
+                                            ->afterStateUpdated(function ($state, Set $set, Get $get) {
+                                                if ($state) {
+                                                    $animal = Animals::find($state);
+                                                    $set('unit_price', $animal->selling_price ?? 0);
+                                                    $set('stock', $animal->stock ?? 0);
+                                                }
+                                                self::updateTotalPrice($get, $set); // Panggil updateTotalPrice
+                                            }),
+
+                                        TextInput::make('quantity')
+                                            ->required()
+                                            ->numeric()
+                                            ->default(1)
+                                            ->minValue(1)
+                                            ->columnSpan(1)
+                                            ->live(onBlur: true)
+                                            ->afterStateUpdated(function ($state, Set $set, Get $get) {
+                                                if ($get('type') === 'product') {
+                                                    $stock = $get('stock');
+                                                    if ($state > $stock) {
+                                                        $set('quantity', $stock);
+                                                        Notification::make()
+                                                            ->title('Insufficient stock')
+                                                            ->warning()
+                                                            ->send();
+                                                    }
+                                                } elseif ($get('type') === 'animal') {
+                                                    $stock = $get('stock');
+                                                    if ($state > $stock) {
+                                                        $set('quantity', $stock);
+                                                        Notification::make()
+                                                            ->title('Insufficient animal stock')
+                                                            ->warning()
+                                                            ->send();
+                                                    }
+                                                }
+                                                self::updateTotalPrice($get, $set);
+                                            }),
+                                        TextInput::make('stock')
+                                            ->numeric()
+                                            ->readOnly()
+                                            ->columnSpan(1)
+                                            ->visible(fn(Get $get): bool => $get('type') === 'product'),
+
+                                        TextInput::make('unit_price')
+                                            ->required()
+                                            ->numeric()
+                                            ->readOnly()
+                                            ->columnSpan(2)
+                                            ->live(),
+                                    ]),
                             ]),
                         Forms\Components\Group::make()
                             ->columns(2) // Membuat layout 2 kolom
@@ -100,12 +198,14 @@ class PostransactionResource extends Resource
                                                 }
 
                                                 $set('is_cash', $paymentMethod->is_cash ?? false);
-                                            }),
+                                            })
+                                            ->live(),
                                         Forms\Components\Hidden::make('is_cash')
                                             ->dehydrated(),
                                         Forms\Components\TextInput::make('paid_amount')
                                             ->numeric()
                                             ->reactive()
+                                            ->live(debounce: 1000)
                                             ->label('Amount Paid')
                                             ->readOnly(fn(Get $get) => $get('is_cash') == false)
                                             ->afterStateUpdated(function (Set $set, Get $get, $state) {
@@ -155,90 +255,33 @@ class PostransactionResource extends Resource
             ]);
     }
 
-    public static function getItemsRepeater(): Repeater
-    {
-        return Forms\Components\Repeater::make('order')
-            ->relationship('order')
-            ->live()
-            ->columns([
-                'md' => 10,
-            ])
-            ->afterStateUpdated(function (Get $get, Set $set) {
-                self::updateTotalPrice($get, $set);
-            })
-            ->schema([
-                Select::make('product_id')
-                    ->label('Product')
-                    ->required()
-                    ->options(Product::query()->where('stock', '>', 1)->pluck('name', 'id'))
-                    ->columnSpan([
-                        'md' => 5,
-                    ])
-                    ->afterStateHydrated(function (Set $set, Get $get, $state) {
-                        $product = Product::find($state);
-                        $set('unit_price', $product->selling_price ?? 0);
-                        $set('stock', $product->stock ?? 0);
-                    })
-                    ->afterStateUpdated(function ($state, Set $set, Get $get) {
-                        $product = Product::find($state);
-                        $set('unit_price', $product->selling_price ?? 0);
-                        $set('stock', $product->stock ?? 0);
-                        $quantity = $get('quantity') ?? 1;
-                        $stock = $get('stock');
-                        self::updateTotalPrice($get, $set);
-                    })
-                    ->disableOptionsWhenSelectedInSiblingRepeaterItems(),
-                TextInput::make('quantity')
-                    ->required()
-                    ->numeric()
-                    ->default(1)
-                    ->minValue(1)
-                    ->columnSpan([
-                        'md' => 1
-                    ])
-                    ->afterStateUpdated(function ($state, Set $set, Get $get) {
-                        $stock = $get('stock');
-                        if ($state > $stock) {
-                            $set('quantity', $stock);
-                            Notification::make()
-                                ->title('Insufficient stock')
-                                ->warning()
-                                ->send();
-                        }
-                        self::updateTotalPrice($get, $set);
-                    }),
-
-                TextInput::make('stock')
-                    ->required()
-                    ->numeric()
-                    ->readOnly()
-                    ->columnSpan([
-                        'md' => 1
-                    ]),
-
-                TextInput::make('unit_price')
-                    ->required()
-                    ->numeric()
-                    ->readOnly()
-                    ->columnSpan([
-                        'md' => 3
-                    ]),
-            ]);
-    }
-
     protected static function updateTotalPrice(Get $get, Set $set): void
     {
-        $selectedProducts = collect($get('order'))
-            ->filter(fn($item) => !empty($item['product_id']) && !empty($item['quantity']));
+        $total = 0;
+        $orders = $get('orderItems') ?? [];
 
-        $prices = Product::find($selectedProducts->pluck('product_id'))
-            ->pluck('selling_price', 'id');
-
-        $total = $selectedProducts->reduce(function ($total, $product) use ($prices) {
-            return $total + ($prices[$product['product_id']] * $product['quantity']);
-        }, 0);
+        foreach ($orders as $order) {
+            if (!empty($order['product_id'])) {
+                // Jika ada product_id, dapatkan harga langsung dari database
+                $product = Product::find($order['product_id']);
+                $price = $product->selling_price ?? 0;
+                $quantity = (int) ($order['quantity'] ?? 1);
+                $total += $price * $quantity;
+            } elseif (!empty($order['animals_id'])) {
+                // Sama untuk animals
+                $animal = Animals::find($order['animals_id']);
+                $price = $animal->selling_price ?? 0;
+                $quantity = (int) ($order['quantity'] ?? 1);
+                $total += $price * $quantity;
+            }
+        }
 
         $set('total_price', $total);
+
+        if (!$get('is_cash')) {
+            $set('paid_amount', $total);
+            $set('change_amount', 0);
+        }
     }
 
     protected static function updateExchangePaid(Get $get, Set $set): void
@@ -248,6 +291,7 @@ class PostransactionResource extends Resource
         $exchangePaid = $paidAmount - $totalPrice;
         $set('change_amount', $exchangePaid);
     }
+
 
     public static function getPages(): array
     {

@@ -378,6 +378,8 @@ class OlshoptransactionResource extends Resource
                 self::calculateShippingCost($get, $set);
             })
             ->schema([
+                Forms\Components\Hidden::make('type')
+                    ->default('product'),
                 Forms\Components\Select::make('product_id')
                     ->label('Produk')
                     ->required()

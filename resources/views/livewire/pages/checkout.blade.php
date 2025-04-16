@@ -1,6 +1,6 @@
 <div>
     <section class="bg-white py-2 antialiased dark:bg-gray-900 md:py-4">
-        <form action="#" class="mx-auto max-w-screen-xl px-4 2xl:px-0">
+        <form class="mx-auto max-w-screen-xl px-4 2xl:px-0">
             <ol
                 class="items-center flex w-full max-w-2xl text-center text-sm font-medium text-gray-500 dark:text-gray-400 sm:text-base">
                 <li
@@ -99,8 +99,7 @@
                                                 <input type="text" id="phone-input" wire:model.blur="phone"
                                                     wire:keydown.debounce.500ms="saveField('phone')"
                                                     class="z-20 block w-full rounded-e-lg border border-s-0 border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:border-s-gray-700 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500"
-                                                    pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" placeholder="123-456-7890"
-                                                    required />
+                                                    placeholder="123-456-7890" required />
                                             </div>
                                         </div>
                                         @error('phone')
@@ -470,6 +469,7 @@
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror --}}
                         <button wire:click="proceedOrder" wire:loading.attr="disabled"
+                            onclick="event.preventDefault()"
                             class="mt-4 flex w-full items-center justify-center rounded-lg bg-primary-500 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-600 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
                             <span wire:loading.remove>Proceed Order</span>
                             <span wire:loading>
