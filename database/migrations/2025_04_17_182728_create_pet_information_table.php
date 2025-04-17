@@ -15,12 +15,14 @@ return new class extends Migration
             $table->id();
             $table->foreignId('order_id')->constrained('order')->cascadeOnDelete();
             $table->string('name');
+            $table->foreignId('category_animals_id')->nullable()->constrained('category_animals')->nullOnDelete();
             $table->integer('age');
             $table->string('photo');
-            $table->string('description');
-            $table->date('check_in');
-            $table->date('check_out');
-            $table->integer('days');
+            $table->string('description')->nullable();
+            $table->date('check_in')->nullable();
+            $table->date('check_out')->nullable();
+            $table->integer('days')->nullable();
+            $table->boolean('on_petshop')->default(false);
             $table->timestamps();
             $table->softDeletes();
         });
