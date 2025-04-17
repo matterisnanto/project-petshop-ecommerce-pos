@@ -14,7 +14,7 @@ class Animals extends Model
     use HasFactory;
     protected $table = 'animals';
     //
-    protected $fillable = ['name', 'slug', 'category_animals_id', 'breeds_id', 'age', 'weight', 'stock', 'gender', 'health_status', 'vaccination_status', 'thumbnail', 'description', 'purchase_price', 'selling_price', 'is_active'];
+    protected $fillable = ['name', 'slug', 'barcode', 'category_animals_id', 'breeds_id', 'age', 'weight', 'stock', 'gender', 'health_status', 'vaccination_status', 'thumbnail', 'description', 'purchase_price', 'selling_price', 'is_active'];
 
     public function categoryAnimals()
     {

@@ -60,11 +60,13 @@ class AnimalsResource extends Resource
                                     ->live(onBlur: true)
                                     ->required()
                                     ->maxLength(255),
-
                                 Forms\Components\TextInput::make('slug')
                                     ->required()
                                     ->readOnly()
                                     ->maxLength(255),
+                                Forms\Components\TextInput::make('barcode')
+                                    ->maxLength(255)
+                                    ->default(null),
                                 Forms\Components\TextInput::make('description')
                                     ->maxLength(255)
                                     ->default(null),

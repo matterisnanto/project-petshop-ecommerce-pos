@@ -11,15 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('hotels', function (Blueprint $table) {
+        Schema::create('pet_information', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('order_id')->constrained('order')->cascadeOnDelete();
             $table->string('name');
-            $table->foreignId('category_animals_id')->nullable()->constrained()->nullOnDelete();
-            $table->text('description')->nullable();
-            $table->decimal('price_per_day');
-            $table->integer('capacity');
-            $table->string('thumbnail')->nullable();
-            $table->boolean('is_active')->default(true);
+            $table->integer('age');
+            $table->string('photo');
+            $table->string('description');
+            $table->date('check_in');
+            $table->date('check_out');
+            $table->integer('days');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -30,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('hotels');
+        Schema::dropIfExists('pet_information');
     }
 };
