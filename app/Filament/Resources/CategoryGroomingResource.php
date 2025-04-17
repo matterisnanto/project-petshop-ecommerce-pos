@@ -21,7 +21,7 @@ class CategoryGroomingResource extends Resource
     protected static ?string $modelLabel = 'Category Grooming';
     protected static ?string $pluralModelLabel = 'Category Grooming';
     protected static ?string $navigationGroup = 'Service Resource';
-    protected static ?int $navigationSort = 20;
+    protected static ?int $navigationSort = 10;
 
     protected static ?string $navigationIcon = 'heroicon-o-circle-stack';
 
@@ -29,17 +29,50 @@ class CategoryGroomingResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('slug')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\Textarea::make('description')
-                    ->columnSpanFull(),
-                Forms\Components\TextInput::make('photo')
-                    ->maxLength(255)
-                    ->default(null),
+                Forms\Components\Section::make('Basic Information')
+                    ->description('Enter the basic details of the item')
+                    ->schema([
+                        Forms\Components\TextInput::make('name')
+                            ->required()
+                            ->maxLength(255)
+                            ->placeholder('Enter a descriptive name')
+                            ->columnSpan(['md' => 2]),
+
+                        Forms\Components\TextInput::make('slug')
+                            ->required()
+                            ->maxLength(255)
+                            ->unique(ignoreRecord: true)
+                            ->placeholder('auto-generated-if-empty')
+                            ->hint('Will be automatically generated from name if left empty')
+                            ->rules(['alpha_dash'])
+                            ->columnSpan(['md' => 2]),
+                    ])
+                    ->columns(2),
+
+                Forms\Components\Section::make('Description')
+                    ->schema([
+                        Forms\Components\Textarea::make('description')
+                            ->columnSpanFull()
+                            ->rows(5)
+                            ->placeholder('Enter a detailed description')
+                            ->maxLength(1000)
+                            ->helperText('Max 1000 characters'),
+                    ]),
+
+                Forms\Components\Section::make('Media')
+                    ->schema([
+                        Forms\Components\FileUpload::make('photo')
+                            ->label('Upload Photo')
+                            ->directory('photos')
+                            ->image()
+                            ->imageEditor()
+                            ->imageResizeMode('cover')
+                            ->imageCropAspectRatio('16:9')
+                            ->imagePreviewHeight('250')
+                            ->maxSize(2048)
+                            ->helperText('Maximum file size: 2MB')
+                            ->columnSpanFull(),
+                    ]),
             ]);
     }
 

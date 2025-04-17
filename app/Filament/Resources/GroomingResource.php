@@ -21,7 +21,7 @@ class GroomingResource extends Resource
     protected static ?string $modelLabel = 'Grooming';
     protected static ?string $pluralModelLabel = 'Grooming';
     protected static ?string $navigationGroup = 'Service Resource';
-    protected static ?int $navigationSort = 20;
+    protected static ?int $navigationSort = 11;
 
     public static function getNavigationIcon(): string
     {
@@ -44,6 +44,13 @@ class GroomingResource extends Resource
                 Forms\Components\TextInput::make('category_grooming_id')
                     ->numeric()
                     ->default(null),
+                Forms\Components\Repeater::make('groomingPackage')
+                    ->relationship('groomingPackage')
+                    ->schema([
+                        Forms\Components\TextInput::make('name')
+                            ->required(),
+                    ])
+                    ->columnSpanFull(),
                 Forms\Components\TextInput::make('photo')
                     ->maxLength(255)
                     ->default(null),
