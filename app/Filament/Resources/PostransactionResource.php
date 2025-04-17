@@ -4,10 +4,13 @@ namespace App\Filament\Resources;
 
 use Filament\Forms;
 use Filament\Tables;
-use App\Models\Product;
+use App\Models\Hotel;
 
+use App\Models\Animals;
+use App\Models\Product;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
+use App\Models\Grooming;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use App\Models\PaymentMethod;
@@ -22,8 +25,9 @@ use Filament\Forms\Components\Textarea;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\FileUpload;
 use App\Filament\Resources\PostransactionResource\Pages;
-use App\Models\Animals;
 
 class PostransactionResource extends Resource
 {
@@ -40,7 +44,7 @@ class PostransactionResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Group::make()
-                    ->columnSpanFull() // Tambahkan ini
+                    ->columnSpanFull()
                     ->schema([
                         Forms\Components\Section::make('Main Information')
                             ->schema([
@@ -59,7 +63,7 @@ class PostransactionResource extends Resource
                                 Repeater::make('order')
                                     ->relationship()
                                     ->live()
-                                    ->statePath('orderItems') // Pastikan ini ada
+                                    ->statePath('orderItems')
                                     ->columns(['md' => 10])
                                     ->afterStateUpdated(function (Get $get, Set $set) {
                                         self::updateTotalPrice($get, $set);
@@ -69,16 +73,20 @@ class PostransactionResource extends Resource
                                             ->options([
                                                 'product' => 'Product',
                                                 'animal' => 'Animal',
+                                                'grooming' => 'Grooming',
+                                                'hotel' => 'Hotel',
                                             ])
                                             ->required()
-                                            ->live() // Tambahkan live()
+                                            ->live()
                                             ->columnSpan(2)
                                             ->afterStateUpdated(function ($state, Set $set, Get $get) {
                                                 $set('product_id', null);
                                                 $set('animals_id', null);
+                                                $set('grooming_id', null);
+                                                $set('hotel_id', null);
                                                 $set('unit_price', 0);
                                                 $set('quantity', 1);
-                                                self::updateTotalPrice($get, $set); // Panggil updateTotalPrice
+                                                self::updateTotalPrice($get, $set);
                                             }),
 
                                         Select::make('product_id')
@@ -87,14 +95,14 @@ class PostransactionResource extends Resource
                                             ->options(Product::query()->where('stock', '>', 0)->pluck('name', 'id'))
                                             ->columnSpan(4)
                                             ->required(fn(Get $get): bool => $get('type') === 'product')
-                                            ->visible(fn(Get $get): bool => $get('type') === 'product') // Tambahkan live()
+                                            ->visible(fn(Get $get): bool => $get('type') === 'product')
                                             ->afterStateUpdated(function ($state, Set $set, Get $get) {
                                                 if ($state) {
                                                     $product = Product::find($state);
                                                     $set('unit_price', $product->selling_price ?? 0);
                                                     $set('stock', $product->stock ?? 0);
                                                 }
-                                                self::updateTotalPrice($get, $set); // Panggil updateTotalPrice
+                                                self::updateTotalPrice($get, $set);
                                             }),
 
                                         Select::make('animals_id')
@@ -103,14 +111,44 @@ class PostransactionResource extends Resource
                                             ->columnSpan(4)
                                             ->required(fn(Get $get): bool => $get('type') === 'animal')
                                             ->visible(fn(Get $get): bool => $get('type') === 'animal')
-                                            ->live() // Tambahkan live()
+                                            ->live()
                                             ->afterStateUpdated(function ($state, Set $set, Get $get) {
                                                 if ($state) {
                                                     $animal = Animals::find($state);
                                                     $set('unit_price', $animal->selling_price ?? 0);
                                                     $set('stock', $animal->stock ?? 0);
                                                 }
-                                                self::updateTotalPrice($get, $set); // Panggil updateTotalPrice
+                                                self::updateTotalPrice($get, $set);
+                                            }),
+
+                                        Select::make('grooming_id')
+                                            ->label('Grooming Service')
+                                            ->options(Grooming::query()->where('is_active', true)->pluck('name', 'id'))
+                                            ->columnSpan(4)
+                                            ->required(fn(Get $get): bool => $get('type') === 'grooming')
+                                            ->visible(fn(Get $get): bool => $get('type') === 'grooming')
+                                            ->live()
+                                            ->afterStateUpdated(function ($state, Set $set, Get $get) {
+                                                if ($state) {
+                                                    $grooming = Grooming::find($state);
+                                                    $set('unit_price', $grooming->selling_price ?? 0);
+                                                }
+                                                self::updateTotalPrice($get, $set);
+                                            }),
+
+                                        Select::make('hotel_id')
+                                            ->label('Hotel Service')
+                                            ->options(Hotel::query()->where('is_active', true)->pluck('name', 'id'))
+                                            ->columnSpan(4)
+                                            ->required(fn(Get $get): bool => $get('type') === 'hotel')
+                                            ->visible(fn(Get $get): bool => $get('type') === 'hotel')
+                                            ->live()
+                                            ->afterStateUpdated(function ($state, Set $set, Get $get) {
+                                                if ($state) {
+                                                    $hotel = Hotel::find($state);
+                                                    $set('unit_price', $hotel->price_per_day ?? 0);
+                                                }
+                                                self::updateTotalPrice($get, $set);
                                             }),
 
                                         TextInput::make('quantity')
@@ -142,6 +180,7 @@ class PostransactionResource extends Resource
                                                 }
                                                 self::updateTotalPrice($get, $set);
                                             }),
+
                                         TextInput::make('stock')
                                             ->numeric()
                                             ->readOnly()
@@ -154,12 +193,42 @@ class PostransactionResource extends Resource
                                             ->readOnly()
                                             ->columnSpan(2)
                                             ->live(),
+
+                                        // Pet Information Section (visible only for grooming and hotel)
+                                        Repeater::make('petInformation')
+                                            ->relationship()
+                                            ->visible(fn(Get $get): bool => in_array($get('type'), ['grooming', 'hotel']))
+                                            ->schema([
+                                                TextInput::make('name')
+                                                    ->required()
+                                                    ->label('Pet Name'),
+                                                TextInput::make('age')
+                                                    ->numeric()
+                                                    ->required()
+                                                    ->label('Pet Age'),
+                                                FileUpload::make('photo')
+                                                    ->image()
+                                                    ->directory('pet-photos')
+                                                    ->required()
+                                                    ->label('Pet Photo'),
+                                                Textarea::make('description')
+                                                    ->required()
+                                                    ->label('Pet Description'),
+                                                DatePicker::make('check_in')
+                                                    ->required(fn(Get $get): bool => $get('../../type') === 'hotel')
+                                                    ->visible(fn(Get $get): bool => $get('../../type') === 'hotel'),
+                                                DatePicker::make('check_out')
+                                                    ->required(fn(Get $get): bool => $get('../../type') === 'hotel')
+                                                    ->visible(fn(Get $get): bool => $get('../../type') === 'hotel')
+                                                    ->afterOrEqual('check_in'),
+                                            ])
+                                            ->columnSpanFull()
+                                            ->visible(fn(Get $get): bool => in_array($get('type'), ['grooming', 'hotel']))
                                     ]),
                             ]),
                         Forms\Components\Group::make()
-                            ->columns(2) // Membuat layout 2 kolom
+                            ->columns(2)
                             ->schema([
-                                // Kolom pertama: Total Price & Note
                                 Forms\Components\Section::make('Total & Notes')
                                     ->schema([
                                         Forms\Components\TextInput::make('total_price')
@@ -169,16 +238,15 @@ class PostransactionResource extends Resource
                                         Forms\Components\Textarea::make('note')
                                             ->columnSpanFull(),
                                     ])
-                                    ->columnSpan(1), // Ambil 1 kolom dari 2 kolom total
+                                    ->columnSpan(1),
 
-                                // Kolom kedua: Pembayaran
                                 Forms\Components\Section::make('Payment')
                                     ->schema([
                                         Forms\Components\Select::make('payment_method_id')
                                             ->relationship('paymentMethod', 'name')
                                             ->reactive()
                                             ->options(function () {
-                                                return PaymentMethod::where('pos_transaction', true) // Filter yang pos_transaction = true
+                                                return PaymentMethod::where('pos_transaction', true)
                                                     ->pluck('name', 'id');
                                             })
                                             ->afterStateUpdated(function ($state, Set $set, Get $get) {
@@ -209,7 +277,6 @@ class PostransactionResource extends Resource
                                             ->label('Amount Paid')
                                             ->readOnly(fn(Get $get) => $get('is_cash') == false)
                                             ->afterStateUpdated(function (Set $set, Get $get, $state) {
-                                                // Function untuk menghitung uang kembalian
                                                 self::updateExchangePaid($get, $set);
                                             }),
                                         Forms\Components\TextInput::make('change_amount')
@@ -217,9 +284,8 @@ class PostransactionResource extends Resource
                                             ->label('Change')
                                             ->readOnly(),
                                     ])
-                                    ->columnSpan(1), // Ambil 1 kolom dari 2 kolom total
+                                    ->columnSpan(1),
                             ])
-
                     ]),
             ]);
     }
@@ -231,13 +297,10 @@ class PostransactionResource extends Resource
                 Tables\Columns\TextColumn::make('name')->searchable(),
                 Tables\Columns\TextColumn::make('gender'),
                 Tables\Columns\TextColumn::make('total_price')->numeric()->sortable(),
-
-                // Kolom ini untuk menampilkan nama metode pembayaran
                 Tables\Columns\TextColumn::make('paymentMethod.name')
                     ->label('Payment Method')
                     ->sortable()
                     ->searchable(),
-
                 Tables\Columns\TextColumn::make('paid_amount')->numeric()->sortable(),
                 Tables\Columns\TextColumn::make('change_amount')->numeric()->sortable(),
                 Tables\Columns\TextColumn::make('created_at')->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true),
@@ -262,15 +325,23 @@ class PostransactionResource extends Resource
 
         foreach ($orders as $order) {
             if (!empty($order['product_id'])) {
-                // Jika ada product_id, dapatkan harga langsung dari database
                 $product = Product::find($order['product_id']);
                 $price = $product->selling_price ?? 0;
                 $quantity = (int) ($order['quantity'] ?? 1);
                 $total += $price * $quantity;
             } elseif (!empty($order['animals_id'])) {
-                // Sama untuk animals
                 $animal = Animals::find($order['animals_id']);
                 $price = $animal->selling_price ?? 0;
+                $quantity = (int) ($order['quantity'] ?? 1);
+                $total += $price * $quantity;
+            } elseif (!empty($order['grooming_id'])) {
+                $grooming = Grooming::find($order['grooming_id']);
+                $price = $grooming->selling_price ?? 0;
+                $quantity = (int) ($order['quantity'] ?? 1);
+                $total += $price * $quantity;
+            } elseif (!empty($order['hotel_id'])) {
+                $hotel = Hotel::find($order['hotel_id']);
+                $price = $hotel->price_per_day ?? 0;
                 $quantity = (int) ($order['quantity'] ?? 1);
                 $total += $price * $quantity;
             }
@@ -291,6 +362,7 @@ class PostransactionResource extends Resource
         $exchangePaid = $paidAmount - $totalPrice;
         $set('change_amount', $exchangePaid);
     }
+
 
 
     public static function getPages(): array

@@ -47,6 +47,10 @@ class AnimalsResource extends Resource
                             ->maxLength(255)
                             ->columnSpanFull(),
                         Forms\Components\hidden::make('slug'),
+                        Forms\Components\TextInput::make('barcode')
+                            ->maxLength(255)
+                            ->default(null)
+                            ->columnSpanFull(),
                         Forms\Components\Select::make('category_animals_id')
                             ->relationship('categoryAnimals', 'name')
                             ->label('Animals Category')
@@ -64,9 +68,6 @@ class AnimalsResource extends Resource
                                     ->required()
                                     ->readOnly()
                                     ->maxLength(255),
-                                Forms\Components\TextInput::make('barcode')
-                                    ->maxLength(255)
-                                    ->default(null),
                                 Forms\Components\TextInput::make('description')
                                     ->maxLength(255)
                                     ->default(null),
