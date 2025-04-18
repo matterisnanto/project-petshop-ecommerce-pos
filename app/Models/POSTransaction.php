@@ -13,6 +13,7 @@ class PosTransaction extends Model
     //
     protected $fillable = [
         'name',
+        'phone',
         'email',
         'gender',
         'total_price',
@@ -43,5 +44,15 @@ class PosTransaction extends Model
         return view('livewire.pos-transaction', [
             'transactions' => $this->transactions
         ]);
+    }
+
+    public function productOrders()
+    {
+        return $this->hasMany(Order::class)->whereNotNull('product_id');
+    }
+
+    public function animalOrders()
+    {
+        return $this->hasMany(Order::class)->whereNotNull('animals_id');
     }
 }

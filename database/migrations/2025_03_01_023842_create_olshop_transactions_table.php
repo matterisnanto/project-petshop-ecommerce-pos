@@ -13,25 +13,29 @@ return new class extends Migration
     {
         Schema::create('olshop_transactions', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('phone');
-            $table->string('email')->unique();
-            $table->unsignedBigInteger('sub_total_amount');
+            $table->string('name', 100);
+            $table->string('phone', 20);
+            $table->string('email', 100);
+            $table->decimal('sub_total_amount', 12, 2);
             $table->foreignId('promo_code_id')->nullable()->constrained()->nullOnDelete();
-            // $table->integer('quantity');
-            $table->unsignedBigInteger('discount_amount');
-            $table->unsignedBigInteger('grand_total_amount');
-            $table->string('province');
-            $table->string('city_regency');
-            $table->string('district');
-            $table->string('vilage_subdistrict');
-            $table->string('post_code');
-            $table->string('address');
-            $table->boolean('is_paid');
-            $table->string('trx_id');
-            $table->string('proof');
-            $table->softDeletes();
+            $table->decimal('discount_amount', 12, 2)->default(0);
+            $table->decimal('grand_total_amount', 12, 2);
+            $table->string('province', 100);
+            $table->string('city_regency', 100);
+            $table->string('post_code', 10);
+            $table->text('complete_address');
+            $table->boolean('is_paid')->default(false);
+            $table->string('trx_id', 50)->unique();
+            $table->string('package_resi_number', 50)->default('Being Processed');
+            $table->string('courier', 50);
+            $table->string('shipping_service', 50);
+            $table->decimal('weight_total', 8, 2);
+            $table->decimal('shipping_cost', 12, 2);
+            $table->string('estimated_delivery', 100);
+            $table->foreignId('payment_method_id')->nullable()->constrained()->nullOnDelete();
+            $table->string('proof', 255);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

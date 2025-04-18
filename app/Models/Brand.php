@@ -10,9 +10,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Brand extends Model
 {
     use HasFactory;
-    
+
     protected $table = 'brands';
-    
+
     protected $fillable = ['name', 'slug', 'logo'];
 
     public function setNameAttribute($value)
@@ -38,5 +38,12 @@ class Brand extends Model
         }
 
         return $slug;
+    }
+
+    public function scopeWithProductsCount($query)
+    {
+        return $query->withCount(['products' => function ($query) {
+            $query->where('is_active', true);
+        }]);
     }
 }

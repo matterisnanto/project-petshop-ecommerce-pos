@@ -1,25 +1,51 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\TrxController;
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\ProductController;
-use App\Http\Controllers\ContactUsController;
+use App\Livewire\Pos;
+use App\Livewire\Home;
+use App\Livewire\TrxCheck;
+
+use App\Livewire\ContactUs;
+use App\Livewire\ProductList;
+use App\Livewire\ShoppingCart;
 use App\Exports\TemplateExport;
+use App\Livewire\Checkout;
+use App\Livewire\OrderConfirmation;
+use App\Livewire\PetGrooming;
+use App\Livewire\PetHotel;
+use App\Livewire\ProductDetail;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Route;
 
-Route::get('/', [HomeController::class, 'index'])->name('home');
 
-Route::get('/product', [ProductController::class, 'index'])->name('product');
-Route::get('/products/show-all', [ProductController::class, 'showAll'])->name('products.showAll');
+Route::get('/', Home::class)->name('home');
 
-Route::get('/trx-check', [TrxController::class, 'index'])->name('trx');
-Route::post('/trx-check', [TrxController::class, 'searchTransaction'])->name('transaction.search');
+Route::get('/products', ProductList::class)->name('products');
+Route::get('/products/{product:slug}', ProductDetail::class)->name('products-show');
 
-Route::get('contact-us', [ContactUsController::class, 'index'])->name('contactus');
+Route::get('/shopping-cart', ShoppingCart::class)->name('shoppingcart');
+
+Route::get('/shopping-cart/checkout', Checkout::class)->name('checkout');
+
+Route::get('/order-confirmation/{transaction_id}', OrderConfirmation::class)
+    ->name('order-confirmation');
+
+Route::get('/pet-grooming', PetGrooming::class)->name('pet-grooming');
+
+Route::get('/pet-hotel', PetHotel::class)->name('pet-hotel');
+
+Route::get('/trx-check', TrxCheck::class)->name('trx-check');
+
+Route::get('/contact-us', ContactUs::class)->name('contact-us');
+
+Route::get('/debug-cart', function () {
+    return response()->json([
+        'cart' => session('cart'),
+        'cart_totals' => session('cart_totals'),
+        'checkout_data' => session('checkout_data')
+    ]);
+});
+
 
 Route::get('/download-template', function () {
     return Excel::download(new TemplateExport, 'template.xlsx');
 })->name('download-template');
-
-use App\Livewire\Pos;

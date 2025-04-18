@@ -29,7 +29,7 @@ class ProductResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Product';
 
-    protected static ?int $navigationSort = 5;
+    protected static ?int $navigationSort = 6;
 
     protected static ?string $navigationGroup = 'Product Resource';
 
@@ -38,139 +38,323 @@ class ProductResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Section::make('Product Information')
+                    ->description('Basic product details')
+                    ->icon('heroicon-o-shopping-bag')
                     ->schema([
-                        Forms\Components\TextInput::make('name')
-                            ->afterStateUpdated(function (Set $set, $state) {
-                                $set('slug', Product::generateUniqueSlug($state));
-                            })
-                            ->required()
-                            ->live(onBlur: true)
-                            ->maxLength(255),
-                        Forms\Components\TextInput::make('slug')
-                            ->required()
-                            ->maxLength(255),
-                        Forms\Components\TextInput::make('barcode')
-                            ->maxLength(255)
-                            ->default(null),
-                        Forms\Components\TextInput::make('stock')
-                            ->required()
-                            ->numeric()
-                            ->default(1),
-                        Forms\Components\Textarea::make('about')
-                            ->columnSpanFull(),
+                        Forms\Components\Grid::make()
+                            ->schema([
+                                Forms\Components\TextInput::make('name')
+                                    ->label('Product Name')
+                                    ->afterStateUpdated(function (Set $set, $state) {
+                                        $set('slug', Product::generateUniqueSlug($state));
+                                    })
+                                    ->required()
+                                    ->live(onBlur: true)
+                                    ->maxLength(255)
+                                    ->placeholder('Enter product name')
+                                    ->columnSpan(['md' => 2]),
+
+                                Forms\Components\TextInput::make('slug')
+                                    ->label('URL Identifier')
+                                    ->required()
+                                    ->readOnly()
+                                    ->maxLength(255)
+                                    ->helperText('Auto-generated from product name')
+                                    ->columnSpan(['md' => 2]),
+
+                                Forms\Components\TextInput::make('barcode')
+                                    ->maxLength(255)
+                                    ->placeholder('Enter barcode')
+                                    ->prefixIcon('lucide-barcode')
+                                    ->columnSpan(['md' => 2]),
+
+                                Forms\Components\TextInput::make('stock')
+                                    ->required()
+                                    ->numeric()
+                                    ->minValue(0)
+                                    ->prefixIcon('heroicon-o-archive-box')
+                                    ->default(1)
+                                    ->columnSpan(['md' => 1]),
+
+                                Forms\Components\TextInput::make('weight')
+                                    ->required()
+                                    ->numeric()
+                                    ->minValue(0)
+                                    ->suffix('grams')
+                                    ->columnSpan(['md' => 1]),
+                            ])
+                            ->columns(2),
+
+                        Forms\Components\Textarea::make('description')
+                            ->label('Product Description')
+                            ->columnSpanFull()
+                            ->rows(4)
+                            ->placeholder('Detailed product description...'),
+
                         Forms\Components\FileUpload::make('thumbnail')
+                            ->label('Main Product Image')
                             ->image()
                             ->required()
-                            ->columnSpanFull(),
+                            ->directory('product-thumbnails')
+                            ->imageEditor()
+                            ->imageResizeMode('cover')
+                            ->imageCropAspectRatio('1:1')
+                            ->panelAspectRatio('2:1')
+                            ->columnSpanFull()
+                            ->helperText('Recommended size: 800x800px'),
+
                         Forms\Components\Repeater::make('photos')
+                            ->label('Additional Product Images')
                             ->relationship('photos')
                             ->schema([
                                 Forms\Components\FileUpload::make('photo')
+                                    ->image()
+                                    ->directory('product-gallery')
+                                    ->imageEditor()
+                                    ->imageResizeMode('cover')
+                                    ->imageCropAspectRatio('1:1')
                                     ->required(),
                             ])
+                            ->grid(2)
+                            ->defaultItems(1)
+                            ->createItemButtonLabel('Add another image')
                             ->columnSpanFull(),
                     ])
-                    ->columns(2),
+                    ->columns(2)
+                    ->collapsible(),
 
                 Forms\Components\Section::make('Pricing')
+                    ->description('Product pricing information')
+                    ->icon('heroicon-o-currency-dollar')
                     ->schema([
-                        Forms\Components\TextInput::make('purchase_price')
-                            ->required()
-                            ->numeric()
-                            ->prefix('Rp'),
-                        Forms\Components\TextInput::make('selling_price')
-                            ->required()
-                            ->numeric()
-                            ->prefix('Rp'),
-                    ])
-                    ->columns(2),
+                        Forms\Components\Grid::make()
+                            ->schema([
+                                Forms\Components\TextInput::make('purchase_price')
+                                    ->required()
+                                    ->numeric()
+                                    ->minValue(0)
+                                    ->prefix('Rp')
+                                    ->columnSpan(['md' => 1]),
 
-                Forms\Components\Section::make('Additional')
+                                Forms\Components\TextInput::make('selling_price')
+                                    ->required()
+                                    ->numeric()
+                                    ->minValue(0)
+                                    ->prefix('Rp')
+                                    ->columnSpan(['md' => 1]),
+                            ])
+                            ->columns(2),
+                    ])
+                    ->collapsible(),
+
+                Forms\Components\Section::make('Classification')
+                    ->description('Product categorization')
+                    ->icon('heroicon-o-tag')
                     ->schema([
-                        Forms\Components\Select::make('category_id')
-                            ->relationship('category', 'name')
-                            ->label('Category')
-                            ->default(null)
-                            ->createOptionForm([
-                                Forms\Components\TextInput::make('name')
-                                    ->afterStateUpdated(function (Set $set, $state) {
-                                        $set('slug', Category::generateUniqueSlug($state));
-                                    })
-                                    ->required()
-                                    ->live(onBlur: true)
-                                    ->required()
-                                    ->maxLength(255),
-                                Forms\Components\TextInput::make('slug')
-                                    ->required()
-                                    ->readOnly()
-                                    ->maxLength(255),
-                                Forms\Components\FileUpload::make('icon')
-                                    ->image()
-                                    ->columnSpan('full')
-                                    ->default(null),
+                        Forms\Components\Grid::make()
+                            ->schema([
+                                Forms\Components\Select::make('category_id')
+                                    ->relationship('category', 'name')
+                                    ->label('Product Category')
+                                    ->prefixIcon('heroicon-o-circle-stack')
+                                    ->native(false)
+                                    ->searchable()
+                                    ->preload()
+                                    ->createOptionForm([
+                                        Forms\Components\Section::make('New Product Category')
+                                            ->icon('heroicon-o-circle-stack')
+                                            ->schema([
+                                                Forms\Components\Grid::make()
+                                                    ->schema([
+                                                        Forms\Components\TextInput::make('name')
+                                                            ->label('Category Name')
+                                                            ->afterStateUpdated(function (Set $set, $state) {
+                                                                $set('slug', Category::generateUniqueSlug($state));
+                                                            })
+                                                            ->required()
+                                                            ->live(onBlur: true)
+                                                            ->maxLength(255)
+                                                            ->placeholder('e.g., Cat Food, Dog Food, Toys')
+                                                            ->helperText('The display name for your category')
+                                                            ->columnSpan(['md' => 2]),
+
+                                                        Forms\Components\TextInput::make('slug')
+                                                            ->label('URL Identifier')
+                                                            ->required()
+                                                            ->readOnly()
+                                                            ->maxLength(255)
+                                                            ->helperText('Auto-generated from category name')
+                                                            ->columnSpan(['md' => 2]),
+                                                    ])
+                                                    ->columns(2),
+
+                                                Forms\Components\FileUpload::make('icon')
+                                                    ->label('Category Icon')
+                                                    ->image()
+                                                    ->directory('category-icons')
+                                                    ->imageEditor()
+                                                    ->imageResizeMode('contain')
+                                                    ->imageCropAspectRatio('1:1')
+                                                    ->imagePreviewHeight('150')
+                                                    ->maxSize(512)
+                                                    ->helperText('Upload a square icon (recommended 200x200px)')
+                                                    ->downloadable()
+                                                    ->columnSpanFull()
+                                                    ->panelAspectRatio('2:1'),
+                                            ])
+                                            ->columns(2)
+                                            ->collapsible(),
+                                    ])
+                                    ->columnSpan(['md' => 1])
+                                    ->helperText('Select or create specific product category'),
+
+                                Forms\Components\Select::make('brand_id')
+                                    ->relationship('brand', 'name')
+                                    ->label('Product Brand')
+                                    ->prefixIcon('heroicon-o-tag')
+                                    ->native(false)
+                                    ->searchable()
+                                    ->preload()
+                                    ->createOptionForm([
+
+                                        Forms\Components\Section::make('New Product Brand')
+                                            ->icon('heroicon-o-tag')
+                                            ->schema([
+                                                Forms\Components\Grid::make()
+                                                    ->schema([
+                                                        Forms\Components\TextInput::make('name')
+                                                            ->label('Brand Name')
+                                                            ->afterStateUpdated(function (Set $set, $state) {
+                                                                $set('slug', Brand::generateUniqueSlug($state));
+                                                            })
+                                                            ->required()
+                                                            ->live(onBlur: true)
+                                                            ->maxLength(255)
+                                                            ->placeholder('e.g., Whiskas, Purina')
+                                                            ->helperText('The official name of your brand')
+                                                            ->columnSpan(['md' => 2]),
+
+                                                        Forms\Components\TextInput::make('slug')
+                                                            ->label('URL Slug')
+                                                            ->required()
+                                                            ->maxLength(255)
+                                                            ->helperText('Will be auto-generated from name')
+                                                            ->columnSpan(['md' => 2]),
+                                                    ])
+                                                    ->columns(2),
+
+                                                Forms\Components\FileUpload::make('logo')
+                                                    ->label('Brand Logo')
+                                                    ->image()
+                                                    ->directory('brand-logos')
+                                                    ->imageEditor()
+                                                    ->imageResizeMode('contain')
+                                                    ->imageCropAspectRatio('1:1')
+                                                    ->imagePreviewHeight('150')
+                                                    ->maxSize(1024)
+                                                    ->required()
+                                                    ->helperText('Upload a square logo (max 1MB)')
+                                                    ->columnSpanFull()
+                                                    ->panelAspectRatio('2:1'),
+                                            ])
+                                            ->columns(2)
+                                            ->collapsible(),
+
+                                    ])
+                                    ->columnSpan(['md' => 1])
+                                    ->helperText('Select or create specific product brand'),
                             ])
-                            ->default(null),
-                        Forms\Components\Select::make('brand_id')
-                            ->relationship('brand', 'name')
-                            ->label('Brand')
-                            ->createOptionForm([
-                                Forms\Components\TextInput::make('name')
-                                    ->afterStateUpdated(function (Set $set, $state) {
-                                        $set('slug', Brand::generateUniqueSlug($state));
-                                    })
-                                    ->required()
-                                    ->live(onBlur: true)
-                                    ->required()
-                                    ->maxLength(255),
-                                Forms\Components\TextInput::make('slug')
-                                    ->required()
-                                    ->maxLength(255),
-                                Forms\Components\FileUpload::make('logo')
-                                    ->image()
-                                    ->columnSpan('full')
-                                    ->required(),
-                            ])
-                            ->default(null),
+                            ->columns(2),
+
                         Forms\Components\Select::make('supplier_id')
                             ->relationship('supplier', 'name')
-                            ->label('Supplier Name')
+                            ->label('Supplier')
+                            ->prefixIcon('heroicon-o-truck')
+                            ->native(false)
+                            ->searchable()
+                            ->preload()
                             ->createOptionForm([
-                                Forms\Components\TextInput::make('name')
-                                    ->label('Supplier Name')
-                                    ->required()
-                                    ->maxLength(255),
-                                Forms\Components\TextInput::make('email')
-                                    ->label('Email')
-                                    ->email()
-                                    ->unique()
-                                    ->required()
-                                    ->maxLength(255),
-                                Forms\Components\TextInput::make('phone')
-                                    ->label('Phone Number')
-                                    ->tel()
-                                    ->mask('999-9999-9999') // Format input
-                                    ->prefix('+62') // Tambahkan prefix
-                                    ->required()
-                                    ->maxLength(255),
-                                Forms\Components\TextInput::make('address')
-                                    ->label('Address')
-                                    ->required()
-                                    ->maxLength(255),
-                            ])
-                            ->default(null)
-                            ->columnSpanFull(),
-                    ])
-                    ->columns(2),
+                                Forms\Components\Section::make('New Supplier')
+                                    ->icon('heroicon-o-user-circle')
+                                    ->schema([
+                                        Forms\Components\Grid::make()
+                                            ->schema([
+                                                Forms\Components\TextInput::make('name')
+                                                    ->label('Supplier Name')
+                                                    ->required()
+                                                    ->maxLength(255)
+                                                    ->placeholder('e.g., PT. Supplier Maju Jaya')
+                                                    ->columnSpan(['md' => 2]),
 
+                                                Forms\Components\TextInput::make('email')
+                                                    ->label('Email Address')
+                                                    ->email()
+                                                    ->unique()
+                                                    ->required()
+                                                    ->maxLength(255)
+                                                    ->placeholder('supplier@example.com')
+                                                    ->prefixIcon('heroicon-o-envelope')
+                                                    ->columnSpan(['md' => 2]),
+                                            ])
+                                            ->columns(2),
+
+                                        Forms\Components\TextInput::make('phone')
+                                            ->label('Phone Number')
+                                            ->tel()
+                                            ->required()
+                                            ->maxLength(255)
+                                            ->mask('999999999999')
+                                            ->prefix('+62')
+                                            ->stripCharacters(['-', ' '])
+                                            ->rule('digits_between:10,13')
+                                            ->afterStateHydrated(function (Forms\Components\TextInput $component, $state) {
+                                                // Remove +62 if already present to avoid duplication
+                                                $cleaned = str_replace('+62', '', $state);
+                                                $component->state($cleaned);
+                                            })
+                                            ->dehydrateStateUsing(fn($state) => '+62' . $state)
+                                            ->placeholder('81234567890')
+                                            ->prefixIcon('heroicon-o-phone')
+                                            ->helperText('Enter number without +62 (e.g., 81234567890)')
+                                            ->columnSpan(['md' => 2]),
+
+                                        Forms\Components\Textarea::make('address')
+                                            ->label('Full Address')
+                                            ->required()
+                                            ->maxLength(255)
+                                            ->rows(3)
+                                            ->placeholder('Street, City, Province, Postal Code')
+                                            ->columnSpanFull(),
+                                    ])
+                                    ->columns(2)
+                                    ->collapsible(),
+                            ])
+                            ->columnSpanFull()
+                            ->helperText('Select or create supplier'),
+                    ])
+                    ->columns(2)
+                    ->collapsible(),
 
                 Forms\Components\Section::make('Status')
+                    ->description('Product visibility settings')
+                    ->icon('heroicon-o-eye')
                     ->schema([
                         Forms\Components\Toggle::make('is_active')
-                            ->required(),
+                            ->label('Active Product')
+                            ->onColor('success')
+                            ->offColor('danger')
+                            ->inline(false)
+                            ->columnSpan(['md' => 1]),
+
                         Forms\Components\Toggle::make('is_popular')
-                            ->required(),
+                            ->label('Popular Product')
+                            ->onColor('success')
+                            ->offColor('danger')
+                            ->inline(false)
+                            ->columnSpan(['md' => 1]),
                     ])
-                    ->columns(2),
+                    ->columns(2)
+                    ->collapsible(),
             ]);
     }
 
@@ -179,8 +363,8 @@ class ProductResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\ImageColumn::make('thumbnail')
-                ->label('Foto Produk')
-                ->square(),
+                    ->label('Product Photo')
+                    ->square(),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('brand.name')

@@ -8,9 +8,14 @@ use App\Models\Product;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Filament\Forms\Form;
+use App\Models\PromoCode;
 use Filament\Tables\Table;
+use Illuminate\Support\Str;
+use App\Models\PaymentMethod;
 use Filament\Resources\Resource;
 use App\Models\Olshoptransaction;
+use App\Services\RajaOngkirService;
+use Illuminate\Support\Facades\Log;
 use Filament\Forms\Components\Repeater;
 use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Builder;
@@ -30,7 +35,7 @@ class OlshoptransactionResource extends Resource
 
     protected static ?string $navigationGroup = 'Transactions';
 
-    protected static ?int $navigationSort = 1;
+    protected static ?int $navigationSort = 2;
 
     protected static ?string $navigationIcon = 'heroicon-o-shopping-bag';
 
@@ -47,32 +52,16 @@ class OlshoptransactionResource extends Resource
                                 ->schema([
                                     self::getItemsRepeater(),
                                 ]),
-                            Forms\Components\Section::make('Price to pay')
-                                ->schema([
-                                    Forms\Components\TextInput::make('sub_total_amount')
-                                        ->required()
-                                        ->numeric()
-                                        ->columnSpanFull(),
-                                    Forms\Components\Select::make('promo_code_id')
-                                        ->label('Promo Code')
-                                        ->relationship('promocode', 'code')
-                                        ->default(null)
-                                        ->afterStateUpdated(function ($state, callable $get, callable $set) {
-                                            // Logika untuk menghitung diskon berdasarkan promo code
-                                            $discount = 0; // Ganti dengan logika perhitungan diskon
-                                            $set('discount_amount', $discount);
-                                        }),
-                                    Forms\Components\TextInput::make('discount_amount')
-                                        ->label('Discount Amount')
-                                        ->required()
-                                        ->default(0)
-                                        ->readOnly()
-                                        ->numeric(), // Menempati 1 kolom
-                                    Forms\Components\TextInput::make('grand_total_amount')
-                                        ->required()
-                                        ->numeric()
-                                        ->columnSpanFull(),
-                                ]),
+                            Forms\Components\TextInput::make('sub_total_amount')
+                                ->required()
+                                ->numeric()
+                                ->prefix('Rp'),
+                            Forms\Components\TextInput::make('weight_total')
+                                ->label('Total Weight (gram)')
+                                ->numeric()
+                                ->default(0)
+                                ->readOnly()
+                                ->suffix(' gram'),
                             // Menempati semua kolom (full width)
                         ]),
                     Forms\Components\Wizard\Step::make('Customer Information')
@@ -109,136 +98,219 @@ class OlshoptransactionResource extends Resource
                                 ->columns(2),
                             Forms\Components\Section::make('Address Information')
                                 ->description('')
+                                ->afterStateHydrated(function (Set $set, Get $get) {
+                                    // Trigger shipping cost calculation when loading edit form
+                                    self::calculateShippingCost($get, $set);
+                                })
                                 ->schema([
                                     Forms\Components\Select::make('province')
                                         ->label('Province')
                                         ->required()
                                         ->options(function () {
-                                            // Fetch data Provinsi dari API
-                                            $response = file_get_contents('https://matterisnanto.github.io/api-wilayah-indonesia/api/provinces.json');
-                                            $provinces = json_decode($response, true);
-
-                                            // Format data untuk options
-                                            $options = [];
-                                            foreach ($provinces as $province) {
-                                                $options[$province['id']] = $province['name'];
-                                            }
-
-                                            return $options;
+                                            $response = RajaOngkirService::getDomesticDestinations('province');
+                                            return collect($response['data'])->pluck('province', 'province_id');
                                         })
                                         ->searchable()
-                                        ->reactive()
                                         ->columnSpanFull(),
                                     Forms\Components\Select::make('city_regency')
                                         ->label('City/Regency')
+                                        ->live(onBlur: true)
                                         ->required()
                                         ->options(function (callable $get) {
-                                            // Ambil province_id yang dipilih
-                                            $province = $get('province');
+                                            if (!$get('province')) return [];
+                                            $response = RajaOngkirService::getDomesticDestinations('city', $get('province'));
 
-                                            // Jika province_id belum dipilih, kembalikan array kosong
-                                            if (!$province) {
-                                                return [];
-                                            }
-
-                                            // Fetch data Kabupaten/Kota berdasarkan province_id
-                                            $response = file_get_contents("https://matterisnanto.github.io/api-wilayah-indonesia/api/regencies/{$province}.json");
-                                            $regencies = json_decode($response, true);
-
-                                            // Format data untuk options
-                                            $options = [];
-                                            foreach ($regencies as $regency) {
-                                                $options[$regency['id']] = $regency['name'];
-                                            }
-
-                                            return $options;
+                                            return collect($response['data'])->mapWithKeys(function ($item) {
+                                                // Combine type and city_name (e.g., "Kabupaten Aceh Barat")
+                                                $displayName = $item['type'] . ' ' . $item['city_name'];
+                                                return [$item['city_id'] => $displayName];
+                                            });
                                         })
                                         ->searchable()
-                                        ->reactive()
-                                        ->columnSpanFull(),
-                                    Forms\Components\Select::make('district')
-                                        ->label('District')
-                                        ->required()
-                                        ->options(function (callable $get) {
-                                            // Ambil regency_id yang dipilih
-                                            $regency = $get('city_regency');
+                                        ->searchDebounce(500)
+                                        ->live() // Tambahkan ini untuk memantau perubahan
+                                        ->afterStateUpdated(function ($state, Set $set, Get $get) {
+                                            // Ambil data kota berdasarkan city_id
+                                            if (!$state) return;
 
-                                            // Jika regency_id belum dipilih, kembalikan array kosong
-                                            if (!$regency) {
-                                                return [];
+                                            $response = RajaOngkirService::getDomesticDestinations('city', $get('province'));
+                                            $cityData = collect($response['data'])->firstWhere('city_id', $state);
+
+                                            if ($cityData && isset($cityData['postal_code'])) {
+                                                $set('post_code', $cityData['postal_code']);
                                             }
+                                        }),
 
-                                            // Fetch data Kecamatan berdasarkan regency_id
-                                            $response = file_get_contents("https://matterisnanto.github.io/api-wilayah-indonesia/api/districts/{$regency}.json");
-                                            $districts = json_decode($response, true);
-
-                                            // Format data untuk options
-                                            $options = [];
-                                            foreach ($districts as $district) {
-                                                $options[$district['id']] = $district['name'];
-                                            }
-
-                                            return $options;
-                                        })
-                                        ->searchable()
-                                        ->reactive()
-                                        ->columnSpanFull(),
-                                    Forms\Components\Select::make('vilage_subdistrict')
-                                        ->label('Village/Subdistrict')
-                                        ->required()
-                                        ->options(function (callable $get) {
-                                            // Ambil district_id yang dipilih
-                                            $district = $get('district');
-
-                                            // Jika district_id belum dipilih, kembalikan array kosong
-                                            if (!$district) {
-                                                return [];
-                                            }
-
-                                            // Fetch data Kelurahan/Desa berdasarkan district_id
-                                            $response = file_get_contents("https://matterisnanto.github.io/api-wilayah-indonesia/api/villages/{$district}.json");
-                                            $villages = json_decode($response, true);
-
-                                            // Format data untuk options
-                                            $options = [];
-                                            foreach ($villages as $village) {
-                                                $options[$village['id']] = $village['name'];
-                                            }
-
-                                            return $options;
-                                        })
-                                        ->searchable()
-                                        ->reactive()
-                                        ->columnSpanFull(),
                                     Forms\Components\TextInput::make('post_code')
                                         ->label('Post Code')
                                         ->required()
                                         ->numeric()
-                                        ->columnSpanFull(),
-                                    Forms\Components\TextInput::make('address')
-                                        ->label('Address')
+                                        ->readOnly(),
+                                    Forms\Components\TextInput::make('complete_address')
+                                        ->label('Complete Address')
                                         ->required()
-                                        ->maxLength(255)
-                                        ->placeholder('Enter RT/RW, street/alley name, and landmarks')
-                                        ->columnSpanFull(),
+                                        ->columnSpanFull()
+                                        ->helperText('Wait until the postal code appears, then fill in the complete address to avoid repeated filling.'),
                                 ])
                                 ->columns(2),
                         ]),
                     Forms\Components\Wizard\Step::make('Transaction Details')
                         ->description('')
+                        ->afterStateHydrated(function (Set $set, Get $get) {
+                            // Trigger shipping cost calculation when loading edit form
+                            self::calculateShippingCost($get, $set);
+                        })
                         ->schema([
                             Forms\Components\TextInput::make('trx_id')
                                 ->label('Booking Trx Number')
+                                ->default('TRX-' . now()->format('Ymd') . '-' . Str::upper(Str::random(6)))
                                 ->required()
                                 ->maxLength(255),
+                            Forms\Components\TextInput::make('package_resi_number')
+                                ->label('Package Resi Number')
+                                ->required()
+                                ->default('Being Processed')
+                                ->maxLength(255),
+                            Forms\Components\Select::make('courier')
+                                ->label('Courier')
+                                ->live(onBlur: true)
+                                ->required()
+                                ->options([
+                                    'jne' => 'JNE',
+                                    'tiki' => 'TIKI',
+                                    'pos' => 'POS Indonesia',
+                                ])
+                                ->live()
+                                ->afterStateUpdated(function (Get $get, Set $set) {
+                                    self::calculateShippingCost($get, $set);
+                                })
+                                ->columnSpanFull(),
+
+                            Forms\Components\Select::make('shipping_service')
+                                ->label('Shipping Service')
+                                ->required()
+                                ->options(function (Get $get) {
+                                    $options = $get('shipping_service_options') ?? [];
+
+                                    // If in edit mode and current value not in options, add it
+                                    $currentValue = $get('shipping_service');
+                                    if ($currentValue && !array_key_exists($currentValue, $options)) {
+                                        try {
+                                            $data = json_decode($currentValue, true);
+                                            if ($data) {
+                                                $options[$currentValue] = self::formatShippingServiceDisplay($data);
+                                            }
+                                        } catch (\Exception $e) {
+                                            // Ignore if invalid JSON
+                                        }
+                                    }
+
+                                    return $options;
+                                })
+                                ->getOptionLabelUsing(function ($value) {
+                                    try {
+                                        $data = json_decode($value, true);
+                                        if ($data) {
+                                            return self::formatShippingServiceDisplay($data);
+                                        }
+                                        return $value;
+                                    } catch (\Exception $e) {
+                                        return $value;
+                                    }
+                                })
+                                ->live()
+                                ->afterStateUpdated(function ($state, Get $get, Set $set) {
+                                    try {
+                                        $serviceData = json_decode($state, true);
+                                        if ($serviceData) {
+                                            $set('shipping_cost', $serviceData['cost'] ?? 0);
+                                            $set('estimated_delivery', $serviceData['etd'] ?? '1-2');
+                                        }
+                                    } catch (\Exception $e) {
+                                        Log::error('Error parsing shipping service: ' . $e->getMessage());
+                                    }
+                                    self::updateGrandTotal($get, $set);
+                                })
+                                ->searchable()
+                                ->columnSpanFull()
+                                ->required()
+                                ->helperText('Select delivery service'),
+                            Forms\Components\Hidden::make('estimated_delivery'),
+                            Forms\Components\Select::make('payment_method_id')
+                                ->label('Payment Method')
+                                ->required()
+                                ->relationship('paymentmethod', 'name')
+                                ->options(function () {
+                                    return PaymentMethod::where('olshop_transaction', true)
+                                        ->pluck('name', 'id');
+                                })
+                                ->live()
+                                ->afterStateUpdated(function ($state, Set $set) {
+                                    $paymentMethod = PaymentMethod::find($state);
+                                    if ($paymentMethod) {
+                                        $set('payment_method_account_number', $paymentMethod->account_number);
+                                    }
+                                })
+                                ->columnSpanFull(),
+
+                            Forms\Components\TextInput::make('payment_method_account_number')
+                                ->label('Account Number')
+                                ->readOnly()
+                                ->columnSpanFull()
+                                ->visible(fn(Get $get): bool => filled($get('payment_method_id'))),
+                            Forms\Components\TextInput::make('promo_code_input')
+                                ->label('Promo Code')
+                                ->placeholder('Enter promo code')
+                                ->live(onBlur: true)
+                                ->afterStateUpdated(function (Get $get, Set $set, $state) {
+                                    self::validateAndApplyPromoCode($get, $set, $state);
+                                })
+                                ->columnSpanFull()
+                                ->helperText(function (Get $get) {
+                                    $promoId = $get('promo_code_id');
+                                    if (!$promoId) return null;
+
+                                    $promo = PromoCode::find($promoId);
+                                    if (!$promo) return null;
+
+                                    return "Promo code {$promo->code} applied (Discount: Rp " . number_format($promo->discount_amount, 0, ',', '.') . ")";
+                                }),
+                            Forms\Components\TextInput::make('shipping_cost')
+                                ->label('Shipping Cost')
+                                ->numeric()
+                                ->default(0)
+                                ->readOnly()
+                                ->prefix('Rp'),
+                            Forms\Components\TextInput::make('discount_amount')
+                                ->label('Discount Amount')
+                                ->required()
+                                ->default(0)
+                                ->readOnly()
+                                ->numeric()
+                                ->prefix('Rp'),
+                            Forms\Components\TextInput::make('grand_total_amount')
+                                ->label('Amount to be paid')
+                                ->required()
+                                ->numeric()
+                                ->prefix('Rp')
+                                ->columnSpanFull(),
                             Forms\Components\FileUpload::make('proof')
                                 ->label('Proof of Payment')
                                 ->image()
-                                ->required(),
+                                ->directory('proof-payments') // direktori penyimpanan
+                                ->imagePreviewHeight('250') // tinggi preview
+                                ->openable() // memungkinkan membuka gambar di tab baru
+                                ->downloadable() // memungkinkan download gambar
+                                ->imageEditor() // opsional: tambahkan editor gambar
+                                ->panelAspectRatio('2:1') // rasio panel preview
+                                ->panelLayout('integrated') // tata letak panel
+                                ->required()
+                                ->columnSpanFull(),
                             Forms\Components\Toggle::make('is_paid')
                                 ->label('Already Paid?')
                                 ->required(),
-                        ]),
+                        ])
+                        ->columns(2),
                 ])
                     ->columnSpan('full')
                     ->columns(1)
@@ -295,15 +367,19 @@ class OlshoptransactionResource extends Resource
     public static function getItemsRepeater(): Repeater
     {
         return Forms\Components\Repeater::make('order')
-            ->relationship('order')
+            ->relationship('orders')
             ->live()
             ->columns([
                 'md' => 10,
             ])
             ->afterStateUpdated(function (Get $get, Set $set) {
                 self::updateSubTotalAmount($get, $set);
+                self::calculateTotalWeight($get, $set);
+                self::calculateShippingCost($get, $set);
             })
             ->schema([
+                Forms\Components\Hidden::make('type')
+                    ->default('product'),
                 Forms\Components\Select::make('product_id')
                     ->label('Produk')
                     ->required()
@@ -363,6 +439,110 @@ class OlshoptransactionResource extends Resource
             ]);
     }
 
+    protected static function calculateShippingCost(Get $get, Set $set): void
+    {
+        $origin = config('services.rajaongkir.origin_city');
+        $destination = $get('city_regency');
+        $weight = max(1, $get('weight_total'));
+        $courier = $get('courier');
+        $currentService = $get('shipping_service');
+
+        // Validate required fields
+        if (empty($origin) || empty($destination) || empty($weight) || empty($courier)) {
+            return;
+        }
+
+        try {
+            // Get fresh shipping options regardless of current service
+            $response = RajaOngkirService::getShippingCost($origin, $destination, $weight, $courier);
+
+            if (empty($response['data'])) {
+                Notification::make()
+                    ->title('No shipping services available')
+                    ->body('Courier not available for this route')
+                    ->warning()
+                    ->send();
+                return;
+            }
+
+            $serviceOptions = [];
+            $foundCurrentService = false;
+
+            foreach ($response['data'] as $courierData) {
+                if (empty($courierData['costs'])) continue;
+
+                foreach ($courierData['costs'] as $service) {
+                    $costValue = $service['cost'][0]['value'] ?? 0;
+                    $etd = str_replace([' HARI', 'HARI'], '', $service['cost'][0]['etd'] ?? '1-2');
+
+                    $serviceData = [
+                        'courier' => $courierData['code'],
+                        'service' => $service['service'],
+                        'description' => $service['description'] ?? '',
+                        'cost' => $costValue,
+                        'etd' => $etd
+                    ];
+
+                    $optionValue = json_encode($serviceData);
+                    $displayText = self::formatShippingServiceDisplay($serviceData);
+
+                    $serviceOptions[$optionValue] = $displayText;
+
+                    // Check if this matches current service during edit
+                    if ($currentService) {
+                        try {
+                            $currentData = json_decode($currentService, true);
+                            if (
+                                $currentData && $currentData['service'] === $serviceData['service']
+                                && $currentData['courier'] === $serviceData['courier']
+                            ) {
+                                $foundCurrentService = true;
+                            }
+                        } catch (\Exception $e) {
+                            continue;
+                        }
+                    }
+                }
+            }
+
+            $set('shipping_service_options', $serviceOptions);
+
+            // During edit, preserve the current service if it exists in new options
+            if ($currentService && $foundCurrentService) {
+                // No need to change the current service
+            } else if (!empty($serviceOptions)) {
+                // Select first option if no current service or not found
+                $firstOption = array_key_first($serviceOptions);
+                $serviceData = json_decode($firstOption, true);
+                $set('shipping_service', $firstOption);
+                $set('shipping_cost', $serviceData['cost']);
+                $set('estimated_delivery', $serviceData['etd']);
+            }
+        } catch (\Exception $e) {
+            Log::error('Shipping cost error: ' . $e->getMessage());
+            Notification::make()
+                ->title('Failed to calculate shipping')
+                ->body($e->getMessage())
+                ->danger()
+                ->send();
+        }
+
+        self::updateGrandTotal($get, $set);
+    }
+
+    protected static function formatShippingServiceDisplay(array $serviceData): string
+    {
+        return sprintf(
+            "%s %s - Rp %s (Est: %s days) %s",
+            strtoupper($serviceData['courier']),
+            $serviceData['service'],
+            number_format($serviceData['cost'], 0, ',', '.'),
+            $serviceData['etd'],
+            $serviceData['description'] ?? ''
+        );
+    }
+
+
     protected static function updateSubTotalAmount(Get $get, Set $set): void
     {
         $selectedProducts = collect($get('order'))
@@ -376,7 +556,117 @@ class OlshoptransactionResource extends Resource
         }, 0);
 
         $set('sub_total_amount', $total);
+        self::updateGrandTotal($get, $set);
     }
+
+    // Tambahkan method ini di class OlshoptransactionResource
+    protected static function applyPromoCode(Get $get, Set $set): void
+    {
+        $promoCodeId = $get('promo_code_id');
+        $subTotal = $get('sub_total_amount') ?? 0;
+
+        if ($promoCodeId) {
+            $promoCode = \App\Models\PromoCode::find($promoCodeId);
+
+            if ($promoCode) {
+                // Set discount amount
+                $set('discount_amount', $promoCode->discount_amount);
+
+                // Beri notifikasi jika promo berhasil diterapkan
+                Notification::make()
+                    ->title('Promo code applied')
+                    ->body('Discount: Rp ' . number_format($promoCode->discount_amount, 0, ',', '.'))
+                    ->success()
+                    ->send();
+            } else {
+                $set('discount_amount', 0);
+                $set('promo_code_id', null);
+            }
+        } else {
+            $set('discount_amount', 0);
+        }
+
+        self::updateGrandTotal($get, $set);
+    }
+
+    protected static function validateAndApplyPromoCode(Get $get, Set $set, ?string $promoCode): void
+    {
+        // Reset promo code if input is empty
+        if (empty($promoCode)) {
+            $set('discount_amount', 0);
+            $set('promo_code_id', null);
+            self::updateGrandTotal($get, $set);
+            Notification::make()
+                ->title('Promo code removed')
+                ->success()
+                ->send();
+            return;
+        }
+
+        // Find valid promo code
+        $promo = PromoCode::where('code', $promoCode)
+            ->active()
+            ->first();
+
+        if ($promo) {
+            $subTotal = $get('sub_total_amount') ?? 0;
+
+            // Set discount amount
+            $set('promo_code_id', $promo->id);
+            $set('discount_amount', $promo->discount_amount);
+
+            Notification::make()
+                ->title('Promo code applied successfully')
+                ->body('Discount: Rp ' . number_format($promo->discount_amount, 0, ',', '.'))
+                ->success()
+                ->send();
+        } else {
+            // Invalid promo code
+            $set('promo_code_id', null);
+            $set('discount_amount', 0);
+
+            Notification::make()
+                ->title('Invalid promo code')
+                ->body('The promo code is not valid or has expired')
+                ->danger()
+                ->send();
+        }
+
+        self::updateGrandTotal($get, $set);
+    }
+
+    protected static function updateGrandTotal(Get $get, Set $set): void
+    {
+        $subTotal = $get('sub_total_amount') ?? 0;
+        $discount = $get('discount_amount') ?? 0;
+        $shipping = $get('shipping_cost') ?? 0;
+
+        // Pastikan diskon tidak melebihi subtotal
+        $effectiveDiscount = min($discount, $subTotal);
+
+        $grandTotal = $subTotal - $effectiveDiscount + $shipping;
+
+        $set('grand_total_amount', max(0, $grandTotal));
+    }
+
+    protected static function calculateTotalWeight(Get $get, Set $set): void
+    {
+        $selectedProducts = collect($get('order'))
+            ->filter(fn($item) => !empty($item['product_id']) && !empty($item['quantity']));
+
+        $products = Product::find($selectedProducts->pluck('product_id'));
+
+        $totalWeight = 0;
+
+        foreach ($selectedProducts as $item) {
+            $product = $products->firstWhere('id', $item['product_id']);
+            $totalWeight += ($product->weight ?? 0) * $item['quantity'];
+        }
+
+        $set('weight_total', $totalWeight);
+    }
+
+
     public static function getRelations(): array
     {
         return [

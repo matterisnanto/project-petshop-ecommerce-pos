@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('expenses', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->longText('note');
-            $table->date('date_expense')->nullable();
-            $table->integer('amount');
+            $table->string('name', 100);
+            $table->text('note');
+            $table->date('date_expense');
+            $table->decimal('amount', 12, 2);
             $table->timestamps();
             $table->softDeletes();
         });

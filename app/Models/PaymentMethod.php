@@ -12,7 +12,7 @@ class PaymentMethod extends Model
 
     protected $table = 'payment_methods';
 
-    protected $fillable = ['name', 'image', 'is_cash'];
+    protected $fillable = ['name', 'account_number', 'image', 'olshop_transaction', 'pos_transaction', 'is_cash'];
 
     protected $appends = ['image_url'];
 
