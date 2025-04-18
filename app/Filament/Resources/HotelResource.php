@@ -207,7 +207,7 @@ class HotelResource extends Resource
                     ->label('photo'),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('categoryAnimals')
+                Tables\Columns\TextColumn::make('categoryAnimals.name')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('price_per_day')
                     ->numeric()

@@ -55,6 +55,7 @@ class BrandResource extends Resource
                                 Forms\Components\TextInput::make('slug')
                                     ->label('URL Slug')
                                     ->required()
+                                    ->readOnly()
                                     ->maxLength(255)
                                     ->helperText('Will be auto-generated from name')
                                     ->columnSpan(['md' => 2]),

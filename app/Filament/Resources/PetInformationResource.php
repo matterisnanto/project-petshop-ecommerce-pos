@@ -131,18 +131,18 @@ class PetInformationResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('order_id')
-                    ->numeric()
+                Tables\Columns\ImageColumn::make('photo')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('order.postransaction.name')
+                    ->label('Owner Name')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('name')
+                    ->label('Pet Name')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('age')
                     ->numeric()
+                    ->suffix(' Month')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('photo')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('description')
-                    ->searchable(),
                 Tables\Columns\TextColumn::make('check_in')
                     ->date()
                     ->sortable(),
