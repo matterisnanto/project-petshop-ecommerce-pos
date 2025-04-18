@@ -34,28 +34,96 @@ class PetInformationResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('order')
-                    ->relationship('posTransaction', 'name')
-                    ->required(),
-                Forms\Components\TextInput::make('name')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('age')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('photo')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('description')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\DatePicker::make('check_in')
-                    ->required(),
-                Forms\Components\DatePicker::make('check_out')
-                    ->required(),
-                Forms\Components\TextInput::make('days')
-                    ->required()
-                    ->numeric(),
+                Forms\Components\Section::make('Order Information')
+                    ->schema([
+                        Forms\Components\Select::make('order_id')
+                            ->label('Order')
+                            ->relationship('order', 'id')
+                            ->searchable()
+                            ->preload()
+                            ->required()
+                            ->columnSpanFull(),
+                    ]),
+
+                Forms\Components\Section::make('Pet Details')
+                    ->columns(2)
+                    ->schema([
+                        Forms\Components\TextInput::make('name')
+                            ->label('Pet Name')
+                            ->required()
+                            ->maxLength(100)
+                            ->columnSpan(1),
+
+                        Forms\Components\Select::make('category_animals_id')
+                            ->label('Animal Category')
+                            ->relationship('categoryAnimal', 'name')
+                            ->searchable()
+                            ->preload()
+                            ->required(),
+
+                        Forms\Components\TextInput::make('age')
+                            ->required()
+                            ->numeric()
+                            ->minValue(0)
+                            ->suffix('months'),
+
+                        Forms\Components\Select::make('gender')
+                            ->label('Gender')
+                            ->options([
+                                'male' => 'Male',
+                                'female' => 'Female',
+                                'unknown' => 'Unknown',
+                            ])
+                            ->required(),
+                    ]),
+
+                Forms\Components\Section::make('Photo')
+                    ->schema([
+                        Forms\Components\FileUpload::make('photo')
+                            ->label('Pet Photo')
+                            ->image()
+                            ->directory('pet-photos')
+                            ->maxSize(2048)
+                            ->required()
+                            ->columnSpanFull(),
+                    ]),
+
+                Forms\Components\Section::make('Stay Information')
+                    ->columns(2)
+                    ->schema([
+                        Forms\Components\DatePicker::make('check_in')
+                            ->label('Check-in Date')
+                            ->required()
+                            ->native(false)
+                            ->minDate(now()),
+
+                        Forms\Components\DatePicker::make('check_out')
+                            ->label('Check-out Date')
+                            ->required()
+                            ->native(false)
+                            ->minDate(fn(Forms\Get $get) => $get('check_in') ?: now()),
+
+                        Forms\Components\TextInput::make('days')
+                            ->label('Duration (days)')
+                            ->numeric()
+                            ->minValue(1)
+                            ->default(1)
+                            ->required(),
+
+                        Forms\Components\Toggle::make('on_petshop')
+                            ->label('Currently at Petshop?')
+                            ->onColor('success')
+                            ->offColor('danger')
+                            ->inline(false),
+                    ]),
+
+                Forms\Components\Section::make('Additional Information')
+                    ->schema([
+                        Forms\Components\Textarea::make('description')
+                            ->label('Special Notes')
+                            ->maxLength(500)
+                            ->columnSpanFull(),
+                    ]),
             ]);
     }
 
