@@ -2,15 +2,17 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 use App\Models\Order;
 use App\Models\Product;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class OrderController extends Controller
 {
+    // GET /orders
     public function index()
     {
         $orders = Order::with(['product', 'posTransaction.paymentMethod'])->get();
@@ -18,7 +20,7 @@ class OrderController extends Controller
         $orders->transform(function ($order) {
             return [
                 'id' => $order->id,
-                'postransaction' => optional($order->posTransaction)->name ?? '-',
+                'transaction_name' => optional($order->posTransaction)->name ?? '-',
                 'payment_method' => [
                     'name' => optional(optional($order->posTransaction)->paymentMethod)->name ?? 'Unknown',
                     'is_cash' => optional(optional($order->posTransaction)->paymentMethod)->is_cash ?? false,
@@ -26,23 +28,27 @@ class OrderController extends Controller
                 'product' => [
                     'product_id' => optional($order->product)->id,
                     'product_name' => optional($order->product)->name ?? '-',
-                    'quantity' => $order->quantity ?? 0,
-                    'unit_price' => $order->unit_price ?? 0
-                ]
+                ],
+                'quantity' => $order->quantity ?? 0,
+                'unit_price' => $order->unit_price ?? 0,
+                'created_at' => $order->created_at,
+                'updated_at' => $order->updated_at,
             ];
         });
 
-        return response()->json($orders);
+        return response()->json([
+            'success' => true,
+            'data' => $orders
+        ], 200);
     }
 
+    // POST /orders
     public function store(Request $request)
     {
-        // Validasi input
         $validator = Validator::make($request->all(), [
             'pos_transaction_id' => 'required|exists:pos_transactions,id',
             'product_id' => 'required|exists:products,id',
             'quantity' => 'required|integer|min:1',
-            'payment_method_id' => 'required|exists:payment_methods,id',
         ]);
 
         if ($validator->fails()) {
@@ -55,25 +61,22 @@ class OrderController extends Controller
 
         DB::beginTransaction();
         try {
-            // Ambil produk
             $product = Product::lockForUpdate()->find($request->product_id);
 
             if (!$product || $product->stock < $request->quantity) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Stok tidak mencukupi'
+                    'message' => 'Stok tidak mencukupi untuk produk: ' . ($product->name ?? 'Produk tidak ditemukan'),
                 ], 422);
             }
 
-            // Simpan order
             $order = Order::create([
                 'pos_transaction_id' => $request->pos_transaction_id,
                 'product_id' => $request->product_id,
                 'quantity' => $request->quantity,
-                'unit_price' => $product->price, // Gunakan harga dari database
+                'unit_price' => $product->price,
             ]);
 
-            // Kurangi stok produk
             $product->decrement('stock', $request->quantity);
 
             DB::commit();
@@ -87,9 +90,81 @@ class OrderController extends Controller
             DB::rollBack();
             return response()->json([
                 'success' => false,
-                'message' => 'Terjadi kesalahan, coba lagi',
+                'message' => 'Terjadi kesalahan',
                 'error' => $e->getMessage()
             ], 500);
         }
+    }
+
+    // GET /orders/{id}
+    public function show($id)
+    {
+        $order = Order::with(['product', 'posTransaction.paymentMethod'])->find($id);
+
+        if (!$order) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Order tidak ditemukan'
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $order
+        ], 200);
+    }
+
+    // PUT /orders/{id}
+    public function update(Request $request, $id)
+    {
+        $order = Order::find($id);
+
+        if (!$order) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Order tidak ditemukan'
+            ], 404);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'quantity' => 'sometimes|required|integer|min:1',
+            'unit_price' => 'sometimes|required|numeric|min:0',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validasi gagal',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $order->update($request->only(['quantity', 'unit_price']));
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Order berhasil diperbarui',
+            'data' => $order
+        ], 200);
+    }
+
+    // DELETE /orders/{id}
+    public function destroy($id)
+    {
+        $order = Order::find($id);
+
+        if (!$order) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Order tidak ditemukan'
+            ], 404);
+        }
+
+        $order->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Order berhasil dihapus'
+        ], 200);
     }
 }

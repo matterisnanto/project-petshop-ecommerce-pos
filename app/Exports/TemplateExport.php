@@ -29,16 +29,16 @@ class ProductsExport implements FromCollection, WithHeadings, WithTitle
     public function headings(): array
     {
         return [
-            'name',
-            'category_id',
-            'stock',
-            'selling_price',
-            'is_active',
-            'barcode',
-            'image',
+            'name',            // Nama produk
+            'category_id',     // ID kategori
+            'barcode',         // Kode barcode produk
+            'stock',           // Jumlah stok
+            'purchase_price',  // Harga beli
+            'selling_price',   // Harga jual
+            'is_active',       // Status aktif atau tidak (1/0)
+            'thumbnail',       // Gambar utama produk
         ];
     }
-
     public function title(): string
     {
         return 'Products';
