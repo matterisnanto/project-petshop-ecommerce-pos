@@ -34,21 +34,49 @@ class BrandResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
-                    ->afterStateUpdated(function (Set $set, $state) {
-                        $set('slug', Brand::generateUniqueSlug($state));
-                    })
-                    ->required()
-                    ->live(onBlur: true)
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('slug')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\FileUpload::make('logo')
-                    ->image()
-                    ->columnSpan('full')
-                    ->required(),
+                Forms\Components\Section::make('Brand Information')
+                    ->description('Enter your brand details')
+                    ->icon('heroicon-o-tag')
+                    ->schema([
+                        Forms\Components\Grid::make()
+                            ->schema([
+                                Forms\Components\TextInput::make('name')
+                                    ->label('Brand Name')
+                                    ->afterStateUpdated(function (Set $set, $state) {
+                                        $set('slug', Brand::generateUniqueSlug($state));
+                                    })
+                                    ->required()
+                                    ->live(onBlur: true)
+                                    ->maxLength(255)
+                                    ->placeholder('e.g., Whiskas, Purina')
+                                    ->helperText('The official name of your brand')
+                                    ->columnSpan(['md' => 2]),
+
+                                Forms\Components\TextInput::make('slug')
+                                    ->label('URL Slug')
+                                    ->required()
+                                    ->maxLength(255)
+                                    ->helperText('Will be auto-generated from name')
+                                    ->columnSpan(['md' => 2]),
+                            ])
+                            ->columns(2),
+
+                        Forms\Components\FileUpload::make('logo')
+                            ->label('Brand Logo')
+                            ->image()
+                            ->directory('brand-logos')
+                            ->imageEditor()
+                            ->imageResizeMode('contain')
+                            ->imageCropAspectRatio('1:1')
+                            ->imagePreviewHeight('150')
+                            ->maxSize(1024)
+                            ->required()
+                            ->helperText('Upload a square logo (max 1MB)')
+                            ->columnSpanFull()
+                            ->panelAspectRatio('2:1'),
+                    ])
+                    ->columns(2)
+                    ->collapsible(),
             ]);
     }
 

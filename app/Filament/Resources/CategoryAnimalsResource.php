@@ -7,6 +7,7 @@ use Filament\Tables;
 use Filament\Forms\Set;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Illuminate\Support\Carbon;
 use App\Models\CategoryAnimals;
 use Filament\Resources\Resource;
 use Illuminate\Database\Eloquent\Builder;
@@ -32,26 +33,54 @@ class CategoryAnimalsResource extends Resource
             ->schema([
                 Forms\Components\Section::make('Category Information')
                     ->description('Provide basic details about the animal category')
+                    ->icon('heroicon-o-circle-stack') // Added icon
+                    ->collapsible() // Make section collapsible
                     ->schema([
-                        Forms\Components\TextInput::make('name')
-                            ->afterStateUpdated(function (Set $set, $state) {
-                                $set('slug', CategoryAnimals::generateUniqueSlug($state));
-                            })
-                            ->required()
-                            ->live(onBlur: true)
+                        Forms\Components\Grid::make()
+                            ->schema([
+                                Forms\Components\TextInput::make('name')
+                                    ->label('Category Name')
+                                    ->afterStateUpdated(function (Set $set, $state) {
+                                        $set('slug', CategoryAnimals::generateUniqueSlug($state));
+                                    })
+                                    ->required()
+                                    ->live(onBlur: true)
+                                    ->maxLength(255)
+                                    ->placeholder('e.g., Dogs, Cats, Birds')
+                                    ->helperText('The display name for this animal category')
+                                    ->columnSpan(['md' => 2]),
+
+                                Forms\Components\TextInput::make('slug')
+                                    ->label('URL Identifier')
+                                    ->required()
+                                    ->readOnly()
+                                    ->maxLength(255)
+                                    ->helperText('Auto-generated from category name')
+                                    ->columnSpan(['md' => 2]),
+                            ])
+                            ->columns(2),
+
+                        Forms\Components\Textarea::make('description')
+                            ->label('Description')
                             ->maxLength(255)
+                            ->rows(3)
+                            ->placeholder('Brief description about this animal category')
+                            ->helperText('Max 255 characters')
                             ->columnSpanFull(),
-                        Forms\Components\TextInput::make('slug')
-                            ->required()
-                            ->readOnly()
-                            ->maxLength(255),
-                        Forms\Components\TextInput::make('description')
-                            ->maxLength(255)
-                            ->default(null),
-                        Forms\Components\TextInput::make('icon')
-                            ->maxLength(255)
-                            ->default(null),
+
+                        Forms\Components\FileUpload::make('icon')
+                            ->label('Category Icon')
+                            ->image()
+                            ->directory('category-icons')
+                            ->imageEditor()
+                            ->imageResizeMode('contain')
+                            ->imageCropAspectRatio('1:1')
+                            ->panelAspectRatio('2:1')
+                            ->maxSize(512)
+                            ->helperText('Recommended size: 200x200px, max 512KB')
+                            ->columnSpanFull(),
                     ])
+                    ->columns(2)
             ]);
     }
 
@@ -59,13 +88,13 @@ class CategoryAnimalsResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\ImageColumn::make('icon')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('slug')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('description')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('icon')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -105,7 +134,6 @@ class CategoryAnimalsResource extends Resource
         return [
             'index' => Pages\ListCategoryAnimals::route('/'),
             'create' => Pages\CreateCategoryAnimals::route('/create'),
-            'edit' => Pages\EditCategoryAnimals::route('/{record}/edit'),
         ];
     }
 }

@@ -37,149 +37,326 @@ class AnimalsResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Section::make('Basic Information')
+                    ->description('Primary details about the animal')
+                    ->icon('heroicon-o-identification')
                     ->schema([
-                        Forms\Components\TextInput::make('name')
-                            ->afterStateUpdated(function (Set $set, $state) {
-                                $set('slug', Animals::generateUniqueSlug($state));
-                            })
-                            ->required()
-                            ->live(onBlur: true)
-                            ->maxLength(255)
-                            ->columnSpanFull(),
-                        Forms\Components\hidden::make('slug'),
-                        Forms\Components\TextInput::make('barcode')
-                            ->maxLength(255)
-                            ->default(null)
-                            ->columnSpanFull(),
-                        Forms\Components\Select::make('category_animals_id')
-                            ->relationship('categoryAnimals', 'name')
-                            ->label('Animals Category')
-                            ->default(null)
-                            ->createOptionForm([
+                        Forms\Components\Grid::make()
+                            ->schema([
                                 Forms\Components\TextInput::make('name')
                                     ->afterStateUpdated(function (Set $set, $state) {
-                                        $set('slug', CategoryAnimals::generateUniqueSlug($state));
+                                        $set('slug', Animals::generateUniqueSlug($state));
                                     })
                                     ->required()
                                     ->live(onBlur: true)
-                                    ->required()
-                                    ->maxLength(255),
-                                Forms\Components\TextInput::make('slug')
-                                    ->required()
-                                    ->readOnly()
-                                    ->maxLength(255),
-                                Forms\Components\TextInput::make('description')
                                     ->maxLength(255)
-                                    ->default(null),
-                                Forms\Components\FileUpload::make('icon')
-                                    ->image()
-                                    ->columnSpan('full')
-                                    ->default(null),
+                                    ->columnSpan(['md' => 2])
+                                    ->placeholder('Animal name')
+                                    ->hint('The official name of the animal'),
+
+                                Forms\Components\Hidden::make('slug'),
+
+                                Forms\Components\TextInput::make('barcode')
+                                    ->maxLength(255)
+                                    ->columnSpan(['md' => 1])
+                                    ->hint('Unique identifier')
+                                    ->prefixIcon('lucide-barcode'),
                             ])
-                            ->columnSpan(1)
-                            ->default(null),
-                        Forms\Components\Select::make('breeds_id')
-                            ->relationship('breeds', 'name')
-                            ->label('Breeds')
-                            ->default(null)
-                            ->createOptionForm([
+                            ->columns(3),
+
+                        Forms\Components\Grid::make()
+                            ->schema([
                                 Forms\Components\Select::make('category_animals_id')
                                     ->relationship('categoryAnimals', 'name')
-                                    ->label('Animals Category')
-                                    ->default(null),
-                                Forms\Components\TextInput::make('name')
-                                    ->afterStateUpdated(function (Set $set, $state) {
-                                        $set('slug', Breeds::generateUniqueSlug($state));
-                                    })
-                                    ->required()
-                                    ->live(onBlur: true)
-                                    ->required()
-                                    ->maxLength(255),
-                                Forms\Components\TextInput::make('slug')
-                                    ->required()
-                                    ->readOnly()
-                                    ->maxLength(255),
+                                    ->label('Animal Category')
+                                    ->searchable()
+                                    ->preload()
+                                    ->native(false)
+                                    ->prefixIcon('heroicon-o-circle-stack')
+                                    ->placeholder('Select or create a category')
+                                    ->createOptionForm([
+                                        Forms\Components\Section::make('New Category Animals')
+                                            ->icon('heroicon-o-circle-stack') // Added icon
+                                            ->collapsible() // Make section collapsible
+                                            ->schema([
+                                                Forms\Components\Grid::make()
+                                                    ->schema([
+                                                        Forms\Components\TextInput::make('name')
+                                                            ->label('Category Name')
+                                                            ->afterStateUpdated(function (Set $set, $state) {
+                                                                $set('slug', CategoryAnimals::generateUniqueSlug($state));
+                                                            })
+                                                            ->required()
+                                                            ->live(onBlur: true)
+                                                            ->maxLength(255)
+                                                            ->placeholder('e.g., Dogs, Cats, Birds')
+                                                            ->helperText('The display name for this animal category')
+                                                            ->columnSpan(['md' => 2]),
+
+                                                        Forms\Components\TextInput::make('slug')
+                                                            ->label('URL Identifier')
+                                                            ->required()
+                                                            ->readOnly()
+                                                            ->maxLength(255)
+                                                            ->helperText('Auto-generated from category name')
+                                                            ->columnSpan(['md' => 2]),
+                                                    ])
+                                                    ->columns(2),
+
+                                                Forms\Components\Textarea::make('description')
+                                                    ->label('Description')
+                                                    ->maxLength(255)
+                                                    ->rows(3)
+                                                    ->placeholder('Brief description about this animal category')
+                                                    ->helperText('Max 255 characters')
+                                                    ->columnSpanFull(),
+
+                                                Forms\Components\FileUpload::make('icon')
+                                                    ->label('Category Icon')
+                                                    ->image()
+                                                    ->directory('category-icons')
+                                                    ->imageEditor()
+                                                    ->imageResizeMode('contain')
+                                                    ->imageCropAspectRatio('1:1')
+                                                    ->panelAspectRatio('2:1')
+                                                    ->maxSize(512)
+                                                    ->helperText('Recommended size: 200x200px, max 512KB')
+                                                    ->columnSpanFull(),
+                                            ])
+                                            ->columns(2),
+                                    ])
+                                    ->columnSpan(['md' => 1])
+                                    ->helperText('Select or create animal category'),
+
+                                Forms\Components\Select::make('breeds_id')
+                                    ->relationship('breeds', 'name')
+                                    ->label('Animal Breed')
+                                    ->native(false)
+                                    ->searchable()
+                                    ->preload()
+                                    ->prefixIcon('lucide-dna')
+                                    ->createOptionForm([
+                                        Forms\Components\Grid::make()
+                                            ->schema([
+                                                Forms\Components\Section::make('New Breed')
+                                                    ->icon('lucide-dna')  // More vibrant icon
+                                                    ->collapsible()  // Allows section to be collapsed
+                                                    ->columns(2)
+                                                    ->schema([
+                                                        // Animal Category Select with enhanced UI
+                                                        Forms\Components\Select::make('category_animals_id')
+                                                            ->relationship('categoryAnimals', 'name')
+                                                            ->label('Animal Category')
+                                                            ->searchable()
+                                                            ->preload()
+                                                            ->native(false)
+                                                            ->placeholder('Select or create a category')
+                                                            ->createOptionForm([
+                                                                Forms\Components\Section::make('New Category Animals')
+                                                                    ->icon('heroicon-o-tag') // Added icon
+                                                                    ->collapsible() // Make section collapsible
+                                                                    ->schema([
+                                                                        Forms\Components\Grid::make()
+                                                                            ->schema([
+                                                                                Forms\Components\TextInput::make('name')
+                                                                                    ->label('Category Name')
+                                                                                    ->afterStateUpdated(function (Set $set, $state) {
+                                                                                        $set('slug', CategoryAnimals::generateUniqueSlug($state));
+                                                                                    })
+                                                                                    ->required()
+                                                                                    ->live(onBlur: true)
+                                                                                    ->maxLength(255)
+                                                                                    ->placeholder('e.g., Dogs, Cats, Birds')
+                                                                                    ->helperText('The display name for this animal category')
+                                                                                    ->columnSpan(['md' => 2]),
+
+                                                                                Forms\Components\TextInput::make('slug')
+                                                                                    ->label('URL Identifier')
+                                                                                    ->required()
+                                                                                    ->readOnly()
+                                                                                    ->maxLength(255)
+                                                                                    ->helperText('Auto-generated from category name')
+                                                                                    ->columnSpan(['md' => 2]),
+                                                                            ])
+                                                                            ->columns(2),
+
+                                                                        Forms\Components\Textarea::make('description')
+                                                                            ->label('Description')
+                                                                            ->maxLength(255)
+                                                                            ->rows(3)
+                                                                            ->placeholder('Brief description about this animal category')
+                                                                            ->helperText('Max 255 characters')
+                                                                            ->columnSpanFull(),
+
+                                                                        Forms\Components\FileUpload::make('icon')
+                                                                            ->label('Category Icon')
+                                                                            ->image()
+                                                                            ->directory('category-icons')
+                                                                            ->imageEditor()
+                                                                            ->imageResizeMode('contain')
+                                                                            ->imageCropAspectRatio('1:1')
+                                                                            ->panelAspectRatio('2:1')
+                                                                            ->maxSize(512)
+                                                                            ->helperText('Recommended size: 200x200px, max 512KB')
+                                                                            ->columnSpanFull(),
+                                                                    ])
+                                                                    ->columns(2),
+                                                            ])
+                                                            ->columnSpanFull(),
+
+                                                        // Breed Name with visual feedback
+                                                        Forms\Components\TextInput::make('name')
+                                                            ->label('Breed Name')
+                                                            ->afterStateUpdated(function (Set $set, $state) {
+                                                                $set('slug', Breeds::generateUniqueSlug($state));
+                                                            })
+                                                            ->required()
+                                                            ->live(onBlur: true)
+                                                            ->maxLength(255)
+                                                            ->columnSpanFull()
+                                                            ->prefixIcon('lucide-dna'),
+
+                                                        // Slug field with copy button
+                                                        Forms\Components\TextInput::make('slug')
+                                                            ->label('URL Identifier')
+                                                            ->required()
+                                                            ->readOnly()
+                                                            ->maxLength(255)
+                                                            ->helperText('Auto-generated from  name')
+                                                            ->columnSpan(['md' => 2]),
+                                                    ])
+                                            ])
+                                    ])
+                                    ->columnSpan(['md' => 1])
+                                    ->helperText('Select or create specific breed'),
                             ])
-                            ->columnSpan(1)
-                            ->default(null),
+                            ->columns(2)
+                            ->extraAttributes(['class' => 'bg-gray-50 p-4 rounded-lg']),
+
                         Forms\Components\FileUpload::make('thumbnail')
+                            ->label('Main Photo')
                             ->image()
                             ->required()
-                            ->columnSpanFull(),
+                            ->directory('animal-thumbnails')
+                            ->imageEditor()
+                            ->imageResizeMode('cover')
+                            ->imageCropAspectRatio('1:1')
+                            ->columnSpanFull()
+                            ->hint('Primary display image (1:1 ratio recommended)'),
+
                         Forms\Components\Repeater::make('photos')
                             ->relationship('animalsPhotos')
+                            ->label('Additional Photos')
                             ->schema([
                                 Forms\Components\FileUpload::make('photo')
+                                    ->image()
+                                    ->directory('animal-gallery')
+                                    ->imageEditor()
                                     ->required(),
                             ])
-                            ->columnSpanFull(),
-                    ])->columns(2),
+                            ->grid(3)
+                            ->defaultItems(1)
+                            ->columnSpanFull()
+                            ->createItemButtonLabel('Add another photo'),
+                    ])
+                    ->columns(2),
 
                 Forms\Components\Section::make('Physical Attributes')
+                    ->icon('heroicon-o-scale')
                     ->schema([
-                        Forms\Components\TextInput::make('age')
-                            ->required()
-                            ->numeric()
-                            ->suffix('month')
-                            ->columnSpan(1),
-                        Forms\Components\TextInput::make('weight')
-                            ->required()
-                            ->numeric()
-                            ->suffix('kg')
-                            ->columnSpan(1),
+                        Forms\Components\Grid::make()
+                            ->schema([
+                                Forms\Components\TextInput::make('age')
+                                    ->required()
+                                    ->numeric()
+                                    ->minValue(0)
+                                    ->suffix('months')
+                                    ->columnSpan(['md' => 1]),
 
-                        Forms\Components\Select::make('gender')
-                            ->options([
-                                'male' => 'Male',
-                                'female' => 'Female',
-                                'unknown' => 'Unknown'
+                                Forms\Components\TextInput::make('weight')
+                                    ->required()
+                                    ->numeric()
+                                    ->minValue(0)
+                                    ->suffix('kg')
+                                    ->columnSpan(['md' => 1]),
+
+                                Forms\Components\Select::make('gender')
+                                    ->options([
+                                        'male' => 'Male',
+                                        'female' => 'Female',
+                                        'unknown' => 'Unknown'
+                                    ])
+                                    ->required()
+                                    ->native(false)
+                                    ->columnSpan(['md' => 1]),
                             ])
-                            ->required()
-                            ->columnSpan(1),
-                    ])->columns(3),
+                            ->columns(3),
+                    ]),
 
                 Forms\Components\Section::make('Health Information')
+                    ->icon('heroicon-o-heart')
                     ->schema([
-                        Forms\Components\Select::make('health_status')
-                            ->options([
-                                'excellent' => 'Excellent',
-                                'good' => 'Good',
-                                'fair' => 'Fair',
-                                'poor' => 'Poor',
-                                'critical' => 'Critical'
+                        Forms\Components\Grid::make()
+                            ->schema([
+                                Forms\Components\Select::make('health_status')
+                                    ->options([
+                                        'excellent' => 'Excellent',
+                                        'good' => 'Good',
+                                        'fair' => 'Fair',
+                                        'poor' => 'Poor',
+                                        'critical' => 'Critical'
+                                    ])
+                                    ->required()
+                                    ->native(false)
+                                    ->columnSpan(['md' => 1]),
+
+                                Forms\Components\Toggle::make('vaccination_status')
+                                    ->label('Vaccinated')
+                                    ->required()
+                                    ->onColor('success')
+                                    ->offColor('danger')
+                                    ->inline(false)
+                                    ->columnSpan(['md' => 1]),
                             ])
-                            ->required()
-                            ->columnSpan(1),
-                        Forms\Components\Toggle::make('vaccination_status')
-                            ->label('Vaccinated')
-                            ->required()
-                            ->columnSpan(1),
+                            ->columns(2),
 
                         Forms\Components\Textarea::make('description')
                             ->required()
                             ->maxLength(500)
-                            ->columnSpanFull(),
-                    ])->columns(2),
+                            ->rows(4)
+                            ->placeholder('Detailed health notes and observations')
+                            ->columnSpanFull()
+                            ->hint('Max 500 characters'),
+                    ]),
 
-                Forms\Components\Section::make('Additional Information')
+                Forms\Components\Section::make('Financial Information')
+                    ->icon('heroicon-o-currency-dollar')
                     ->schema([
-                        Forms\Components\TextInput::make('purchase_price')
-                            ->required()
-                            ->numeric()
-                            ->prefix('Rp')
-                            ->columnSpan(1),
+                        Forms\Components\Grid::make()
+                            ->schema([
+                                Forms\Components\TextInput::make('purchase_price')
+                                    ->required()
+                                    ->numeric()
+                                    ->minValue(0)
+                                    ->prefix('Rp')
+                                    ->columnSpan(['md' => 1]),
 
-                        Forms\Components\TextInput::make('selling_price')
-                            ->required()
-                            ->numeric()
-                            ->prefix('Rp')
-                            ->columnSpan(1),
+                                Forms\Components\TextInput::make('selling_price')
+                                    ->required()
+                                    ->numeric()
+                                    ->minValue(0)
+                                    ->prefix('Rp')
+                                    ->columnSpan(['md' => 1]),
 
-                        Forms\Components\Toggle::make('is_active')
-                            ->label('Is Acvtive')
-                            ->required()
-                            ->columnSpan(1),
-                    ])->columns(3),
+                                Forms\Components\Toggle::make('is_active')
+                                    ->label('Available for sale')
+                                    ->required()
+                                    ->onColor('success')
+                                    ->offColor('danger')
+                                    ->inline(false)
+                                    ->columnSpan(['md' => 1]),
+                            ])
+                            ->columns(3),
+                    ]),
             ]);
     }
 

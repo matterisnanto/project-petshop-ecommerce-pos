@@ -10,8 +10,13 @@ class Hotel extends Model
     //
     protected $fillable = ['name', 'category_animals_id', 'description', 'price_per_day', 'capacity', 'thumbnail', 'is_active'];
 
-    public function categoryanimals()
+    public function categoryAnimals()
     {
         return $this->belongsTo(CategoryAnimals::class);
+    }
+
+    public function hotelPackage()
+    {
+        return $this->hasMany(HotelPackage::class);
     }
 }

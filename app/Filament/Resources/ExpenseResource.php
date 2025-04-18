@@ -9,6 +9,7 @@ use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\Group;
+use Forms\Components\TextInput\Mask;
 use Filament\Forms\Components\Section;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\ExpenseResource\Pages;
@@ -34,22 +35,39 @@ class ExpenseResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Expense')
-                    ->description('')
+                Forms\Components\Section::make('Expense Details')
+                    ->description('Input the details of your spending below.')
+                    ->icon('heroicon-o-receipt-percent') // hanya jika kamu pakai Section yang support icon()
+                    ->columns(2)
+                    ->collapsible()
                     ->schema([
                         Forms\Components\TextInput::make('name')
+                            ->label('Expense Name')
+                            ->placeholder('e.g. Office Rent, Internet, Utilities')
                             ->required()
-                            ->maxLength(255),
+                            ->maxLength(255)
+                            ->prefixIcon('heroicon-o-pencil-square')
+                            ->columnSpanFull()
+                            ->helperText('Name this expense for future reference.'),
+
                         Forms\Components\Textarea::make('note')
+                            ->label('Notes')
+                            ->placeholder('e.g. Paid for 3 months in advance')
                             ->required()
-                            ->columnSpanFull(),
+                            ->autosize()
+                            ->columnSpanFull()
+                            ->rows(3)
+                            ->helperText('Provide additional info for clarity.'),
+
                         Forms\Components\TextInput::make('amount')
+                            ->label('Amount')
                             ->required()
                             ->numeric()
-                            ->prefix('Rp'),
+                            ->prefix('Rp')
+                            ->columnSpanFull()
+                            ->helperText('Use whole numbers, e.g. 1000000 for one million.'),
                     ])
                     ->columnSpanFull(),
-
             ]);
     }
 

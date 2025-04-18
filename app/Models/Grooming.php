@@ -10,18 +10,18 @@ class Grooming extends Model
     //
     protected $fillable = ['name', 'slug', 'category_animals_id', 'category_grooming_id', 'photo', 'description', 'stock', 'purchase_price', 'selling_price', 'is_active'];
 
-    public function categoryanimals()
+    public function categoryAnimals()
     {
         return $this->belongsTo(CategoryAnimals::class);
     }
 
-    public function categorygrooming()
+    public function categoryGrooming()
     {
         return $this->belongsTo(CategoryGrooming::class);
     }
 
     public function groomingPackage()
     {
-        return $this->belongsTo(GroomingPackage::class);
+        return $this->hasMany(GroomingPackage::class);
     }
 }

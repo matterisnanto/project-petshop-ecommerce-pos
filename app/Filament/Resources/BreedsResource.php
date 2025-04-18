@@ -36,51 +36,92 @@ class BreedsResource extends Resource
             ->schema([
                 Forms\Components\Section::make('Breed Information')
                     ->description('Provide details about the animal breed')
-                    ->icon('heroicon-o-information-circle')
+                    ->icon('lucide-dna')  // More vibrant icon
+                    ->collapsible()  // Allows section to be collapsed
                     ->columns(2)
                     ->schema([
+                        // Animal Category Select with enhanced UI
                         Forms\Components\Select::make('category_animals_id')
                             ->relationship('categoryAnimals', 'name')
-                            ->label('Animals Category')
-                            ->default(null)
+                            ->label('Animal Category')
+                            ->searchable()
+                            ->preload()
+                            ->prefixIcon('heroicon-o-circle-stack')
+                            ->native(false)
+                            ->placeholder('Select or create a category')
                             ->createOptionForm([
-                                Forms\Components\TextInput::make('name')
-                                    ->afterStateUpdated(function (Set $set, $state) {
-                                        $set('slug', CategoryAnimals::generateUniqueSlug($state));
-                                    })
-                                    ->required()
-                                    ->live(onBlur: true)
-                                    ->required()
-                                    ->maxLength(255),
+                                Forms\Components\Section::make('New Category Animals')
+                                    ->icon('heroicon-o-circle-stack') // Added icon
+                                    ->collapsible() // Make section collapsible
+                                    ->schema([
+                                        Forms\Components\Grid::make()
+                                            ->schema([
+                                                Forms\Components\TextInput::make('name')
+                                                    ->label('Category Name')
+                                                    ->afterStateUpdated(function (Set $set, $state) {
+                                                        $set('slug', CategoryAnimals::generateUniqueSlug($state));
+                                                    })
+                                                    ->required()
+                                                    ->live(onBlur: true)
+                                                    ->maxLength(255)
+                                                    ->placeholder('e.g., Dogs, Cats, Birds')
+                                                    ->helperText('The display name for this animal category')
+                                                    ->columnSpan(['md' => 2]),
 
-                                Forms\Components\TextInput::make('slug')
-                                    ->required()
-                                    ->readOnly()
-                                    ->maxLength(255),
-                                Forms\Components\TextInput::make('description')
-                                    ->maxLength(255)
-                                    ->default(null),
-                                Forms\Components\FileUpload::make('icon')
-                                    ->image()
-                                    ->columnSpan('full')
-                                    ->default(null),
+                                                Forms\Components\TextInput::make('slug')
+                                                    ->label('URL Identifier')
+                                                    ->required()
+                                                    ->readOnly()
+                                                    ->maxLength(255)
+                                                    ->helperText('Auto-generated from category name')
+                                                    ->columnSpan(['md' => 2]),
+                                            ])
+                                            ->columns(2),
+
+                                        Forms\Components\Textarea::make('description')
+                                            ->label('Description')
+                                            ->maxLength(255)
+                                            ->rows(3)
+                                            ->placeholder('Brief description about this animal category')
+                                            ->helperText('Max 255 characters')
+                                            ->columnSpanFull(),
+
+                                        Forms\Components\FileUpload::make('icon')
+                                            ->label('Category Icon')
+                                            ->image()
+                                            ->directory('category-icons')
+                                            ->imageEditor()
+                                            ->imageResizeMode('contain')
+                                            ->imageCropAspectRatio('1:1')
+                                            ->panelAspectRatio('2:1')
+                                            ->maxSize(512)
+                                            ->helperText('Recommended size: 200x200px, max 512KB')
+                                            ->columnSpanFull(),
+                                    ])
+                                    ->columns(2),
                             ])
-                            ->columnSpanFull()
-                            ->default(null),
+                            ->columnSpanFull(),
+
+                        // Breed Name with visual feedback
                         Forms\Components\TextInput::make('name')
+                            ->label('Breed Name')
                             ->afterStateUpdated(function (Set $set, $state) {
                                 $set('slug', Breeds::generateUniqueSlug($state));
                             })
                             ->required()
                             ->live(onBlur: true)
-                            ->required()
+                            ->maxLength(255)
                             ->columnSpanFull()
-                            ->maxLength(255),
+                            ->prefixIcon('lucide-dna'),
+
+                        // Slug field with copy button
                         Forms\Components\TextInput::make('slug')
+                            ->label('URL Identifier')
                             ->required()
                             ->readOnly()
-                            ->columnSpanFull()
-                            ->maxLength(255),
+                            ->maxLength(255)
+                            ->helperText('Auto-generated from  name')
+                            ->columnSpan(['md' => 2]),
                     ])
             ]);
     }
@@ -89,11 +130,10 @@ class BreedsResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('category_animals_id')
-                    ->numeric()
-                    ->sortable(),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('categoryAnimals.name')
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('slug')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
@@ -114,6 +154,7 @@ class BreedsResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -134,7 +175,6 @@ class BreedsResource extends Resource
         return [
             'index' => Pages\ListBreeds::route('/'),
             'create' => Pages\CreateBreeds::route('/create'),
-            'edit' => Pages\EditBreeds::route('/{record}/edit'),
         ];
     }
 }

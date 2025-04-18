@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('grooming_packages', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('price')->nullable();
+            $table->longText('description')->nullable();
             $table->foreignId('grooming_id')->constrained('groomings')->cascadeOnDelete();
             $table->timestamps();
             $table->softDeletes();

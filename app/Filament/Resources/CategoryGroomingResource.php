@@ -31,6 +31,7 @@ class CategoryGroomingResource extends Resource
             ->schema([
                 Forms\Components\Section::make('Basic Information')
                     ->description('Enter the basic details of the item')
+                    ->icon('heroicon-o-information-circle')
                     ->schema([
                         Forms\Components\TextInput::make('name')
                             ->required()

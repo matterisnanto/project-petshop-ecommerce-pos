@@ -8,7 +8,7 @@ class HotelPackage extends Model
 {
     protected $table = 'hotel_packages';
     //
-    protected $fillable = ['name', 'hotel_id'];
+    protected $fillable = ['name', 'price', 'description', 'hotel_id'];
 
     public function hotels()
     {

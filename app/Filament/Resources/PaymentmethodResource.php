@@ -35,39 +35,71 @@ class PaymentmethodResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Payment method Information')
+                Forms\Components\Section::make('Payment Method Details')
+                    ->icon('heroicon-o-credit-card')  // Added icon
+                    ->description('Configure payment method information')
+                    ->columns(2)
+                    ->collapsible()
                     ->schema([
+                        // Name Field
                         Forms\Components\TextInput::make('name')
-                            ->label('Name')
+                            ->label('Payment Method Name')
                             ->required()
                             ->maxLength(255)
-                            ->columnSpan(['md' => 2]),
+                            ->placeholder('e.g. Bank Transfer, E-Wallet, Cash')
+                            ->prefixIcon('heroicon-o-credit-card')
+                            ->columnSpan(['md' => 2])
+                            ->helperText('Enter the display name for this payment method'),
+
+                        // Account Number Field
                         Forms\Components\TextInput::make('account_number')
-                            ->label('Account Number')
+                            ->label('Account/Reference Number')
                             ->maxLength(50)
-                            ->columnSpan(['md' => 2]),
+                            ->placeholder('e.g. 1234567890')
+                            ->columnSpan(['md' => 2])
+                            ->helperText('Optional account or reference number'),
+
+                        // Image Upload
                         Forms\Components\FileUpload::make('image')
-                            ->label('Upload Image')
+                            ->label('Payment Method Logo')
                             ->image()
-                            ->directory('expense-images')
+                            ->directory('payment-method-images')
                             ->imageEditor()
+                            ->imageResizeMode('contain')
+                            ->imagePreviewHeight('120')
+                            ->panelAspectRatio('1:1')
+                            ->panelLayout('integrated')
                             ->required()
+                            ->columnSpan(['md' => 2])
+                            ->helperText('Upload the payment method logo/icon (1:1 ratio recommended)'),
+
+                        // Payment Type Toggles
+                        Forms\Components\Fieldset::make('Payment Type')
+                            ->columns(3)
+                            ->schema([
+                                Forms\Components\Toggle::make('olshop_transaction')
+                                    ->label('Online Payment')
+                                    ->inline(false)
+                                    ->onColor('primary')
+                                    ->offColor('gray')
+                                    ->required(),
+
+                                Forms\Components\Toggle::make('pos_transaction')
+                                    ->label('Offline Payment')
+                                    ->inline(false)
+                                    ->onColor('warning')
+                                    ->offColor('gray')
+                                    ->required(),
+
+                                Forms\Components\Toggle::make('is_cash')
+                                    ->label('Cash Payment')
+                                    ->inline(false)
+                                    ->onColor('success')
+                                    ->offColor('gray')
+                                    ->required(),
+                            ])
                             ->columnSpan(['md' => 2]),
-                        Forms\Components\Toggle::make('olshop_transaction')
-                            ->label('this is online payment?')
-                            ->inline(false)
-                            ->required(),
-                        Forms\Components\Toggle::make('pos_transaction')
-                            ->label('this is offline payment?')
-                            ->inline(false)
-                            ->required(),
-                        Forms\Components\Toggle::make('is_cash')
-                            ->label('is this cash payment?')
-                            ->inline(false)
-                            ->required(),
                     ])
-                    ->columns(2) // Mengatur layout menjadi 2 kolom
-                    ->collapsible() // Membuat section bisa di-collapse
                     ->columnSpanFull(),
             ]);
     }

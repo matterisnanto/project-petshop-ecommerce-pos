@@ -34,22 +34,50 @@ class CategoryResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
-                    ->afterStateUpdated(function (Set $set, $state) {
-                        $set('slug', Category::generateUniqueSlug($state));
-                    })
-                    ->required()
-                    ->live(onBlur: true)
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('slug')
-                    ->required()
-                    ->readOnly()
-                    ->maxLength(255),
-                Forms\Components\FileUpload::make('icon')
-                    ->image()
-                    ->columnSpan('full')
-                    ->default(null),
+                Forms\Components\Section::make('Category Details')
+                    ->description('Create or edit a product category')
+                    ->icon('heroicon-o-tag')
+                    ->schema([
+                        Forms\Components\Grid::make()
+                            ->schema([
+                                Forms\Components\TextInput::make('name')
+                                    ->label('Category Name')
+                                    ->afterStateUpdated(function (Set $set, $state) {
+                                        $set('slug', Category::generateUniqueSlug($state));
+                                    })
+                                    ->required()
+                                    ->live(onBlur: true)
+                                    ->maxLength(255)
+                                    ->placeholder('e.g., Cat Food, Dog Food, Toys')
+                                    ->helperText('The display name for your category')
+                                    ->columnSpan(['md' => 2]),
+
+                                Forms\Components\TextInput::make('slug')
+                                    ->label('URL Identifier')
+                                    ->required()
+                                    ->readOnly()
+                                    ->maxLength(255)
+                                    ->helperText('Auto-generated from category name')
+                                    ->columnSpan(['md' => 2]),
+                            ])
+                            ->columns(2),
+
+                        Forms\Components\FileUpload::make('icon')
+                            ->label('Category Icon')
+                            ->image()
+                            ->directory('category-icons')
+                            ->imageEditor()
+                            ->imageResizeMode('contain')
+                            ->imageCropAspectRatio('1:1')
+                            ->imagePreviewHeight('150')
+                            ->maxSize(512)
+                            ->helperText('Upload a square icon (recommended 200x200px)')
+                            ->downloadable()
+                            ->columnSpanFull()
+                            ->panelAspectRatio('2:1'),
+                    ])
+                    ->columns(2)
+                    ->collapsible(),
             ]);
     }
 

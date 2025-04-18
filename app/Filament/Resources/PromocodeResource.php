@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use Filament\Forms;
 use Filament\Tables;
+use Filament\Forms\Get;
 use Filament\Forms\Form;
 use App\Models\Promocode;
 use Filament\Tables\Table;
@@ -34,21 +35,62 @@ class PromocodeResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('code')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('discount_amount')
-                    ->required()
-                    ->numeric()
-                    ->default(0)
-                    ->prefix('Rp'),
-                Forms\Components\DatePicker::make('start_date')
-                    ->required(),
-                Forms\Components\DatePicker::make('end_date')
-                    ->required(),
-                Forms\Components\Toggle::make('is_active')
-                    ->label('Is the promo code active?')
-                    ->required(),
+                Forms\Components\Section::make('Promo Code Information')
+                    ->icon('heroicon-o-percent-badge')
+                    ->description('Create a new discount promotion')
+                    ->columns(2)
+                    ->schema([
+                        Forms\Components\TextInput::make('code')
+                            ->label('Promo Code')
+                            ->required()
+                            ->maxLength(255)
+                            ->placeholder('e.g. SUMMER20')
+                            ->columnSpan(['md' => 1])
+                            ->helperText('Enter uppercase letters and numbers only'),
+
+                        Forms\Components\TextInput::make('discount_amount')
+                            ->label('Discount Value')
+                            ->required()
+                            ->numeric()
+                            ->default(0)
+                            ->prefix('Rp')
+                            ->inputMode('decimal')
+                            ->minValue(0)
+                            ->maxValue(10000000)
+                            ->step(1000)
+                            ->prefixIcon('heroicon-o-currency-dollar')
+                            ->columnSpan(['md' => 1])
+                            ->helperText('Enter the discount amount in Rupiah'),
+
+                        Forms\Components\DatePicker::make('start_date')
+                            ->label('Start Date')
+                            ->required()
+                            ->native(false)
+                            ->displayFormat('d M Y')
+                            ->prefixIcon('heroicon-o-calendar')
+                            ->columnSpan(['md' => 1])
+                            ->helperText('When the promo becomes active'),
+
+                        Forms\Components\DatePicker::make('end_date')
+                            ->label('End Date')
+                            ->required()
+                            ->native(false)
+                            ->displayFormat('d M Y')
+                            ->minDate(fn(Get $get) => $get('start_date') ?: now())
+                            ->prefixIcon('heroicon-o-calendar')
+                            ->columnSpan(['md' => 1])
+                            ->helperText('When the promo expires'),
+
+                        Forms\Components\Toggle::make('is_active')
+                            ->label('Active Status')
+                            ->required()
+                            ->inline(false)
+                            ->onColor('success')
+                            ->offColor('danger')
+                            ->default(true)
+                            ->columnSpan(['md' => 2])
+                            ->helperText('Toggle to activate/deactivate the promo'),
+                    ]),
             ]);
     }
 

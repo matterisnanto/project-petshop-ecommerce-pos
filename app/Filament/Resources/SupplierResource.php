@@ -2,16 +2,17 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\SupplierResource\Pages;
-use App\Filament\Resources\SupplierResource\RelationManagers;
-use App\Models\Supplier;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use App\Models\Supplier;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Filament\Resources\Resource;
+use Filament\Forms\Components\TextInput;
 use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Resources\SupplierResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\SupplierResource\RelationManagers;
 
 class SupplierResource extends Resource
 {
@@ -32,30 +33,61 @@ class SupplierResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
-                    ->label('Supplier Name')
-                    ->required()
-                    ->maxLength(255),
+                Forms\Components\Section::make('Supplier Information')
+                    ->description('Enter complete supplier details')
+                    ->icon('heroicon-o-user-circle')
+                    ->schema([
+                        Forms\Components\Grid::make()
+                            ->schema([
+                                Forms\Components\TextInput::make('name')
+                                    ->label('Supplier Name')
+                                    ->required()
+                                    ->maxLength(255)
+                                    ->placeholder('e.g., PT. Supplier Maju Jaya')
+                                    ->columnSpan(['md' => 2]),
 
-                Forms\Components\TextInput::make('email')
-                    ->label('Email')
-                    ->email()
-                    ->unique()
-                    ->required()
-                    ->maxLength(255),
+                                Forms\Components\TextInput::make('email')
+                                    ->label('Email Address')
+                                    ->email()
+                                    ->unique()
+                                    ->required()
+                                    ->maxLength(255)
+                                    ->placeholder('supplier@example.com')
+                                    ->prefixIcon('heroicon-o-envelope')
+                                    ->columnSpan(['md' => 2]),
+                            ])
+                            ->columns(2),
 
-                Forms\Components\TextInput::make('phone')
-                    ->label('Phone Number')
-                    ->tel()
-                    ->mask('999-9999-9999') // Format input
-                    ->prefix('+62') // Tambahkan prefix
-                    ->required()
-                    ->maxLength(255),
+                        Forms\Components\TextInput::make('phone')
+                            ->label('Phone Number')
+                            ->tel()
+                            ->required()
+                            ->maxLength(255)
+                            ->mask('999999999999')
+                            ->prefix('+62')
+                            ->stripCharacters(['-', ' '])
+                            ->rule('digits_between:10,13')
+                            ->afterStateHydrated(function (TextInput $component, $state) {
+                                // Remove +62 if already present to avoid duplication
+                                $cleaned = str_replace('+62', '', $state);
+                                $component->state($cleaned);
+                            })
+                            ->dehydrateStateUsing(fn($state) => '+62' . $state)
+                            ->placeholder('81234567890')
+                            ->prefixIcon('heroicon-o-phone')
+                            ->helperText('Enter number without +62 (e.g., 81234567890)')
+                            ->columnSpan(['md' => 2]),
 
-                Forms\Components\TextInput::make('address')
-                    ->label('Address')
-                    ->required()
-                    ->maxLength(255),
+                        Forms\Components\Textarea::make('address')
+                            ->label('Full Address')
+                            ->required()
+                            ->maxLength(255)
+                            ->rows(3)
+                            ->placeholder('Street, City, Province, Postal Code')
+                            ->columnSpanFull(),
+                    ])
+                    ->columns(2)
+                    ->collapsible(),
             ]);
     }
 
