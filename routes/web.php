@@ -1,37 +1,51 @@
 <?php
 
 use App\Livewire\Pos;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\shoppingcart;
-use App\Http\Controllers\TrxController;
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\ProductController;
-use App\Http\Controllers\ContactUsController;
-use App\Http\Controllers\ShoppingCartController;
+use App\Livewire\Home;
+use App\Livewire\TrxCheck;
+
+use App\Livewire\ContactUs;
+use App\Livewire\ProductList;
+use App\Livewire\ShoppingCart;
 use App\Exports\TemplateExport;
+use App\Livewire\Checkout;
+use App\Livewire\OrderConfirmation;
+use App\Livewire\PetGrooming;
+use App\Livewire\PetHotel;
+use App\Livewire\ProductDetail;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Route;
 
-Route::get('/', [HomeController::class, 'index'])->name('home');
 
-Route::get('/product', [ProductController::class, 'index'])->name('product');
-Route::get('/products/show-all', [ProductController::class, 'showAll'])->name('products.showAll');
-Route::get('/product/{slug}', [ProductController::class, 'show'])->name('product.detail');
+Route::get('/', Home::class)->name('home');
 
-Route::post('/cart/add/{id}', [ShoppingCartController::class, 'addToCart'])->name('cart.add');
-Route::post('/cart/update/{id}', [ShoppingCartController::class, 'updateCart'])->name('cart.update');
-Route::get('/cart/remove/{id}', [ShoppingCartController::class, 'removeFromCart'])->name('cart.remove');
-Route::post('/remove-from-cart/{id}', [ShoppingCartController::class, 'removeFromCart'])->name('remove.from.cart');
-Route::get('/shopping-cart', [ShoppingCartController::class, 'viewCart'])->name('cart.view');
-Route::get('/shopping-cart/checkout', [ShoppingCartController::class, 'checkout'])->name('checkout');
+Route::get('/products', ProductList::class)->name('products');
+Route::get('/products/{product:slug}', ProductDetail::class)->name('products-show');
 
-Route::get('/trx-check', [TrxController::class, 'index'])->name('trx');
-Route::post('/trx-check', [TrxController::class, 'searchTransaction'])->name('transaction.search');
+Route::get('/shopping-cart', ShoppingCart::class)->name('shoppingcart');
 
-Route::get('/contact-us', [ContactUsController::class, 'index'])->name('contactus');
-Route::get('contact-us', [ContactUsController::class, 'index'])->name('contactus');
+Route::get('/shopping-cart/checkout', Checkout::class)->name('checkout');
+
+Route::get('/order-confirmation/{transaction_id}', OrderConfirmation::class)
+    ->name('order-confirmation');
+
+Route::get('/pet-grooming', PetGrooming::class)->name('pet-grooming');
+
+Route::get('/pet-hotel', PetHotel::class)->name('pet-hotel');
+
+Route::get('/trx-check', TrxCheck::class)->name('trx-check');
+
+Route::get('/contact-us', ContactUs::class)->name('contact-us');
+
+Route::get('/debug-cart', function () {
+    return response()->json([
+        'cart' => session('cart'),
+        'cart_totals' => session('cart_totals'),
+        'checkout_data' => session('checkout_data')
+    ]);
+});
+
 
 Route::get('/download-template', function () {
     return Excel::download(new TemplateExport, 'template.xlsx');
 })->name('download-template');
-
-use App\Livewire\Pos;

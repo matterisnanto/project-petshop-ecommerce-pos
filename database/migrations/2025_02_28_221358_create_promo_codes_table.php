@@ -13,8 +13,10 @@ return new class extends Migration
     {
         Schema::create('promo_codes', function (Blueprint $table) {
             $table->id();
-            $table->string('code');
-            $table->integer('discount_amount');
+            $table->string('code', 50)->unique();
+            $table->decimal('discount_amount', 12, 2);
+            $table->dateTime('start_date')->useCurrent();
+            $table->dateTime('end_date');
             $table->timestamps();
             $table->softDeletes();
         });

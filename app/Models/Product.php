@@ -4,16 +4,17 @@ namespace App\Models;
 
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Product extends Model
 {
     use HasFactory;
     protected $table = 'products';
     //
-    protected $fillable = ['name', 'slug', 'barcode', 'thumbnail', 'about', 'purchase_price', 'selling_price', 'is_active', 'is_popular', 'stock', 'category_id', 'brand_id', 'supplier_id'];
+    protected $fillable = ['name', 'slug', 'barcode', 'thumbnail', 'description', 'weight', 'purchase_price', 'selling_price', 'is_active', 'is_popular', 'stock', 'category_id', 'brand_id', 'supplier_id'];
 
     protected $appends = ['image_url'];
 
@@ -55,11 +56,43 @@ class Product extends Model
         return $this->thumbnail ? url('storage/', $this->thumbnail) : null;
     }
 
-    public function scopeSearch($query, $value)
+    public function scopePopular($query)
     {
-        return $query->where("name", "like", "%{$value}%");
+        return $query->where('is_popular', true);
     }
 
+    public function scopePriceAsc($query)
+    {
+        return $query->orderBy('selling_price', 'asc');
+    }
+
+    public function scopePriceDesc($query)
+    {
+        return $query->orderBy('selling_price', 'desc');
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
+
+    public function scopeSearch(Builder $query, string $search = null): Builder
+    {
+        if (!$search) {
+            return $query;
+        }
+
+        return $query->where(function ($query) use ($search) {
+            $query->where('name', 'like', "%{$search}%")
+                ->orWhere('description', 'like', "%{$search}%")
+                ->orWhere('barcode', 'like', "%{$search}%");
+        });
+    }
+
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
 
     public function order(): HasMany
     {

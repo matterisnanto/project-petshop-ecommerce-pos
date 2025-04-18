@@ -11,10 +11,10 @@ class OlshopTransaction extends Model
 {
     protected $table = 'olshop_transactions';
     //
-    protected $fillable = ['name', 'phone', 'email', 'promo_code_id', 'sub_total_amount', 'grand_total_amount', 'discount_amount', 'province', 'city_regency', 'district', 'vilage_subdistrict', 'post_code', 'address', 'city', 'is_paid', 'trx_id', 'proof'];
+    protected $fillable = ['name', 'phone', 'email', 'promo_code_id', 'sub_total_amount', 'grand_total_amount', 'discount_amount', 'province', 'city_regency', 'post_code', 'complete_address', 'is_paid', 'trx_id', 'courier', 'shipping_service', 'weight_total', 'shipping_cost', 'estimated_delivery', 'payment_method_id', 'proof'];
 
 
-    public function order(): HasMany
+    public function orders(): HasMany
     {
         return $this->hasMany(order::class, 'olshop_transaction_id');
     }
@@ -29,6 +29,12 @@ class OlshopTransaction extends Model
         return $this->belongsTo(PromoCode::class, 'promo_code_id');
     }
 
+    public function paymentmethod()
+    {
+        return $this->belongsTo(PaymentMethod::class, 'payment_method_id');
+    }
+
+
     protected function phone(): Attribute
     {
         return Attribute::make(
@@ -37,19 +43,7 @@ class OlshopTransaction extends Model
         );
     }
 
-
-    // public function subtotalamount() {
-    //     return $this->belongsTo(SubTotalAmount::class);
-    // }
-
-
-    // public function grandtotalamount() {
-    //     return $this->belongsTo(GrandTotalAmount::class);
-    // }
-
-
-    // public function discountamount() {
-    //     return $this->belongsTo(DiscountAmount::class);
-    // }
-
+    protected $casts = [
+        'shipping_service' => 'array', // jika kolom ini yang menyimpan JSON
+    ];
 }

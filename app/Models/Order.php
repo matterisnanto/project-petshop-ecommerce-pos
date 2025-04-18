@@ -15,23 +15,38 @@ class Order extends Model
 
     protected $table = 'order';
 
-    protected $fillable = ['pos_transaction_id', 'olshop_transaction_id', 'product_id', 'quantity', 'unit_price'];
+    protected $fillable = ['pos_transaction_id', 'olshop_transaction_id', 'type', 'product_id', 'animals_id', 'grooming_id', 'hotel_id', 'quantity', 'unit_price'];
 
 
     public function posTransaction(): BelongsTo
     {
         return $this->belongsTo(PosTransaction::class, 'pos_transaction_id');
     }
-
+    public function olshopTransaction(): BelongsTo
+    {
+        return $this->belongsTo(OlshopTransaction::class, 'olshop_transaction_id');
+    }
 
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class, 'product_id');
     }
 
-    public function paymentMethod(): BelongsTo
-{
-    return $this->belongsTo(PaymentMethod::class, 'payment_method_id');
-}
+    public function animal()
+    {
+        return $this->belongsTo(Animals::class, 'animals_id');
+    }
+    public function grooming()
+    {
+        return $this->belongsTo(Grooming::class, 'animals_id');
+    }
+    public function hotel()
+    {
+        return $this->belongsTo(Hotel::class, 'animals_id');
+    }
 
+    public function petInformation()
+    {
+        return $this->hasMany(PetInformation::class, 'order_id');
+    }
 }
