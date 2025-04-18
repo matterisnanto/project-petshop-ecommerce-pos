@@ -34,9 +34,9 @@ class PetInformationResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('order_id')
-                    ->required()
-                    ->numeric(),
+                Forms\Components\Select::make('order')
+                    ->relationship('posTransaction', 'name')
+                    ->required(),
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(255),

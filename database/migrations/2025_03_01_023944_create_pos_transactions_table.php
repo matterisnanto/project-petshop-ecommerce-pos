@@ -13,18 +13,15 @@ return new class() extends Migration {
 
         Schema::create('pos_transactions', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->nullable();
-            $table->string('phone')->nullable();
-            $table->string('email')->nullable();
-            $table->enum('gender', ['male', 'female']);
-            $table->integer('total_price');
+            $table->string('name', 100)->nullable();
+            $table->string('phone', 20)->nullable();
+            $table->string('email', 100)->nullable();
+            $table->enum('gender', ['male', 'female'])->nullable();
+            $table->decimal('total_price', 12, 2);
             $table->text('note')->nullable();
-            $table->foreignId('payment_method_id')
-                ->nullable()
-                ->constrained('payment_methods')
-                ->nullOnDelete();
-            $table->integer('paid_amount')->nullable();
-            $table->integer('change_amount')->nullable();
+            $table->foreignId('payment_method_id')->nullable()->constrained()->nullOnDelete();
+            $table->decimal('paid_amount', 12, 2)->nullable();
+            $table->decimal('change_amount', 12, 2)->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

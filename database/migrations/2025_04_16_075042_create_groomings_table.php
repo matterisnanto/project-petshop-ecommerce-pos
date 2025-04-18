@@ -13,15 +13,15 @@ return new class extends Migration
     {
         Schema::create('groomings', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('slug')->unique();
+            $table->string('name', 100);
+            $table->string('slug', 100)->unique();
             $table->foreignId('category_animals_id')->nullable()->constrained()->nullOnDelete();
-            $table->foreignId('category_grooming_id')->nullable()->constrained('category_groomings')->nullOnDelete();
-            $table->string('photo')->nullable();
-            $table->longText('description')->nullable();
-            $table->string('stock');
-            $table->unsignedBigInteger('purchase_price')->nullable();
-            $table->unsignedBigInteger('selling_price');
+            $table->foreignId('category_grooming_id')->nullable()->constrained()->nullOnDelete();
+            $table->string('photo', 255)->nullable();
+            $table->text('description')->nullable();
+            $table->integer('stock')->default(0);
+            $table->decimal('purchase_price', 12, 2)->nullable();
+            $table->decimal('selling_price', 12, 2);
             $table->boolean('is_active')->default(false);
             $table->timestamps();
             $table->softDeletes();

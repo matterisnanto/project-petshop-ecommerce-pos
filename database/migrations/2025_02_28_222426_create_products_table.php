@@ -12,17 +12,17 @@ return new class() extends Migration {
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('slug')->unique();
-            $table->string('barcode')->nullable();
-            $table->string('weight');
-            $table->string('thumbnail');
+            $table->string('name', 100);
+            $table->string('slug', 100)->unique();
+            $table->string('barcode', 50)->nullable()->unique();
+            $table->decimal('weight', 8, 2);
+            $table->string('thumbnail', 255);
             $table->longText('description')->nullable();
-            $table->unsignedBigInteger('purchase_price');
-            $table->unsignedBigInteger('selling_price');
+            $table->decimal('purchase_price', 12, 2);
+            $table->decimal('selling_price', 12, 2);
             $table->boolean('is_active')->default(true);
-            $table->boolean('is_popular');
-            $table->integer('stock')->default();
+            $table->boolean('is_popular')->default(false);
+            $table->integer('stock')->default(0);
             $table->foreignId('category_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('brand_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('supplier_id')->nullable()->constrained()->nullOnDelete();

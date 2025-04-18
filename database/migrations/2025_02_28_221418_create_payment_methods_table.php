@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('payment_methods', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('account_number')->nullable();
-            $table->string('image');
+            $table->string('name', 50);
+            $table->string('account_number', 50)->nullable();
+            $table->string('image', 255);
             $table->boolean('olshop_transaction')->default(false);
             $table->boolean('pos_transaction')->default(false);
             $table->boolean('is_cash')->default(false);

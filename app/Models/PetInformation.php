@@ -9,11 +9,21 @@ class PetInformation extends Model
 {
     protected $table = 'pet_information';
     //
-    protected $fillable = ['order_id', 'name', 'age', 'photo', 'description', 'check_in', 'check_out', 'days'];
+    protected $fillable = ['order_id', 'name', 'category_animals_id', 'age', 'photo', 'description', 'check_in', 'check_out', 'days'];
 
     public function order()
     {
         return $this->belongsTo(Order::class);
+    }
+
+    public function posTransaction()
+    {
+        return $this->belongsTo(PosTransaction::class);
+    }
+
+    public function categoryAnimal()
+    {
+        return $this->belongsTo(CategoryAnimals::class);
     }
 
     // app/Models/PetInformation.php

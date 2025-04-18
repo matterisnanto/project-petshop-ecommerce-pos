@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('breeds', function (Blueprint $table) {
             $table->id();
             $table->foreignId('category_animals_id')->constrained('category_animals')->cascadeOnDelete();
-            $table->string('name');
-            $table->string('slug');
+            $table->string('name', 100);
+            $table->string('slug', 100);
             $table->timestamps();
             $table->softDeletes();
         });

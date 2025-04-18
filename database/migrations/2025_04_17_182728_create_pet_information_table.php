@@ -14,11 +14,11 @@ return new class extends Migration
         Schema::create('pet_information', function (Blueprint $table) {
             $table->id();
             $table->foreignId('order_id')->constrained('order')->cascadeOnDelete();
-            $table->string('name');
-            $table->foreignId('category_animals_id')->nullable()->constrained('category_animals')->nullOnDelete();
+            $table->string('name', 100);
+            $table->foreignId('category_animals_id')->nullable()->constrained()->nullOnDelete();
             $table->integer('age');
-            $table->string('photo');
-            $table->string('description')->nullable();
+            $table->string('photo', 255);
+            $table->text('description')->nullable();
             $table->date('check_in')->nullable();
             $table->date('check_out')->nullable();
             $table->integer('days')->nullable();

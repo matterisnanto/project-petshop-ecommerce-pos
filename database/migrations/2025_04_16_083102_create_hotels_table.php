@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::create('hotels', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('name', 100);
             $table->foreignId('category_animals_id')->nullable()->constrained()->nullOnDelete();
             $table->text('description')->nullable();
-            $table->decimal('price_per_day');
+            $table->decimal('price_per_day', 12, 2);
             $table->integer('capacity');
-            $table->string('thumbnail')->nullable();
+            $table->string('thumbnail', 255)->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
             $table->softDeletes();

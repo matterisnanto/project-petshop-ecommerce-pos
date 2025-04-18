@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('category_groomings', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('slug')->unique();
-            $table->longText('description')->nullable();
-            $table->string('photo')->nullable();
+            $table->string('name', 100);
+            $table->string('slug', 100)->unique();
+            $table->text('description')->nullable();
+            $table->string('photo', 255)->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

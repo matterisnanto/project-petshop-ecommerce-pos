@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('grooming_packages', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('price')->nullable();
-            $table->longText('description')->nullable();
-            $table->foreignId('grooming_id')->constrained('groomings')->cascadeOnDelete();
+            $table->string('name', 100);
+            $table->decimal('price', 12, 2)->nullable();
+            $table->text('description')->nullable();
+            $table->foreignId('grooming_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
             $table->softDeletes();
         });
