@@ -38,6 +38,10 @@ class GroomingResource extends Resource
                     ->description('Product identification details')
                     ->schema([
                         Forms\Components\TextInput::make('name')
+                            ->afterStateUpdated(function (Set $set, $state) {
+                                $set('slug', Grooming::generateUniqueSlug($state));
+                            })
+                            ->live(onBlur: true)
                             ->required()
                             ->maxLength(255)
                             ->columnSpan(['md' => 2])

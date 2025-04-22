@@ -19,6 +19,7 @@ return new class extends Migration
             $table->foreignId('product_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('animals_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('grooming_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignId('breeding_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('hotel_id')->nullable()->constrained()->nullOnDelete();
             $table->integer('quantity');
             $table->decimal('unit_price', 12, 2);

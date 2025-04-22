@@ -10,6 +10,7 @@ use App\Models\Animals;
 use App\Models\Product;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
+use App\Models\Breeding;
 use App\Models\Grooming;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
@@ -75,6 +76,7 @@ class PostransactionResource extends Resource
                                                 'animal' => 'Animal',
                                                 'grooming' => 'Grooming',
                                                 'hotel' => 'Hotel',
+                                                'breeding' => 'Breeding',
                                             ])
                                             ->required()
                                             ->live()
@@ -151,13 +153,28 @@ class PostransactionResource extends Resource
                                                 self::updateTotalPrice($get, $set);
                                             }),
 
+                                        Select::make('breeding_id')
+                                            ->label('Breeding Service')
+                                            ->options(Breeding::query()->where('is_active', true)->pluck('name', 'id'))
+                                            ->columnSpan(4)
+                                            ->required(fn(Get $get): bool => $get('type') === 'breeding')
+                                            ->visible(fn(Get $get): bool => $get('type') === 'breeding')
+                                            ->live()
+                                            ->afterStateUpdated(function ($state, Set $set, Get $get) {
+                                                if ($state) {
+                                                    $breeding = Breeding::find($state);
+                                                    $set('unit_price', $breeding->selling_price ?? 0);
+                                                }
+                                                self::updateTotalPrice($get, $set);
+                                            }),
+
                                         TextInput::make('quantity')
                                             ->required()
                                             ->numeric()
                                             ->default(1)
                                             ->minValue(1)
                                             ->columnSpan(1)
-                                            ->live(onBlur: true)
+                                            ->live(debounce: 1000)
                                             ->afterStateUpdated(function ($state, Set $set, Get $get) {
                                                 if ($get('type') === 'product') {
                                                     $stock = $get('stock');
@@ -197,7 +214,6 @@ class PostransactionResource extends Resource
                                         // Pet Information Section (visible only for grooming and hotel)
                                         Repeater::make('petInformation')
                                             ->relationship()
-                                            ->visible(fn(Get $get): bool => in_array($get('type'), ['grooming', 'hotel']))
                                             ->schema([
                                                 TextInput::make('name')
                                                     ->required()
@@ -214,16 +230,14 @@ class PostransactionResource extends Resource
                                                 Textarea::make('description')
                                                     ->required()
                                                     ->label('Pet Description'),
-                                                DatePicker::make('check_in')
-                                                    ->required(fn(Get $get): bool => $get('../../type') === 'hotel')
-                                                    ->visible(fn(Get $get): bool => $get('../../type') === 'hotel'),
+                                                DatePicker::make('check_in'),
                                                 DatePicker::make('check_out')
-                                                    ->required(fn(Get $get): bool => $get('../../type') === 'hotel')
-                                                    ->visible(fn(Get $get): bool => $get('../../type') === 'hotel')
                                                     ->afterOrEqual('check_in'),
+                                                TextInput::make('days')
+                                                    ->readOnly(),
                                             ])
                                             ->columnSpanFull()
-                                            ->visible(fn(Get $get): bool => in_array($get('type'), ['grooming', 'hotel']))
+                                            ->visible(fn(Get $get): bool => in_array($get('type'), ['grooming', 'hotel', 'breeding']))
                                     ]),
                             ]),
                         Forms\Components\Group::make()
@@ -342,6 +356,11 @@ class PostransactionResource extends Resource
             } elseif (!empty($order['hotel_id'])) {
                 $hotel = Hotel::find($order['hotel_id']);
                 $price = $hotel->price_per_day ?? 0;
+                $quantity = (int) ($order['quantity'] ?? 1);
+                $total += $price * $quantity;
+            } elseif (!empty($order['breeding_id'])) {
+                $breeding = Breeding::find($order['breeding_id']);
+                $price = $breeding->selling_price ?? 0;
                 $quantity = (int) ($order['quantity'] ?? 1);
                 $total += $price * $quantity;
             }

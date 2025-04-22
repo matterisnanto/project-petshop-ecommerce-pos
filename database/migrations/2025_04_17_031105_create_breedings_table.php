@@ -11,16 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('hotels', function (Blueprint $table) {
+        Schema::create('breedings', function (Blueprint $table) {
             $table->id();
             $table->string('name', 100);
             $table->string('slug', 100)->unique();
             $table->foreignId('category_animals_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignId('breeds_id')->nullable()->constrained()->nullOnDelete();
+            $table->string('photo', 255)->nullable();
             $table->text('description')->nullable();
-            $table->decimal('price_per_day', 12, 2);
-            $table->integer('capacity');
-            $table->string('thumbnail', 255)->nullable();
-            $table->boolean('is_active')->default(true);
+            $table->integer('stock')->default(0);
+            $table->decimal('purchase_price', 12, 2)->nullable();
+            $table->decimal('selling_price', 12, 2);
+            $table->boolean('is_active')->default(false);
             $table->timestamps();
             $table->softDeletes();
         });
@@ -31,6 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('hotels');
+        Schema::dropIfExists('breedings');
     }
 };

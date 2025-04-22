@@ -23,7 +23,7 @@ class HotelResource extends Resource
     protected static ?string $modelLabel = 'Hotel';
     protected static ?string $pluralModelLabel = 'Hotel';
     protected static ?string $navigationGroup = 'Service Resource';
-    protected static ?int $navigationSort = 12;
+    protected static ?int $navigationSort = 13;
 
     public static function getNavigationIcon(): string
     {
@@ -41,12 +41,22 @@ class HotelResource extends Resource
                     ->schema([
                         Forms\Components\TextInput::make('name')
                             ->label('Name')
+                            ->afterStateUpdated(function (Set $set, $state) {
+                                $set('slug', Hotel::generateUniqueSlug($state));
+                            })
+                            ->live(onBlur: true)
                             ->required()
                             ->maxLength(255)
                             ->placeholder('E.g., Package 1 day')
                             ->prefixIcon('heroicon-o-tag')
                             ->columnSpan(['md' => 2]),
-
+                        Forms\Components\TextInput::make('slug')
+                            ->label('URL Identifier')
+                            ->required()
+                            ->readOnly()
+                            ->maxLength(255)
+                            ->helperText('Auto-generated from hotel name')
+                            ->columnSpan(['md' => 2]),
                         Forms\Components\Select::make('category_animals_id')
                             ->relationship('categoryAnimals', 'name')
                             ->label('Animal Category')

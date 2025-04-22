@@ -41,7 +41,8 @@ Route::get('/debug-cart', function () {
     return response()->json([
         'cart' => session('cart'),
         'cart_totals' => session('cart_totals'),
-        'checkout_data' => session('checkout_data')
+        'checkout_data' => session('checkout_data'),
+        'orderItems' => session('orderItems')
     ]);
 });
 

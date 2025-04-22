@@ -5,25 +5,26 @@ namespace App\Models;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
 
-class Grooming extends Model
+class Breeding extends Model
 {
-    protected $table = 'groomings';
+    protected $table = 'breedings';
     //
-    protected $fillable = ['name', 'slug', 'category_animals_id', 'category_grooming_id', 'photo', 'description', 'stock', 'purchase_price', 'selling_price', 'is_active'];
+    protected $fillable = ['name', 'slug', 'category_animals_id', 'breeds_id', 'photo', 'description', 'stock', 'purchase_price', 'selling_price', 'is_active'];
 
     public function categoryAnimals()
     {
         return $this->belongsTo(CategoryAnimals::class);
     }
 
-    public function categoryGrooming()
+
+    public function breeds()
     {
-        return $this->belongsTo(CategoryGrooming::class);
+        return $this->belongsTo(Breeds::class);
     }
 
-    public function groomingPackage()
+    public function breedingPackage()
     {
-        return $this->hasMany(GroomingPackage::class);
+        return $this->hasMany(BreedingPackage::class);
     }
 
     public static function generateUniqueSlug(string $name): string
