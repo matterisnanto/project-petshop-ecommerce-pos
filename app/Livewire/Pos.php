@@ -3,28 +3,38 @@
 namespace App\Livewire;
 
 use session;
+use Carbon\Carbon;
+
 use Filament\Forms;
+use App\Models\Hotel;
 
 use App\Models\Order;
 use App\Models\Animals;
-
 use App\Models\Product;
 use Filament\Forms\Get;
+
 use Filament\Forms\Set;
 use Livewire\Component;
-
+use App\Models\Breeding;
+use App\Models\Grooming;
 use Filament\Forms\Form;
 use App\Models\PaymentMethod;
+use App\Models\PetInformation;
 use App\Models\PosTransaction;
 use Filament\Forms\Contracts\HasForms;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Concerns\InteractsWithForms;
 
 
 class Pos extends Component implements HasForms
 {
     use InteractsWithForms;
+
     public $search = '';
     public $name_customer = '';
     public $phone = '';
@@ -38,12 +48,16 @@ class Pos extends Component implements HasForms
     public $paid_amount;
     public $change_amount;
     public $is_cash = 1;
-    public $activeTab = 'products'; // 'products' or 'animals'
+    public $activeTab = 'products'; // 'products', 'animals', 'grooming', 'hotel', 'breeding'
+    public $petInformation = [];
 
     public function render()
     {
         $products = collect();
         $animals = collect();
+        $groomings = collect();
+        $hotels = collect();
+        $breedings = collect();
 
         if ($this->activeTab === 'products') {
             $products = Product::where('stock', '>', 0)
@@ -51,9 +65,27 @@ class Pos extends Component implements HasForms
                     $query->search($this->search);
                 })
                 ->paginate(12);
-        } else {
+        } elseif ($this->activeTab === 'animals') {
             $animals = Animals::where('stock', '>', 0)
                 ->where('is_active', true)
+                ->when($this->search, function ($query) {
+                    $query->search($this->search);
+                })
+                ->paginate(12);
+        } elseif ($this->activeTab === 'grooming') {
+            $groomings = Grooming::where('is_active', true)
+                ->when($this->search, function ($query) {
+                    $query->search($this->search);
+                })
+                ->paginate(12);
+        } elseif ($this->activeTab === 'hotel') {
+            $hotels = Hotel::where('is_active', true)
+                ->when($this->search, function ($query) {
+                    $query->search($this->search);
+                })
+                ->paginate(12);
+        } elseif ($this->activeTab === 'breeding') {
+            $breedings = Breeding::where('is_active', true)
                 ->when($this->search, function ($query) {
                     $query->search($this->search);
                 })
@@ -63,6 +95,9 @@ class Pos extends Component implements HasForms
         return view('livewire.pos', [
             'products' => $products,
             'animals' => $animals,
+            'groomings' => $groomings,
+            'hotels' => $hotels,
+            'breedings' => $breedings,
         ]);
     }
 
@@ -142,8 +177,61 @@ class Pos extends Component implements HasForms
                             ->numeric()
                             ->label('Change')
                             ->readOnly(),
+                    ]),
+                // Add pet information section for services that need it
+                Forms\Components\Section::make('Pet Information')
+                    ->visible(fn() => $this->hasServiceWithPetInfo())
+                    ->schema([
+                        Repeater::make('petInformation')
+                            ->schema([
+                                TextInput::make('name')
+                                    ->required()
+                                    ->label('Pet Name'),
+                                TextInput::make('age')
+                                    ->numeric()
+                                    ->required()
+                                    ->label('Pet Age'),
+                                FileUpload::make('photo')
+                                    ->image()
+                                    ->directory('pet-photos')
+                                    ->required()
+                                    ->label('Pet Photo'),
+                                Textarea::make('description')
+                                    ->required()
+                                    ->label('Pet Description'),
+                                DatePicker::make('check_in')
+                                    ->visible(fn() => $this->hasHotelOrBreedingService()),
+                                DatePicker::make('check_out')
+                                    ->visible(fn() => $this->hasHotelOrBreedingService())
+                                    ->afterOrEqual('check_in'),
+                                TextInput::make('days')
+                                    ->readOnly()
+                                    ->visible(fn() => $this->hasHotelOrBreedingService()),
+                            ])
+                            ->columns(2)
+                            ->columnSpanFull()
                     ])
             ]);
+    }
+
+    protected function hasServiceWithPetInfo(): bool
+    {
+        foreach ($this->order_items as $item) {
+            if (in_array($item['type'], ['grooming', 'hotel', 'breeding'])) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    protected function hasHotelOrBreedingService(): bool
+    {
+        foreach ($this->order_items as $item) {
+            if (in_array($item['type'], ['hotel', 'breeding'])) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public function mount()
@@ -166,10 +254,91 @@ class Pos extends Component implements HasForms
 
     public function addToOrder($itemId)
     {
-        if ($this->activeTab === 'products') {
-            $this->addProductToOrder($itemId);
-        } else {
-            $this->addAnimalToOrder($itemId);
+        switch ($this->activeTab) {
+            case 'products':
+                $this->addProductToOrder($itemId);
+                break;
+            case 'animals':
+                $this->addAnimalToOrder($itemId);
+                break;
+            case 'grooming':
+                $this->addGroomingToOrder($itemId);
+                break;
+            case 'hotel':
+                $this->addHotelToOrder($itemId);
+                break;
+            case 'breeding':
+                $this->addBreedingToOrder($itemId);
+                break;
+        }
+    }
+
+    protected function addGroomingToOrder($groomingId)
+    {
+        $grooming = Grooming::find($groomingId);
+        if ($grooming) {
+            $this->order_items[] = [
+                'type' => 'grooming',
+                'grooming_id' => $grooming->id,
+                'name' => $grooming->name,
+                'selling_price' => $grooming->selling_price,
+                'thumbnail' => $grooming->photo,
+                'quantity' => 1,
+                'needs_pet_info' => true,
+            ];
+
+            session()->put('orderItems', $this->order_items);
+            $this->calculateTotal();
+            Notification::make()
+                ->title('Grooming service added to order')
+                ->success()
+                ->send();
+        }
+    }
+
+    protected function addHotelToOrder($hotelId)
+    {
+        $hotel = Hotel::find($hotelId);
+        if ($hotel) {
+            $this->order_items[] = [
+                'type' => 'hotel',
+                'hotel_id' => $hotel->id,
+                'name' => $hotel->name,
+                'selling_price' => $hotel->price_per_day,
+                'thumbnail' => $hotel->thumbnail,
+                'quantity' => 1,
+                'needs_pet_info' => true,
+            ];
+
+            session()->put('orderItems', $this->order_items);
+            $this->calculateTotal();
+            Notification::make()
+                ->title('Hotel service added to order')
+                ->success()
+                ->send();
+        }
+    }
+
+    protected function addBreedingToOrder($breedingId)
+    {
+        $breeding = Breeding::find($breedingId);
+        if ($breeding) {
+            $this->order_items[] = [
+                'type' => 'breeding',
+                'breeding_id' => $breeding->id,
+                'name' => $breeding->name,
+                'selling_price' => $breeding->selling_price,
+                'thumbnail' => $breeding->photo,
+                'quantity' => 1,
+                'needs_pet_info' => true,
+            ];
+
+            session()->put('orderItems', $this->order_items);
+            $this->calculateTotal();
+            Notification::make()
+                ->title('Breeding service added to order')
+                ->success()
+                ->send();
         }
     }
 
@@ -348,21 +517,55 @@ class Pos extends Component implements HasForms
             $orderData = [
                 'pos_transaction_id' => $postransaction->id,
                 'quantity' => $item['quantity'],
-                'unit_price' => $item['selling_price']
+                'unit_price' => $item['selling_price'],
+                'type' => $item['type'],
             ];
 
-            if ($item['type'] === 'product') {
-                $orderData['product_id'] = $item['product_id'];
-                $orderData['type'] = 'product';
-            } else {
-                $orderData['animals_id'] = $item['animal_id'];
-                $orderData['type'] = 'animal';
+            switch ($item['type']) {
+                case 'product':
+                    $orderData['product_id'] = $item['product_id'];
+                    break;
+                case 'animal':
+                    $orderData['animals_id'] = $item['animal_id'];
+                    break;
+                case 'grooming':
+                    $orderData['grooming_id'] = $item['grooming_id'];
+                    break;
+                case 'hotel':
+                    $orderData['hotel_id'] = $item['hotel_id'];
+                    break;
+                case 'breeding':
+                    $orderData['breeding_id'] = $item['breeding_id'];
+                    break;
             }
 
-            Order::create($orderData);
+            $order = Order::create($orderData);
+
+            // Add pet information if this is a service that requires it
+            if (in_array($item['type'], ['grooming', 'hotel', 'breeding']) && !empty($formState['petInformation'])) {
+                foreach ($formState['petInformation'] as $petInfo) {
+                    $petInfoData = [
+                        'order_id' => $order->id,
+                        'name' => $petInfo['name'],
+                        'age' => $petInfo['age'],
+                        'photo' => $petInfo['photo'],
+                        'description' => $petInfo['description'],
+                    ];
+
+                    if (in_array($item['type'], ['hotel', 'breeding'])) {
+                        $petInfoData['check_in'] = $petInfo['check_in'];
+                        $petInfoData['check_out'] = $petInfo['check_out'];
+                        $petInfoData['days'] = Carbon::parse($petInfo['check_in'])
+                            ->diffInDays(Carbon::parse($petInfo['check_out']));
+                    }
+
+                    PetInformation::create($petInfoData);
+                }
+            }
         }
 
         $this->order_items = [];
+        $this->petInformation = [];
         session()->forget('orderItems');
         $this->name_customer = '';
         $this->total_price = 0;
@@ -372,7 +575,7 @@ class Pos extends Component implements HasForms
         $this->payment_method_id = 0;
 
         Notification::make()
-            ->title('Checkout berhasil!')
+            ->title('Checkout successful!')
             ->success()
             ->send();
     }

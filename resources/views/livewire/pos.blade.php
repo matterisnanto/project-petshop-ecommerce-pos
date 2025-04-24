@@ -1,8 +1,7 @@
 <div class="grid grid-cols-1 dark:bg-gray-900 md:grid-cols-3 gap-4">
     <div class="md:col-span-2 bg-white dark:bg-gray-800 shadow-md rounded-lg p-6">
         <div class="mb-4 flex gap-2">
-            <input wire:model.live.debounce.300ms='search' type="text"
-                placeholder="Search {{ $activeTab === 'products' ? 'Product' : 'Animal' }}..."
+            <input wire:model.live.debounce.300ms='search' type="text" placeholder="Search {{ ucfirst($activeTab) }}..."
                 class="w-full p-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
             <x-filament::button x-data="" x-on:click="$dispatch('toggle-scanner')" color="primary">
                 <x-lucide-scan-barcode class="w-5 h-5" />
@@ -10,8 +9,8 @@
             <livewire:scanner-modal-component />
         </div>
 
-        <!-- Tabs for Products/Animals -->
-        <div class="flex border-b border-gray-200 dark:border-gray-700 mb-4">
+        <!-- Tabs for Products/Animals/Services -->
+        <div class="flex border-b border-gray-200 dark:border-gray-700 mb-4 overflow-x-auto">
             <button wire:click="switchTab('products')"
                 class="py-2 px-4 font-medium text-sm border-b-2 {{ $activeTab === 'products' ? 'border-primary-500 text-primary-600 dark:text-primary-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300' }}">
                 Products
@@ -19,6 +18,18 @@
             <button wire:click="switchTab('animals')"
                 class="py-2 px-4 font-medium text-sm border-b-2 {{ $activeTab === 'animals' ? 'border-primary-500 text-primary-600 dark:text-primary-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300' }}">
                 Animals
+            </button>
+            <button wire:click="switchTab('grooming')"
+                class="py-2 px-4 font-medium text-sm border-b-2 {{ $activeTab === 'grooming' ? 'border-primary-500 text-primary-600 dark:text-primary-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300' }}">
+                Grooming
+            </button>
+            <button wire:click="switchTab('hotel')"
+                class="py-2 px-4 font-medium text-sm border-b-2 {{ $activeTab === 'hotel' ? 'border-primary-500 text-primary-600 dark:text-primary-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300' }}">
+                Hotel
+            </button>
+            <button wire:click="switchTab('breeding')"
+                class="py-2 px-4 font-medium text-sm border-b-2 {{ $activeTab === 'breeding' ? 'border-primary-500 text-primary-600 dark:text-primary-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300' }}">
+                Breeding
             </button>
         </div>
 
@@ -37,7 +48,7 @@
                             <p class="text-gray-600 dark:text-gray-400 text-xs">Stok: {{ $item->stock }}</p>
                         </div>
                     @endforeach
-                @else
+                @elseif ($activeTab === 'animals')
                     @foreach ($animals as $item)
                         <div wire:click="addToOrder({{ $item->id }})"
                             class="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg shadow cursor-pointer">
@@ -52,10 +63,56 @@
                             </p>
                         </div>
                     @endforeach
+                @elseif ($activeTab === 'grooming')
+                    @foreach ($groomings as $item)
+                        <div wire:click="addToOrder({{ $item->id }})"
+                            class="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg shadow cursor-pointer">
+                            <img src="{{ asset($item['photo'] ? 'storage/' . $item['photo'] : 'images/default.png') }}"
+                                alt="Grooming Image" class="w-full h-32 object-cover rounded-md"
+                                onerror="this.onerror=null; this.src='{{ asset('images/default.png') }}';">
+                            <h3 class="text-sm font-semibold">{{ $item->name }}</h3>
+                            <p class="text-gray-600 dark:text-gray-400 text-xs">Rp.
+                                {{ number_format($item->selling_price, 0, ',', '.') }}</p>
+                        </div>
+                    @endforeach
+                @elseif ($activeTab === 'hotel')
+                    @foreach ($hotels as $item)
+                        <div wire:click="addToOrder({{ $item->id }})"
+                            class="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg shadow cursor-pointer">
+                            <img src="{{ asset($item['thumbnail'] ? 'storage/' . $item['thumbnail'] : 'images/default.png') }}"
+                                alt="Hotel Image" class="w-full h-32 object-cover rounded-md"
+                                onerror="this.onerror=null; this.src='{{ asset('images/default.png') }}';">
+                            <h3 class="text-sm font-semibold">{{ $item->name }}</h3>
+                            <p class="text-gray-600 dark:text-gray-400 text-xs">Rp.
+                                {{ number_format($item->price_per_day, 0, ',', '.') }}/day</p>
+                        </div>
+                    @endforeach
+                @elseif ($activeTab === 'breeding')
+                    @foreach ($breedings as $item)
+                        <div wire:click="addToOrder({{ $item->id }})"
+                            class="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg shadow cursor-pointer">
+                            <img src="{{ asset($item['photo'] ? 'storage/' . $item['photo'] : 'images/default.png') }}"
+                                alt="Breeding Image" class="w-full h-32 object-cover rounded-md"
+                                onerror="this.onerror=null; this.src='{{ asset('images/default.png') }}';">
+                            <h3 class="text-sm font-semibold">{{ $item->name }}</h3>
+                            <p class="text-gray-600 dark:text-gray-400 text-xs">Rp.
+                                {{ number_format($item->selling_price, 0, ',', '.') }}</p>
+                        </div>
+                    @endforeach
                 @endif
             </div>
             <div class="py-4">
-                {{ $activeTab === 'products' ? $products->links() : $animals->links() }}
+                @if ($activeTab === 'products')
+                    {{ $products->links() }}
+                @elseif ($activeTab === 'animals')
+                    {{ $animals->links() }}
+                @elseif ($activeTab === 'grooming')
+                    {{ $groomings->links() }}
+                @elseif ($activeTab === 'hotel')
+                    {{ $hotels->links() }}
+                @elseif ($activeTab === 'breeding')
+                    {{ $breedings->links() }}
+                @endif
             </div>
         </div>
     </div>
@@ -79,7 +136,18 @@
                             <p class="text-gray-600 dark:text-gray-400 text-xs">Rp
                                 {{ number_format($item['selling_price'], 0, ',', '.') }}</p>
                             <p class="text-gray-600 dark:text-gray-400 text-xs">
-                                {{ $item['type'] === 'product' ? 'Produk' : 'Hewan' }}</p>
+                                @if ($item['type'] === 'product')
+                                    Product
+                                @elseif ($item['type'] === 'animal')
+                                    Animal
+                                @elseif ($item['type'] === 'grooming')
+                                    Grooming
+                                @elseif ($item['type'] === 'hotel')
+                                    Hotel ({{ $item['quantity'] }} days)
+                                @elseif ($item['type'] === 'breeding')
+                                    Breeding
+                                @endif
+                            </p>
                         </div>
                     </div>
                     <div class="flex items-center">
