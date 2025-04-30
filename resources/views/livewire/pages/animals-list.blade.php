@@ -3,10 +3,17 @@
         <div class="mx-auto max-w-screen-xl px-4 2xl:px-0">
             <!-- Heading & Filters -->
             <div class="mb-4 items-end justify-between space-y-4 sm:flex sm:space-y-0 md:mb-8">
-                <div>
+                {{-- <div>
                     <livewire:navigation.bread-crumb :links="[['text' => 'Home', 'url' => route('home')]]" currentPage="All Animals" />
                     <h2 class="mt-3 text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">
                         All Animals</h2>
+                </div> --}}
+                <div>
+                    <livewire:navigation.bread-crumb :links="[['text' => 'Home', 'url' => route('animals')]]" :currentPage="$categoryAnimalName" />
+
+                    <h2 class="mt-3 text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">
+                        {{ $categoryAnimalName }}
+                    </h2>
                 </div>
                 <div
                     class="sm:flex sm:items-center sm:space-x-4 mb-4 grid gap-4 grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4">

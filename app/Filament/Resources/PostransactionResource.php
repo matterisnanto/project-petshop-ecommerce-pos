@@ -40,6 +40,19 @@ class PostransactionResource extends Resource
     protected static ?int $navigationSort = 1;
     protected static ?string $navigationIcon = 'heroicon-o-building-storefront';
 
+    protected static ?string $navigationBadgeTooltip = 'POS transaction today';
+
+    public static function getNavigationBadge(): ?string
+    {
+        return (string) PosTransaction::whereDate('created_at', today())->count();
+    }
+
+    public static function getNavigationBadgeColor(): ?string
+    {
+        return (string) PosTransaction::whereDate('created_at', today())->count() < 0 ? 'success' : 'danger';
+    }
+
+
     public static function form(Form $form): Form
     {
         return $form

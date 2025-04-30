@@ -58,5 +58,5 @@ Route::get('/debug-cart', function () {
 
 
 Route::get('/download-template', function () {
-    return Excel::download(new TemplateExport, 'template.xlsx');
+    return Excel::download(new TemplateExport, 'templateProduct.xlsx');
 })->name('download-template');

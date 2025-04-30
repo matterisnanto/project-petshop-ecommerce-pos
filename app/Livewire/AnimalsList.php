@@ -18,6 +18,7 @@ class AnimalsList extends Component
     public $minPrice = 0;
     public $maxPrice = 5000000;
     public $cartItemCount = 0;
+    public $categoryAnimalName = 'All Animals';
 
     protected $queryString = [
         'sortBy' => ['except' => 'default'],
@@ -34,6 +35,11 @@ class AnimalsList extends Component
         $this->selectedBreeds = request('breeds', []);
         $this->selectedCategoryAnimal = request('categoryAnimal', []);
         $this->sortBy = request('sortBy', 'default');
+
+        if (!empty($this->selectedCategoryAnimal)) {
+            $categoryAnimals = CategoryAnimals::find($this->selectedCategoryAnimal[0]);
+            $this->categoryAnimalName = $categoryAnimals ? $categoryAnimals->name : 'All Animals';
+        }
     }
 
     public function render()

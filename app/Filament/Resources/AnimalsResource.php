@@ -32,6 +32,20 @@ class AnimalsResource extends Resource
         return 'lucide-paw-print';
     }
 
+    protected static ?string $navigationBadgeTooltip = 'Active Animals for sale';
+
+
+    public static function getNavigationBadge(): ?string
+    {
+        return (string) Animals::where('is_active', true)->count();
+    }
+
+
+    public static function getNavigationBadgeColor(): ?string
+    {
+        return 'primary';
+    }
+
     public static function form(Form $form): Form
     {
         return $form

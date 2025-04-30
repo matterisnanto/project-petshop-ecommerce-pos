@@ -33,6 +33,21 @@ class ProductResource extends Resource
 
     protected static ?string $navigationGroup = 'Product Resource';
 
+    protected static ?string $navigationBadgeTooltip = 'Active Product';
+
+
+    public static function getNavigationBadge(): ?string
+    {
+        return (string) Product::where('is_active', true)->count();
+    }
+
+
+    public static function getNavigationBadgeColor(): ?string
+    {
+        return 'primary';
+    }
+
+
     public static function form(Form $form): Form
     {
         return $form

@@ -22,10 +22,21 @@ class PetInformationResource extends Resource
     protected static ?string $pluralModelLabel = 'Pet Information';
     protected static ?string $navigationGroup = 'Transactions';
     protected static ?int $navigationSort = 20;
+    protected static ?string $navigationBadgeTooltip = 'Pet On Petshop';
 
     public static function getNavigationIcon(): string
     {
         return 'lucide-info';
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        return (string) PetInformation::where('on_petshop', true)->count();
+    }
+
+    public static function getNavigationBadgeColor(): ?string
+    {
+        return (string) PetInformation::where('on_petshop', true)->count() > 1 ? 'warning' : 'success';
     }
 
 

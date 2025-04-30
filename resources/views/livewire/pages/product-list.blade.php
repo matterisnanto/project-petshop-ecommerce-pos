@@ -4,9 +4,11 @@
             <!-- Heading & Filters -->
             <div class="mb-4 items-end justify-between space-y-4 sm:flex sm:space-y-0 md:mb-8">
                 <div>
-                    <livewire:navigation.bread-crumb :links="[['text' => 'Home', 'url' => route('home')]]" :currentPage="$categoryName ?? 'All Products'" />
+                    <livewire:navigation.bread-crumb :links="[['text' => 'Home', 'url' => route('products')]]" :currentPage="$categoryName" />
+
                     <h2 class="mt-3 text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">
-                        {{ $categoryName ?? 'All Products' }}</h2>
+                        {{ $categoryName }}
+                    </h2>
                 </div>
                 <div
                     class="sm:flex sm:items-center sm:space-x-4 mb-4 grid gap-4 grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4">

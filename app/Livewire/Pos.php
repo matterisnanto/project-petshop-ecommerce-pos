@@ -51,6 +51,10 @@ class Pos extends Component implements HasForms
     public $activeTab = 'products'; // 'products', 'animals', 'grooming', 'hotel', 'breeding'
     public $petInformation = [];
 
+    protected $listeners = [
+        'scanResult' => 'handleScanResult'
+    ];
+
     public function render()
     {
         $products = collect();
@@ -578,5 +582,19 @@ class Pos extends Component implements HasForms
             ->title('Checkout successful!')
             ->success()
             ->send();
+    }
+
+    public function handleScanResult($decodedText)
+    {
+        $product = Product::where('barcode', $decodedText)->first();
+
+        if ($product) {
+            $this->addToOrder($product->id);
+        } else {
+            Notification::make()
+                ->title('Product not found ' . $decodedText)
+                ->danger()
+                ->send();
+        }
     }
 }
