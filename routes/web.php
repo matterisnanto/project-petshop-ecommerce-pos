@@ -34,8 +34,7 @@ Route::get('/shopping-cart', ShoppingCart::class)->name('shoppingcart');
 
 Route::get('/shopping-cart/checkout', Checkout::class)->name('checkout');
 
-Route::get('/order-confirmation/{transaction_id}', OrderConfirmation::class)
-    ->name('order-confirmation');
+Route::get('/order-confirmation/{transaction_id}', OrderConfirmation::class)->name('order-confirmation');
 
 Route::get('/pet-grooming', PetGrooming::class)->name('pet-grooming');
 
