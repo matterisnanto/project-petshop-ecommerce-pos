@@ -28,7 +28,6 @@ class ProductSeeder extends Seeder
                 'stock' => 50,
                 'category_id' => 1,
                 'brand_id' => 1,
-                'supplier_id' => 1,
             ],
             [
                 'name' => 'Whiskas Wet Food Tuna',
@@ -44,7 +43,6 @@ class ProductSeeder extends Seeder
                 'stock' => 100,
                 'category_id' => 2,
                 'brand_id' => 2,
-                'supplier_id' => 2,
             ],
             [
                 'name' => 'Pedigree Adult Dog Food',
@@ -60,7 +58,6 @@ class ProductSeeder extends Seeder
                 'stock' => 30,
                 'category_id' => 1,
                 'brand_id' => 3,
-                'supplier_id' => 3,
             ],
         ];
 

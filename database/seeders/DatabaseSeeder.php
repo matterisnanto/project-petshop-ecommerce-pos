@@ -24,9 +24,9 @@ class DatabaseSeeder extends Seeder
             CategoryAnimalSeeder::class,
             BreedSeeder::class,
             AnimalSeeder::class,
-            CategoryGroomingSeeder::class,
-            GroomingSeeder::class,
-            HotelSeeder::class,
+            // CategoryGroomingSeeder::class,
+            // GroomingSeeder::class,
+            // HotelSeeder::class,
         ]);
         User::factory()->create([
             'name' => 'Test User',
