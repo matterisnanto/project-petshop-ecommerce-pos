@@ -21,7 +21,7 @@ class PetInformationResource extends Resource
     protected static ?string $modelLabel = 'Pet Information';
     protected static ?string $pluralModelLabel = 'Pet Information';
     protected static ?string $navigationGroup = 'Transactions';
-    protected static ?int $navigationSort = 20;
+    protected static ?int $navigationSort = 3;
     protected static ?string $navigationBadgeTooltip = 'Pet On Petshop';
 
     public static function getNavigationIcon(): string

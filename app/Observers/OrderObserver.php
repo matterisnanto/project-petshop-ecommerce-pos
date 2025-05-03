@@ -13,6 +13,11 @@ class OrderObserver
      */
     public function created(Order $order): void
     {
+        // Hanya proses jika purchases_id kosong
+        if ($order->purchases_id !== null) {
+            return;
+        }
+
         if ($order->type === 'product' && $order->product_id) {
             $product = Product::find($order->product_id);
             if ($product) {
@@ -36,6 +41,11 @@ class OrderObserver
      */
     public function updated(Order $order): void
     {
+        // Hanya proses jika purchases_id kosong
+        if ($order->purchases_id !== null) {
+            return;
+        }
+
         // Handle product order update
         if ($order->type === 'product' && $order->product_id) {
             $product = Product::find($order->product_id);
@@ -85,6 +95,11 @@ class OrderObserver
      */
     public function deleted(Order $order): void
     {
+        // Hanya proses jika purchases_id kosong
+        if ($order->purchases_id !== null) {
+            return;
+        }
+
         if ($order->type === 'product' && $order->product_id) {
             $product = Product::find($order->product_id);
             if ($product) {

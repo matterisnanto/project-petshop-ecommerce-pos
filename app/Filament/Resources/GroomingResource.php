@@ -23,7 +23,7 @@ class GroomingResource extends Resource
     protected static ?string $modelLabel = 'Grooming';
     protected static ?string $pluralModelLabel = 'Grooming';
     protected static ?string $navigationGroup = 'Service Resource';
-    protected static ?int $navigationSort = 11;
+    protected static ?int $navigationSort = 13;
 
     public static function getNavigationIcon(): string
     {

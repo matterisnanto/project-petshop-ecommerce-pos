@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('pos_transaction_id')->nullable()->constrained()->cascadeOnDelete();
             $table->foreignId('olshop_transaction_id')->nullable()->constrained()->cascadeOnDelete();
+            $table->foreignId('purchases_id')->nullable()->constrained()->cascadeOnDelete();
             $table->string('type', 50)->nullable();
             $table->foreignId('product_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('animals_id')->nullable()->constrained()->nullOnDelete();
