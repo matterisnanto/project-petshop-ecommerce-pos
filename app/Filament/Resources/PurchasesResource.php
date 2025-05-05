@@ -764,8 +764,6 @@ class PurchasesResource extends Resource
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('status'),
-                Tables\Columns\TextColumn::make('proof')
-                    ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

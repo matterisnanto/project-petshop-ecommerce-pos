@@ -25,4 +25,9 @@ class PurchaseReturn extends Model
     {
         return $this->hasMany(ReturnItem::class, 'purchase_return_id');
     }
+
+    public function getItemsCountAttribute()
+    {
+        return $this->returnItems()->count();
+    }
 }

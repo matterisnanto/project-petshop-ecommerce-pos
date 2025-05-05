@@ -56,12 +56,14 @@ class TransactionReturnResource extends Resource
                             ->relationship('postransaction', 'trx_id')
                             ->searchable()
                             ->preload()
+                            ->live()
                             ->visible(fn(Forms\Get $get): bool => $get('type') === 'pos'),
                         Forms\Components\Select::make('olshop_transaction_id')
                             ->label('Online Shop Transaction')
                             ->relationship('olshoptransaction', 'trx_id')
                             ->searchable()
                             ->preload()
+                            ->live()
                             ->visible(fn(Forms\Get $get): bool => $get('type') === 'olshop'),
                         Forms\Components\TextInput::make('refund_amount')
                             ->numeric()
@@ -96,34 +98,81 @@ class TransactionReturnResource extends Resource
                                     ])
                                     ->required()
                                     ->live(),
+
+                                // Untuk POS Transaction
                                 Forms\Components\Select::make('product_id')
-                                    ->relationship('product', 'name')
+                                    ->relationship(
+                                        name: 'product',
+                                        titleAttribute: 'name',
+                                        modifyQueryUsing: fn(Builder $query, Forms\Get $get) =>
+                                        $get('../../type') === 'pos'
+                                            ? $query->whereHas('order', fn($q) =>
+                                            $q->where('pos_transaction_id', $get('../../pos_transaction_id')))
+                                            : $query->whereHas('order', fn($q) =>
+                                            $q->where('olshop_transaction_id', $get('../../olshop_transaction_id')))
+                                    )
                                     ->searchable()
                                     ->preload()
                                     ->visible(fn(Forms\Get $get): bool => $get('type') === 'product'),
+
                                 Forms\Components\Select::make('animals_id')
-                                    ->relationship('animals', 'name')
+                                    ->relationship(
+                                        name: 'animals',
+                                        titleAttribute: 'name',
+                                        modifyQueryUsing: fn(Builder $query, Forms\Get $get) =>
+                                        $get('../../type') === 'pos'
+                                            ? $query->whereHas('order', fn($q) =>
+                                            $q->where('pos_transaction_id', $get('../../pos_transaction_id')))
+                                            : $query->whereHas('order', fn($q) =>
+                                            $q->where('olshop_transaction_id', $get('../../olshop_transaction_id')))
+                                    )
                                     ->searchable()
                                     ->preload()
                                     ->visible(fn(Forms\Get $get): bool => $get('type') === 'animal'),
+
+                                // Untuk Olshop Transaction
                                 Forms\Components\Select::make('grooming_id')
-                                    ->relationship('grooming', 'id')
+                                    ->relationship(
+                                        name: 'grooming',
+                                        titleAttribute: 'id',
+                                        modifyQueryUsing: fn(Builder $query, Forms\Get $get) =>
+                                        $query->whereHas('order', fn($q) =>
+                                        $q->where('pos_transaction_id', $get('../../pos_transaction_id')))
+                                    )
                                     ->searchable()
                                     ->preload()
-                                    ->visible(fn(Forms\Get $get): bool => $get('type') === 'grooming'),
+                                    ->visible(fn(Forms\Get $get): bool =>
+                                    $get('type') === 'grooming' && $get('../../type') === 'pos'),
+
                                 Forms\Components\Select::make('breeding_id')
-                                    ->relationship('breeding', 'id')
+                                    ->relationship(
+                                        name: 'breeding',
+                                        titleAttribute: 'id',
+                                        modifyQueryUsing: fn(Builder $query, Forms\Get $get) =>
+                                        $query->whereHas('order', fn($q) =>
+                                        $q->where('pos_transaction_id', $get('../../pos_transaction_id')))
+                                    )
                                     ->searchable()
                                     ->preload()
-                                    ->visible(fn(Forms\Get $get): bool => $get('type') === 'breeding'),
+                                    ->visible(fn(Forms\Get $get): bool =>
+                                    $get('type') === 'breeding' && $get('../../type') === 'pos'),
+
                                 Forms\Components\Select::make('hotel_id')
-                                    ->relationship('hotel', 'id')
+                                    ->relationship(
+                                        name: 'hotel',
+                                        titleAttribute: 'id',
+                                        modifyQueryUsing: fn(Builder $query, Forms\Get $get) =>
+                                        $query->whereHas('order', fn($q) =>
+                                        $q->where('pos_transaction_id', $get('../../pos_transaction_id')))
+                                    )
                                     ->searchable()
                                     ->preload()
-                                    ->visible(fn(Forms\Get $get): bool => $get('type') === 'hotel'),
+                                    ->visible(fn(Forms\Get $get): bool =>
+                                    $get('type') === 'hotel' && $get('../../type') === 'pos'),
                                 Forms\Components\TextInput::make('quantity')
                                     ->numeric()
-                                    ->required(),
+                                    ->required()
+                                    ->helperText('test'),
                                 Forms\Components\TextInput::make('unit_price')
                                     ->numeric()
                                     ->required(),
@@ -148,34 +197,53 @@ class TransactionReturnResource extends Resource
                 Tables\Columns\TextColumn::make('return_number')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('type')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('pos_transaction_id')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('olshop_transaction_id')
-                    ->numeric()
-                    ->sortable(),
+                    ->badge()
+                    ->color(fn(string $state): string => match ($state) {
+                        'pos' => 'info',
+                        'olshop' => 'success',
+                    }),
+                Tables\Columns\TextColumn::make('postransaction.trx_id')
+                    ->label('POS Transaction')
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('olshoptransaction.trx_id')
+                    ->label('Online Transaction')
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('refund_amount')
                     ->numeric()
+                    ->money('IDR')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('status'),
+                Tables\Columns\TextColumn::make('status')
+                    ->badge()
+                    ->color(fn(string $state): string => match ($state) {
+                        'pending' => 'warning',
+                        'approved' => 'success',
+                        'rejected' => 'danger',
+                        'completed' => 'primary',
+                    }),
+                Tables\Columns\TextColumn::make('returnItems.count')
+                    ->label('Items Count')
+                    ->counts('returnItems'),
                 Tables\Columns\TextColumn::make('return_approved_date')
                     ->date()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('type')
+                    ->options([
+                        'pos' => 'POS Transaction',
+                        'olshop' => 'Online Shop Transaction',
+                    ]),
+                Tables\Filters\SelectFilter::make('status')
+                    ->options([
+                        'pending' => 'Pending',
+                        'approved' => 'Approved',
+                        'rejected' => 'Rejected',
+                        'completed' => 'Completed',
+                    ]),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
