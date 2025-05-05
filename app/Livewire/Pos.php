@@ -18,6 +18,7 @@ use Livewire\Component;
 use App\Models\Breeding;
 use App\Models\Grooming;
 use Filament\Forms\Form;
+use Illuminate\Support\Str;
 use App\Models\PaymentMethod;
 use App\Models\PetInformation;
 use App\Models\PosTransaction;
@@ -111,7 +112,10 @@ class Pos extends Component implements HasForms
             ->schema([
                 Forms\Components\Section::make('Form Checkout')
                     ->schema([
+                        Forms\Components\Hidden::make('trx_id')
+                            ->default('TRX-' . now()->format('Ymd') . '-' . Str::upper(Str::random(6))),
                         Forms\Components\TextInput::make('name_customer')
+                            ->label('Customer Name')
                             ->maxLength(255)
                             ->default(fn() => $this->name_customer),
                         Forms\Components\TextInput::make('phone')
@@ -493,9 +497,6 @@ class Pos extends Component implements HasForms
     public function checkout()
     {
         $this->validate([
-            'name_customer' => 'required|string|max:255',
-            'phone' => 'required|string|max:20',
-            'email' => 'required|email|max:255',
             'gender' => 'required|in:male,female',
             'payment_method_id' => 'required',
             'paid_amount' => 'required|numeric',

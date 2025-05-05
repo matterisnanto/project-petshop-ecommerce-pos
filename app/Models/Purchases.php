@@ -19,14 +19,14 @@ class Purchases extends Model
     ];
 
     // Relasi ke Supplier
-    public function supplier()
-    {
-        return $this->belongsTo(Supplier::class);
-    }
-
-    // Relasi ke Item Pembelian
     public function orders()
     {
-        return $this->hasMany(Order::class);
+        return $this->hasMany(Order::class, 'purchases_id'); // Tambahkan foreign key
+    }
+
+    // Tambahkan relasi ke supplier
+    public function suppliers()
+    {
+        return $this->belongsTo(Supplier::class, 'supplier_id');
     }
 }

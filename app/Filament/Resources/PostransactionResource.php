@@ -14,6 +14,7 @@ use App\Models\Breeding;
 use App\Models\Grooming;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Illuminate\Support\Str;
 use App\Models\PaymentMethod;
 use App\Models\PosTransaction;
 use Filament\Resources\Resource;
@@ -33,11 +34,17 @@ use App\Filament\Resources\PostransactionResource\Pages;
 class PostransactionResource extends Resource
 {
     protected static ?string $model = PosTransaction::class;
+
     protected static ?string $navigationLabel = 'POS Transaction';
+
     protected static ?string $modelLabel = 'POS Transaction';
+
     protected static ?string $pluralModelLabel = 'POS Transactions';
+
     protected static ?string $navigationGroup = 'Transactions';
+
     protected static ?int $navigationSort = 1;
+
     protected static ?string $navigationIcon = 'heroicon-o-building-storefront';
 
     protected static ?string $navigationBadgeTooltip = 'POS transaction today';
@@ -62,6 +69,8 @@ class PostransactionResource extends Resource
                     ->schema([
                         Forms\Components\Section::make('Main Information')
                             ->schema([
+                                Forms\Components\Hidden::make('trx_id')
+                                    ->default('TRX-' . now()->format('Ymd') . '-' . Str::upper(Str::random(6))),
                                 Forms\Components\TextInput::make('name')->maxLength(255),
                                 Forms\Components\TextInput::make('email')->email()->maxLength(255)->default(null),
                                 Forms\Components\Select::make('gender')

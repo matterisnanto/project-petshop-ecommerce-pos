@@ -20,7 +20,8 @@ class PosTransaction extends Model
         'note',
         'payment_method_id',
         'paid_amount',
-        'change_amount'
+        'change_amount',
+        'trx_id',
     ];
 
 

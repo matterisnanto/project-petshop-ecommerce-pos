@@ -22,6 +22,7 @@ return new class() extends Migration {
             $table->foreignId('payment_method_id')->nullable()->constrained()->nullOnDelete();
             $table->decimal('paid_amount', 12, 2)->nullable();
             $table->decimal('change_amount', 12, 2)->nullable();
+            $table->string('trx_id', 50)->unique();
             $table->timestamps();
             $table->softDeletes();
         });
