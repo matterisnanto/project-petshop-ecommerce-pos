@@ -52,7 +52,6 @@ class ProductsExport implements FromCollection, WithHeadings, WithTitle, WithEve
             'supplier_id'
         ];
     }
-
     public function title(): string
     {
         return 'Products';
