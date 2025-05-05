@@ -341,9 +341,7 @@
     <section class="bg-primary-100 dark:bg-gray-900">
         <div
             class="gap-8 items-center py-4 px-4 mx-auto max-w-screen-xl lg:grid lg:grid-cols-2 xl:gap-16 sm:py-4 lg:px-6 ">
-            <img class="mb-4 w-full lg:mb-0 rounded-lg"
-                src="https://www.pethouse.co.id/cfind/source/images/retail/51%20jansen%20petshop.jpg"
-                alt="feature image">
+            <img class="mb-4 w-full lg:mb-0 rounded-lg" {{-- src="https://www.pethouse.co.id/cfind/source/images/retail/51%20jansen%20petshop.jpg" --}} alt="feature image">
             <div class="text-gray-500 dark:text-gray-400 sm:text-lg">
                 <h2 class="mb-2 text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">Petshop
                 </h2>

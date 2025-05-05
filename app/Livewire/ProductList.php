@@ -21,6 +21,7 @@ class ProductList extends Component
     public $showFilters = false;
     public $cartItemCount = 0;
     public $cartTotalWeight = 0;
+    public $categoryName = 'All Products';
 
     protected $queryString = [
         'sortBy' => ['except' => 'default'],
@@ -37,6 +38,11 @@ class ProductList extends Component
         $this->selectedBrands = request('brands', []);
         $this->selectedCategories = request('categories', []);
         $this->sortBy = request('sortBy', 'default');
+
+        if (!empty($this->selectedCategories)) {
+            $category = Category::find($this->selectedCategories[0]);
+            $this->categoryName = $category ? $category->name : 'All Products';
+        }
         // Session::forget('cart_totals');
         $this->updateCartItemCount();
     }

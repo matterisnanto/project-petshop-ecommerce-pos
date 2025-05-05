@@ -39,6 +39,18 @@ class OlshoptransactionResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-shopping-bag';
 
+    protected static ?string $navigationBadgeTooltip = 'Olshop transaction has not verified payment';
+
+    public static function getNavigationBadge(): ?string
+    {
+        return (string) Olshoptransaction::where('is_paid', false)->count();
+    }
+
+    public static function getNavigationBadgeColor(): ?string
+    {
+        return 'danger';
+    }
+
     public static function form(Form $form): Form
     {
         return $form

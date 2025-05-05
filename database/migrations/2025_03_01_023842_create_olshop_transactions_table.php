@@ -28,7 +28,7 @@ return new class extends Migration
             $table->string('trx_id', 50)->unique();
             $table->string('package_resi_number', 50)->default('Being Processed');
             $table->string('courier', 50);
-            $table->string('shipping_service', 50);
+            $table->string('shipping_service', 255);
             $table->decimal('weight_total', 8, 2);
             $table->decimal('shipping_cost', 12, 2);
             $table->string('estimated_delivery', 100);

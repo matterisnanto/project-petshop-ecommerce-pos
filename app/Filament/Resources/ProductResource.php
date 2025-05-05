@@ -29,9 +29,24 @@ class ProductResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Product';
 
-    protected static ?int $navigationSort = 6;
+    protected static ?int $navigationSort = 8;
 
     protected static ?string $navigationGroup = 'Product Resource';
+
+    protected static ?string $navigationBadgeTooltip = 'Active Product';
+
+
+    public static function getNavigationBadge(): ?string
+    {
+        return (string) Product::where('is_active', true)->count();
+    }
+
+
+    public static function getNavigationBadgeColor(): ?string
+    {
+        return 'primary';
+    }
+
 
     public static function form(Form $form): Form
     {
@@ -99,7 +114,6 @@ class ProductResource extends Resource
                             ->imageEditor()
                             ->imageResizeMode('cover')
                             ->imageCropAspectRatio('1:1')
-                            ->panelAspectRatio('2:1')
                             ->columnSpanFull()
                             ->helperText('Recommended size: 800x800px'),
 
@@ -216,7 +230,6 @@ class ProductResource extends Resource
                                     ->searchable()
                                     ->preload()
                                     ->createOptionForm([
-
                                         Forms\Components\Section::make('New Product Brand')
                                             ->icon('heroicon-o-tag')
                                             ->schema([
@@ -265,72 +278,6 @@ class ProductResource extends Resource
                                     ->helperText('Select or create specific product brand'),
                             ])
                             ->columns(2),
-
-                        Forms\Components\Select::make('supplier_id')
-                            ->relationship('supplier', 'name')
-                            ->label('Supplier')
-                            ->prefixIcon('heroicon-o-truck')
-                            ->native(false)
-                            ->searchable()
-                            ->preload()
-                            ->createOptionForm([
-                                Forms\Components\Section::make('New Supplier')
-                                    ->icon('heroicon-o-user-circle')
-                                    ->schema([
-                                        Forms\Components\Grid::make()
-                                            ->schema([
-                                                Forms\Components\TextInput::make('name')
-                                                    ->label('Supplier Name')
-                                                    ->required()
-                                                    ->maxLength(255)
-                                                    ->placeholder('e.g., PT. Supplier Maju Jaya')
-                                                    ->columnSpan(['md' => 2]),
-
-                                                Forms\Components\TextInput::make('email')
-                                                    ->label('Email Address')
-                                                    ->email()
-                                                    ->unique()
-                                                    ->required()
-                                                    ->maxLength(255)
-                                                    ->placeholder('supplier@example.com')
-                                                    ->prefixIcon('heroicon-o-envelope')
-                                                    ->columnSpan(['md' => 2]),
-                                            ])
-                                            ->columns(2),
-
-                                        Forms\Components\TextInput::make('phone')
-                                            ->label('Phone Number')
-                                            ->tel()
-                                            ->required()
-                                            ->maxLength(255)
-                                            ->mask('999999999999')
-                                            ->prefix('+62')
-                                            ->stripCharacters(['-', ' '])
-                                            ->rule('digits_between:10,13')
-                                            ->afterStateHydrated(function (Forms\Components\TextInput $component, $state) {
-                                                // Remove +62 if already present to avoid duplication
-                                                $cleaned = str_replace('+62', '', $state);
-                                                $component->state($cleaned);
-                                            })
-                                            ->dehydrateStateUsing(fn($state) => '+62' . $state)
-                                            ->placeholder('81234567890')
-                                            ->prefixIcon('heroicon-o-phone')
-                                            ->helperText('Enter number without +62 (e.g., 81234567890)')
-                                            ->columnSpan(['md' => 2]),
-
-                                        Forms\Components\Textarea::make('address')
-                                            ->label('Full Address')
-                                            ->required()
-                                            ->maxLength(255)
-                                            ->rows(3)
-                                            ->placeholder('Street, City, Province, Postal Code')
-                                            ->columnSpanFull(),
-                                    ])
-                                    ->columns(2)
-                                    ->collapsible(),
-                            ])
-                            ->columnSpanFull()
-                            ->helperText('Select or create supplier'),
                     ])
                     ->columns(2)
                     ->collapsible(),

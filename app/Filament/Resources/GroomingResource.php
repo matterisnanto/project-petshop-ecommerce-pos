@@ -23,7 +23,7 @@ class GroomingResource extends Resource
     protected static ?string $modelLabel = 'Grooming';
     protected static ?string $pluralModelLabel = 'Grooming';
     protected static ?string $navigationGroup = 'Service Resource';
-    protected static ?int $navigationSort = 11;
+    protected static ?int $navigationSort = 13;
 
     public static function getNavigationIcon(): string
     {
@@ -38,6 +38,10 @@ class GroomingResource extends Resource
                     ->description('Product identification details')
                     ->schema([
                         Forms\Components\TextInput::make('name')
+                            ->afterStateUpdated(function (Set $set, $state) {
+                                $set('slug', Grooming::generateUniqueSlug($state));
+                            })
+                            ->live(onBlur: true)
                             ->required()
                             ->maxLength(255)
                             ->columnSpan(['md' => 2])

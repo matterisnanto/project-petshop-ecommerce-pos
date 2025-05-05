@@ -24,12 +24,26 @@ class AnimalsResource extends Resource
     protected static ?string $modelLabel = 'Animals';
     protected static ?string $pluralModelLabel = 'Animals';
     protected static ?string $navigationGroup = 'Animals Resource';
-    protected static ?int $navigationSort = 9;
+    protected static ?int $navigationSort = 11;
 
     // protected static ?string $navigationIcon = 'pawprint';
     public static function getNavigationIcon(): string
     {
         return 'lucide-paw-print';
+    }
+
+    protected static ?string $navigationBadgeTooltip = 'Active Animals for sale';
+
+
+    public static function getNavigationBadge(): ?string
+    {
+        return (string) Animals::where('is_active', true)->count();
+    }
+
+
+    public static function getNavigationBadgeColor(): ?string
+    {
+        return 'primary';
     }
 
     public static function form(Form $form): Form
@@ -229,8 +243,7 @@ class AnimalsResource extends Resource
                                     ->columnSpan(['md' => 1])
                                     ->helperText('Select or create specific breed'),
                             ])
-                            ->columns(2)
-                            ->extraAttributes(['class' => 'bg-gray-50 p-4 rounded-lg']),
+                            ->columns(2),
 
                         Forms\Components\FileUpload::make('thumbnail')
                             ->label('Main Photo')

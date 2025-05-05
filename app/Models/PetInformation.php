@@ -31,8 +31,15 @@ class PetInformation extends Model
     {
         static::saving(function ($petInfo) {
             if ($petInfo->check_in && $petInfo->check_out) {
-                $petInfo->days = Carbon::parse($petInfo->check_in)
+                $days = Carbon::parse($petInfo->check_in)
                     ->diffInDays(Carbon::parse($petInfo->check_out));
+                $petInfo->days = max(1, $days);
+
+                // Update the associated order's quantity if this is a hotel or breeding service
+                if ($petInfo->order && in_array($petInfo->order->type, ['hotel', 'breeding'])) {
+                    $petInfo->order->quantity = max(1, $days);
+                    $petInfo->order->save();
+                }
             }
         });
     }

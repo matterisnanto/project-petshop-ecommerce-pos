@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
 
 class Grooming extends Model
@@ -23,5 +24,18 @@ class Grooming extends Model
     public function groomingPackage()
     {
         return $this->hasMany(GroomingPackage::class);
+    }
+
+    public static function generateUniqueSlug(string $name): string
+    {
+        $slug = Str::slug($name);
+        $originalSlug = $slug;
+        $counter = 1;
+
+        while (self::where('slug', $slug)->exists()) {
+            $slug = $originalSlug . '-' . $counter++;
+            $counter++;
+        }
+        return $slug;
     }
 }

@@ -7,10 +7,14 @@
                         ['text' => 'Home', 'url' => route('home')],
                         [
                             'text' => $product->category->name,
-                            'url' => route('products', $product->category->slug),
+                            'url' =>
+                                url('products') .
+                                '?' .
+                                http_build_query(['categories' => [0 => $product->category_id]]),
                         ],
                     ]" :currentPage="$product->name" />
                 </div>
+
             </div>
 
             <div class="lg:grid lg:grid-cols-2 lg:gap-8 xl:gap-16">

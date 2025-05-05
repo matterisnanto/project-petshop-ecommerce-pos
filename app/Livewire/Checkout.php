@@ -609,7 +609,6 @@ class Checkout extends Component
 
             // Clear session
             Session::forget(['cart', 'cart_totals', 'checkout_data']);
-            // Redirect to confirmation page
             return redirect()->route('order-confirmation', ['transaction_id' => $transaction->trx_id]);
         } catch (\Exception $e) {
             Log::error('Error processing order: ' . $e->getMessage());

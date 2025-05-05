@@ -21,7 +21,7 @@ class CategoryGroomingResource extends Resource
     protected static ?string $modelLabel = 'Category Grooming';
     protected static ?string $pluralModelLabel = 'Category Grooming';
     protected static ?string $navigationGroup = 'Service Resource';
-    protected static ?int $navigationSort = 10;
+    protected static ?int $navigationSort = 12;
 
     protected static ?string $navigationIcon = 'heroicon-o-circle-stack';
 

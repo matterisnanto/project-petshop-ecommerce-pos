@@ -11,6 +11,11 @@ class Breeds extends Model
     //
     protected $fillable = ['category_animals_id', 'name', 'slug'];
 
+    public function animals()
+    {
+        return $this->hasMany(Animals::class);
+    }
+
     public function categoryAnimals()
     {
         return $this->belongsTo(CategoryAnimals::class);
