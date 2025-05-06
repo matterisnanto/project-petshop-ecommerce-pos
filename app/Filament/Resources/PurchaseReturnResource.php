@@ -28,7 +28,7 @@ class PurchaseReturnResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Purchase Returns';
 
-    protected static ?int $navigationSort = 5;
+    protected static ?int $navigationSort = 7;
 
     protected static ?string $navigationGroup = 'Purchasing Resource';
 
@@ -306,15 +306,15 @@ class PurchaseReturnResource extends Resource
             ]);
     }
 
-    protected static function generateOrderLabel(Order $order): string
-    {
-        if ($order->product_id) {
-            return "Product: {$order->product->name} (Qty: {$order->quantity})";
-        } elseif ($order->animals_id) {
-            return "Animal: {$order->animal->name} (Qty: {$order->quantity})";
-        }
-        return 'Item #' . $order->id . " (Qty: {$order->quantity})";
-    }
+    // protected static function generateOrderLabel(Order $order): string
+    // {
+    //     if ($order->product_id) {
+    //         return "Product: {$order->product->name} (Qty: {$order->quantity})";
+    //     } elseif ($order->animals_id) {
+    //         return "Animal: {$order->animal->name} (Qty: {$order->quantity})";
+    //     }
+    //     return 'Item #' . $order->id . " (Qty: {$order->quantity})";
+    // }
 
     public static function table(Table $table): Table
     {

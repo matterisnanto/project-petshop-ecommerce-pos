@@ -25,7 +25,7 @@ class TransactionReturnResource extends Resource
 
     protected static ?string $navigationGroup = 'Transactions';
 
-    protected static ?int $navigationSort = 1;
+    protected static ?int $navigationSort = 4;
 
     public static function getNavigationIcon(): string
     {
@@ -36,54 +36,110 @@ class TransactionReturnResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Return Information')
+                Forms\Components\Section::make('Basic Information')
+                    ->description('Fill in the basic details of the return')
                     ->schema([
-                        Forms\Components\DatePicker::make('return_date')
-                            ->required(),
-                        Forms\Components\TextInput::make('return_number')
-                            ->required()
-                            ->maxLength(255)
-                            ->default('RET-' . date('Ymd') . '-' . strtoupper(uniqid())),
-                        Forms\Components\Select::make('type')
-                            ->options([
-                                'pos' => 'POS Transaction',
-                                'olshop' => 'Online Shop Transaction',
-                            ])
-                            ->required()
-                            ->live(),
-                        Forms\Components\Select::make('pos_transaction_id')
-                            ->label('POS Transaction')
-                            ->relationship('postransaction', 'trx_id')
-                            ->searchable()
-                            ->preload()
-                            ->live()
-                            ->visible(fn(Forms\Get $get): bool => $get('type') === 'pos'),
-                        Forms\Components\Select::make('olshop_transaction_id')
-                            ->label('Online Shop Transaction')
-                            ->relationship('olshoptransaction', 'trx_id')
-                            ->searchable()
-                            ->preload()
-                            ->live()
-                            ->visible(fn(Forms\Get $get): bool => $get('type') === 'olshop'),
-                        Forms\Components\TextInput::make('refund_amount')
-                            ->numeric()
-                            ->required(),
-                        Forms\Components\Select::make('status')
-                            ->options([
-                                'pending' => 'Pending',
-                                'approved' => 'Approved',
-                                'rejected' => 'Rejected',
-                                'completed' => 'Completed',
-                            ])
-                            ->required(),
-                        Forms\Components\DatePicker::make('return_approved_date')
-                            ->visible(fn(Forms\Get $get): bool => in_array($get('status'), ['approved', 'completed'])),
+                        Forms\Components\Grid::make(3)
+                            ->schema([
+                                Forms\Components\DatePicker::make('return_date')
+                                    ->required()
+                                    ->default(now())
+                                    ->native(false)
+                                    ->displayFormat('d M Y')
+                                    ->columnSpan(1),
+
+                                Forms\Components\TextInput::make('return_number')
+                                    ->required()
+                                    ->maxLength(255)
+                                    ->default('RET-' . date('Ymd') . '-' . strtoupper(uniqid()))
+                                    ->columnSpan(1)
+                                    ->readOnly()
+                                    ->helperText('Auto-generated return number'),
+
+                                Forms\Components\Select::make('status')
+                                    ->options([
+                                        'pending' => 'Pending',
+                                        'approved' => 'Approved',
+                                        'rejected' => 'Rejected',
+                                        'completed' => 'Completed',
+                                    ])
+                                    ->required()
+                                    ->default('pending')
+                                    ->live()
+                                    ->columnSpan(1)
+                                    ->afterStateUpdated(function ($state, Forms\Set $set) {
+                                        if (in_array($state, ['approved', 'completed'])) {
+                                            $set('return_approved_date', now());
+                                        } else {
+                                            $set('return_approved_date', null);
+                                        }
+                                    }),
+                            ]),
+
+                        Forms\Components\Grid::make(3)
+                            ->schema([
+                                Forms\Components\Select::make('type')
+                                    ->options([
+                                        'pos' => 'POS Transaction',
+                                        'olshop' => 'Online Shop Transaction',
+                                    ])
+                                    ->required()
+                                    ->live()
+                                    ->native(false)
+                                    ->columnSpan(1)
+                                    ->afterStateUpdated(function ($state, Forms\Set $set) {
+                                        $set('pos_transaction_id', null);
+                                        $set('olshop_transaction_id', null);
+                                    }),
+
+                                Forms\Components\Select::make('pos_transaction_id')
+                                    ->label('POS Transaction')
+                                    ->relationship('postransaction', 'trx_id')
+                                    ->searchable()
+                                    ->preload()
+                                    ->live()
+                                    ->native(false)
+                                    ->visible(fn(Forms\Get $get): bool => $get('type') === 'pos')
+                                    ->columnSpan(2),
+
+                                Forms\Components\Select::make('olshop_transaction_id')
+                                    ->label('Online Shop Transaction')
+                                    ->relationship('olshoptransaction', 'trx_id')
+                                    ->searchable()
+                                    ->preload()
+                                    ->live()
+                                    ->native(false)
+                                    ->visible(fn(Forms\Get $get): bool => $get('type') === 'olshop')
+                                    ->columnSpan(2),
+                            ]),
+
+                        Forms\Components\Grid::make(3)
+                            ->schema([
+                                Forms\Components\TextInput::make('refund_amount')
+                                    ->numeric()
+                                    ->prefix('Rp')
+                                    ->default(0)
+                                    ->columnSpan(1),
+
+                                Forms\Components\DatePicker::make('return_approved_date')
+                                    ->visible(fn($get) => in_array($get('status'), ['approved', 'completed']))
+                                    ->disabled(fn($get) => $get('status') !== 'pending')
+                                    ->required(fn($get) => in_array($get('status'), ['approved', 'completed']))
+                                    ->native(false)
+                                    ->displayFormat('d M Y')
+                                    ->columnSpan(1),
+                            ]),
+
                         Forms\Components\Textarea::make('notes')
-                            ->columnSpanFull(),
+                            ->columnSpanFull()
+                            ->rows(3)
+                            ->placeholder('Additional notes about this return'),
                     ])
-                    ->columns(2),
+                    ->columns(3)
+                    ->collapsible(),
 
                 Forms\Components\Section::make('Return Items')
+                    ->description('Add items to be returned')
                     ->schema([
                         Forms\Components\Repeater::make('returnItems')
                             ->relationship()
@@ -97,93 +153,171 @@ class TransactionReturnResource extends Resource
                                         'hotel' => 'Hotel',
                                     ])
                                     ->required()
-                                    ->live(),
+                                    ->live()
+                                    ->afterStateUpdated(function ($state, Forms\Set $set) {
+                                        $set('product_id', null);
+                                        $set('animals_id', null);
+                                        $set('grooming_id', null);
+                                        $set('breeding_id', null);
+                                        $set('hotel_id', null);
+                                    }),
 
-                                // Untuk POS Transaction
-                                Forms\Components\Select::make('product_id')
-                                    ->relationship(
-                                        name: 'product',
-                                        titleAttribute: 'name',
-                                        modifyQueryUsing: fn(Builder $query, Forms\Get $get) =>
-                                        $get('../../type') === 'pos'
-                                            ? $query->whereHas('order', fn($q) =>
-                                            $q->where('pos_transaction_id', $get('../../pos_transaction_id')))
-                                            : $query->whereHas('order', fn($q) =>
-                                            $q->where('olshop_transaction_id', $get('../../olshop_transaction_id')))
-                                    )
-                                    ->searchable()
-                                    ->preload()
-                                    ->visible(fn(Forms\Get $get): bool => $get('type') === 'product'),
+                                Forms\Components\Grid::make(3)
+                                    ->schema([
+                                        Forms\Components\Select::make('product_id')
+                                            ->relationship(
+                                                name: 'product',
+                                                titleAttribute: 'name',
+                                                modifyQueryUsing: fn(Builder $query, Forms\Get $get) =>
+                                                $get('../../type') === 'pos'
+                                                    ? $query->whereHas('order', fn($q) =>
+                                                    $q->where('pos_transaction_id', $get('../../pos_transaction_id')))
+                                                    : $query->whereHas('order', fn($q) =>
+                                                    $q->where('olshop_transaction_id', $get('../../olshop_transaction_id')))
+                                            )
+                                            ->searchable()
+                                            ->preload()
+                                            ->visible(fn($get) => $get('type') === 'product')
+                                            ->live()
+                                            ->required(fn($get) => $get('type') === 'product')
+                                            ->afterStateUpdated(function ($state, Forms\Set $set) {
+                                                $product = \App\Models\Product::find($state);
+                                                if ($product) {
+                                                    $set('unit_price', $product->price);
+                                                }
+                                            })
+                                            ->columnSpan(2),
 
-                                Forms\Components\Select::make('animals_id')
-                                    ->relationship(
-                                        name: 'animals',
-                                        titleAttribute: 'name',
-                                        modifyQueryUsing: fn(Builder $query, Forms\Get $get) =>
-                                        $get('../../type') === 'pos'
-                                            ? $query->whereHas('order', fn($q) =>
-                                            $q->where('pos_transaction_id', $get('../../pos_transaction_id')))
-                                            : $query->whereHas('order', fn($q) =>
-                                            $q->where('olshop_transaction_id', $get('../../olshop_transaction_id')))
-                                    )
-                                    ->searchable()
-                                    ->preload()
-                                    ->visible(fn(Forms\Get $get): bool => $get('type') === 'animal'),
+                                        Forms\Components\Select::make('animals_id')
+                                            ->relationship(
+                                                name: 'animals',
+                                                titleAttribute: 'name',
+                                                modifyQueryUsing: fn(Builder $query, Forms\Get $get) =>
+                                                $get('../../type') === 'pos'
+                                                    ? $query->whereHas('order', fn($q) =>
+                                                    $q->where('pos_transaction_id', $get('../../pos_transaction_id')))
+                                                    : $query->whereHas('order', fn($q) =>
+                                                    $q->where('olshop_transaction_id', $get('../../olshop_transaction_id')))
+                                            )
+                                            ->searchable()
+                                            ->preload()
+                                            ->visible(fn($get) => $get('type') === 'animal')
+                                            ->live()
+                                            ->required(fn($get) => $get('type') === 'animal')
+                                            ->afterStateUpdated(function ($state, Forms\Set $set) {
+                                                $animal = \App\Models\Animals::find($state);
+                                                if ($animal) {
+                                                    $set('unit_price', $animal->price);
+                                                }
+                                            })
+                                            ->columnSpan(2),
 
-                                // Untuk Olshop Transaction
-                                Forms\Components\Select::make('grooming_id')
-                                    ->relationship(
-                                        name: 'grooming',
-                                        titleAttribute: 'id',
-                                        modifyQueryUsing: fn(Builder $query, Forms\Get $get) =>
-                                        $query->whereHas('order', fn($q) =>
-                                        $q->where('pos_transaction_id', $get('../../pos_transaction_id')))
-                                    )
-                                    ->searchable()
-                                    ->preload()
-                                    ->visible(fn(Forms\Get $get): bool =>
-                                    $get('type') === 'grooming' && $get('../../type') === 'pos'),
+                                        // For POS-specific services
+                                        Forms\Components\Select::make('grooming_id')
+                                            ->relationship(
+                                                name: 'grooming',
+                                                titleAttribute: 'id',
+                                                modifyQueryUsing: fn(Builder $query, Forms\Get $get) =>
+                                                $query->whereHas('order', fn($q) =>
+                                                $q->where('pos_transaction_id', $get('../../pos_transaction_id')))
+                                            )
+                                            ->searchable()
+                                            ->preload()
+                                            ->visible(fn($get) => $get('type') === 'grooming' && $get('../../type') === 'pos')
+                                            ->live()
+                                            ->required(fn($get) => $get('type') === 'grooming' && $get('../../type') === 'pos')
+                                            ->columnSpan(2),
 
-                                Forms\Components\Select::make('breeding_id')
-                                    ->relationship(
-                                        name: 'breeding',
-                                        titleAttribute: 'id',
-                                        modifyQueryUsing: fn(Builder $query, Forms\Get $get) =>
-                                        $query->whereHas('order', fn($q) =>
-                                        $q->where('pos_transaction_id', $get('../../pos_transaction_id')))
-                                    )
-                                    ->searchable()
-                                    ->preload()
-                                    ->visible(fn(Forms\Get $get): bool =>
-                                    $get('type') === 'breeding' && $get('../../type') === 'pos'),
+                                        Forms\Components\Select::make('breeding_id')
+                                            ->relationship(
+                                                name: 'breeding',
+                                                titleAttribute: 'id',
+                                                modifyQueryUsing: fn(Builder $query, Forms\Get $get) =>
+                                                $query->whereHas('order', fn($q) =>
+                                                $q->where('pos_transaction_id', $get('../../pos_transaction_id')))
+                                            )
+                                            ->searchable()
+                                            ->preload()
+                                            ->visible(fn($get) => $get('type') === 'breeding' && $get('../../type') === 'pos')
+                                            ->live()
+                                            ->required(fn($get) => $get('type') === 'breeding' && $get('../../type') === 'pos')
+                                            ->columnSpan(2),
 
-                                Forms\Components\Select::make('hotel_id')
-                                    ->relationship(
-                                        name: 'hotel',
-                                        titleAttribute: 'id',
-                                        modifyQueryUsing: fn(Builder $query, Forms\Get $get) =>
-                                        $query->whereHas('order', fn($q) =>
-                                        $q->where('pos_transaction_id', $get('../../pos_transaction_id')))
-                                    )
-                                    ->searchable()
-                                    ->preload()
-                                    ->visible(fn(Forms\Get $get): bool =>
-                                    $get('type') === 'hotel' && $get('../../type') === 'pos'),
-                                Forms\Components\TextInput::make('quantity')
-                                    ->numeric()
-                                    ->required()
-                                    ->helperText('test'),
-                                Forms\Components\TextInput::make('unit_price')
-                                    ->numeric()
-                                    ->required(),
-                                Forms\Components\Textarea::make('reason')
-                                    ->required(),
+                                        Forms\Components\Select::make('hotel_id')
+                                            ->relationship(
+                                                name: 'hotel',
+                                                titleAttribute: 'id',
+                                                modifyQueryUsing: fn(Builder $query, Forms\Get $get) =>
+                                                $query->whereHas('order', fn($q) =>
+                                                $q->where('pos_transaction_id', $get('../../pos_transaction_id')))
+                                            )
+                                            ->searchable()
+                                            ->preload()
+                                            ->visible(fn($get) => $get('type') === 'hotel' && $get('../../type') === 'pos')
+                                            ->live()
+                                            ->required(fn($get) => $get('type') === 'hotel' && $get('../../type') === 'pos')
+                                            ->columnSpan(2),
+
+                                        Forms\Components\TextInput::make('unit_price')
+                                            ->numeric()
+                                            ->prefix('Rp')
+                                            ->required()
+                                            ->columnSpan(1),
+                                    ]),
+
+                                Forms\Components\Grid::make(3)
+                                    ->schema([
+                                        Forms\Components\TextInput::make('quantity')
+                                            ->numeric()
+                                            ->required()
+                                            ->default(1)
+                                            ->minValue(1)
+                                            ->columnSpan(1),
+
+                                        Forms\Components\TextInput::make('reason')
+                                            ->required()
+                                            ->columnSpan(2)
+                                            ->placeholder('Reason for return'),
+                                    ]),
                             ])
-                            ->columns(2)
-                            ->itemLabel(fn(array $state): ?string =>
-                            $state['product_id'] ?? $state['animals_id'] ?? $state['grooming_id'] ??
-                                $state['breeding_id'] ?? $state['hotel_id'] ?? null)
+                            ->columns(1)
+                            ->itemLabel(function (array $state) {
+                                if (empty($state['type'])) return 'New Return Item';
+
+                                if ($state['type'] === 'product' && !empty($state['product_id'])) {
+                                    $product = \App\Models\Product::find($state['product_id']);
+                                    return $product ? "Product: {$product->name}" : 'Invalid Product';
+                                }
+
+                                if ($state['type'] === 'animal' && !empty($state['animals_id'])) {
+                                    $animal = \App\Models\Animals::find($state['animals_id']);
+                                    return $animal ? "Animal: {$animal->name}" : 'Invalid Animal';
+                                }
+
+                                if ($state['type'] === 'grooming' && !empty($state['grooming_id'])) {
+                                    return "Grooming Service #{$state['grooming_id']}";
+                                }
+
+                                if ($state['type'] === 'breeding' && !empty($state['breeding_id'])) {
+                                    return "Breeding Service #{$state['breeding_id']}";
+                                }
+
+                                if ($state['type'] === 'hotel' && !empty($state['hotel_id'])) {
+                                    return "Hotel Service #{$state['hotel_id']}";
+                                }
+
+                                return 'New Return Item';
+                            })
+                            ->defaultItems(1)
+                            ->collapsible()
+                            ->collapsed()
+                            ->addActionLabel('Add Item')
+                            ->deleteAction(
+                                fn(Forms\Components\Actions\Action $action) => $action->requiresConfirmation(),
+                            )
+                            ->grid(1),
                     ])
+                    ->collapsible(),
             ]);
     }
 

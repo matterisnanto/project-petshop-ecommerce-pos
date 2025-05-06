@@ -22,7 +22,7 @@ class BreedingResource extends Resource
     protected static ?string $modelLabel = 'Breeding';
     protected static ?string $pluralModelLabel = 'Breeding';
     protected static ?string $navigationGroup = 'Service Resource';
-    protected static ?int $navigationSort = 14;
+    protected static ?int $navigationSort = 16;
 
     public static function getNavigationIcon(): string
     {

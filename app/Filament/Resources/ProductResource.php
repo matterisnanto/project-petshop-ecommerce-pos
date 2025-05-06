@@ -29,7 +29,7 @@ class ProductResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Product';
 
-    protected static ?int $navigationSort = 8;
+    protected static ?int $navigationSort = 10;
 
     protected static ?string $navigationGroup = 'Product Resource';
 
