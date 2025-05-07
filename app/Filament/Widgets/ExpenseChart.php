@@ -12,7 +12,8 @@ use Filament\Widgets\ChartWidget;
 class ExpenseChart extends ChartWidget
 {
     protected static ?string $heading = 'Expense';
-    protected static ?int $sort = 2;
+    protected static ?int $sort = 12;
+    protected int | string | array $columnSpan = '4';
     protected static string $color = 'danger';
     public ?string $filter = 'today';
 
