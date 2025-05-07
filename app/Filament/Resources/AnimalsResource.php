@@ -34,12 +34,10 @@ class AnimalsResource extends Resource
 
     protected static ?string $navigationBadgeTooltip = 'Active Animals for sale';
 
-
     public static function getNavigationBadge(): ?string
     {
         return (string) Animals::where('is_active', true)->count();
     }
-
 
     public static function getNavigationBadgeColor(): ?string
     {
@@ -47,13 +45,16 @@ class AnimalsResource extends Resource
     }
 
     public static function form(Form $form): Form
-    {
-        return $form
-            ->schema([
-                Forms\Components\Section::make('Basic Information')
-                    ->description('Primary details about the animal')
-                    ->icon('heroicon-o-identification')
-                    ->schema([
+{
+    return $form
+        ->schema([
+            Forms\Components\Section::make('Basic Information')
+                ->description('Primary details about the animal')
+                ->icon('heroicon-o-identification')
+                ->collapsible()
+                ->columns(2)
+                ->schema([
+                        // Name and Barcode Row - Enhanced UI
                         Forms\Components\Grid::make()
                             ->schema([
                                 Forms\Components\TextInput::make('name')
@@ -64,19 +65,23 @@ class AnimalsResource extends Resource
                                     ->live(onBlur: true)
                                     ->maxLength(255)
                                     ->columnSpan(['md' => 2])
-                                    ->placeholder('Animal name')
-                                    ->hint('The official name of the animal'),
-
+                                    ->placeholder('Enter animal name')
+                                    ->hint('The official name of the animal')
+                                    ->label('Animal Name')
+                                    ->prefixIcon('heroicon-o-tag'),
+                                    
                                 Forms\Components\Hidden::make('slug'),
-
+                                
                                 Forms\Components\TextInput::make('barcode')
                                     ->maxLength(255)
                                     ->columnSpan(['md' => 1])
                                     ->hint('Unique identifier')
-                                    ->prefixIcon('lucide-barcode'),
+                                    ->prefixIcon('lucide-barcode')
+                                    ->label('Barcode ID'),
                             ])
                             ->columns(3),
-
+                        
+                        // Category and Breed Selects - Enhanced UI
                         Forms\Components\Grid::make()
                             ->schema([
                                 Forms\Components\Select::make('category_animals_id')
@@ -86,11 +91,14 @@ class AnimalsResource extends Resource
                                     ->preload()
                                     ->native(false)
                                     ->prefixIcon('heroicon-o-circle-stack')
-                                    ->placeholder('Select or create a category')
+                                    ->placeholder('Select animal category')
+                                    ->helperText('Choose or create new category')
+                                    ->columnSpan(['md' => 1])
                                     ->createOptionForm([
+                                        // Keep existing create option form exactly as is
                                         Forms\Components\Section::make('New Category Animals')
-                                            ->icon('heroicon-o-circle-stack') // Added icon
-                                            ->collapsible() // Make section collapsible
+                                            ->icon('heroicon-o-circle-stack')
+                                            ->collapsible()
                                             ->schema([
                                                 Forms\Components\Grid::make()
                                                     ->schema([
@@ -105,7 +113,7 @@ class AnimalsResource extends Resource
                                                             ->placeholder('e.g., Dogs, Cats, Birds')
                                                             ->helperText('The display name for this animal category')
                                                             ->columnSpan(['md' => 2]),
-
+    
                                                         Forms\Components\TextInput::make('slug')
                                                             ->label('URL Identifier')
                                                             ->required()
@@ -115,7 +123,7 @@ class AnimalsResource extends Resource
                                                             ->columnSpan(['md' => 2]),
                                                     ])
                                                     ->columns(2),
-
+    
                                                 Forms\Components\Textarea::make('description')
                                                     ->label('Description')
                                                     ->maxLength(255)
@@ -123,7 +131,7 @@ class AnimalsResource extends Resource
                                                     ->placeholder('Brief description about this animal category')
                                                     ->helperText('Max 255 characters')
                                                     ->columnSpanFull(),
-
+    
                                                 Forms\Components\FileUpload::make('icon')
                                                     ->label('Category Icon')
                                                     ->image()
@@ -137,10 +145,8 @@ class AnimalsResource extends Resource
                                                     ->columnSpanFull(),
                                             ])
                                             ->columns(2),
-                                    ])
-                                    ->columnSpan(['md' => 1])
-                                    ->helperText('Select or create animal category'),
-
+                                    ]),
+                                    
                                 Forms\Components\Select::make('breeds_id')
                                     ->relationship('breeds', 'name')
                                     ->label('Animal Breed')
@@ -148,15 +154,18 @@ class AnimalsResource extends Resource
                                     ->searchable()
                                     ->preload()
                                     ->prefixIcon('lucide-dna')
+                                    ->placeholder('Select animal breed')
+                                    ->helperText('Choose or create new breed')
+                                    ->columnSpan(['md' => 1])
                                     ->createOptionForm([
+                                        // Keep existing create option form exactly as is
                                         Forms\Components\Grid::make()
                                             ->schema([
                                                 Forms\Components\Section::make('New Breed')
-                                                    ->icon('lucide-dna')  // More vibrant icon
-                                                    ->collapsible()  // Allows section to be collapsed
+                                                    ->icon('lucide-dna')
+                                                    ->collapsible()
                                                     ->columns(2)
                                                     ->schema([
-                                                        // Animal Category Select with enhanced UI
                                                         Forms\Components\Select::make('category_animals_id')
                                                             ->relationship('categoryAnimals', 'name')
                                                             ->label('Animal Category')
@@ -166,8 +175,8 @@ class AnimalsResource extends Resource
                                                             ->placeholder('Select or create a category')
                                                             ->createOptionForm([
                                                                 Forms\Components\Section::make('New Category Animals')
-                                                                    ->icon('heroicon-o-tag') // Added icon
-                                                                    ->collapsible() // Make section collapsible
+                                                                    ->icon('heroicon-o-tag')
+                                                                    ->collapsible()
                                                                     ->schema([
                                                                         Forms\Components\Grid::make()
                                                                             ->schema([
@@ -182,7 +191,7 @@ class AnimalsResource extends Resource
                                                                                     ->placeholder('e.g., Dogs, Cats, Birds')
                                                                                     ->helperText('The display name for this animal category')
                                                                                     ->columnSpan(['md' => 2]),
-
+    
                                                                                 Forms\Components\TextInput::make('slug')
                                                                                     ->label('URL Identifier')
                                                                                     ->required()
@@ -192,7 +201,7 @@ class AnimalsResource extends Resource
                                                                                     ->columnSpan(['md' => 2]),
                                                                             ])
                                                                             ->columns(2),
-
+    
                                                                         Forms\Components\Textarea::make('description')
                                                                             ->label('Description')
                                                                             ->maxLength(255)
@@ -200,7 +209,7 @@ class AnimalsResource extends Resource
                                                                             ->placeholder('Brief description about this animal category')
                                                                             ->helperText('Max 255 characters')
                                                                             ->columnSpanFull(),
-
+    
                                                                         Forms\Components\FileUpload::make('icon')
                                                                             ->label('Category Icon')
                                                                             ->image()
@@ -216,8 +225,7 @@ class AnimalsResource extends Resource
                                                                     ->columns(2),
                                                             ])
                                                             ->columnSpanFull(),
-
-                                                        // Breed Name with visual feedback
+    
                                                         Forms\Components\TextInput::make('name')
                                                             ->label('Breed Name')
                                                             ->afterStateUpdated(function (Set $set, $state) {
@@ -228,23 +236,21 @@ class AnimalsResource extends Resource
                                                             ->maxLength(255)
                                                             ->columnSpanFull()
                                                             ->prefixIcon('lucide-dna'),
-
-                                                        // Slug field with copy button
+    
                                                         Forms\Components\TextInput::make('slug')
                                                             ->label('URL Identifier')
                                                             ->required()
                                                             ->readOnly()
                                                             ->maxLength(255)
-                                                            ->helperText('Auto-generated from  name')
+                                                            ->helperText('Auto-generated from name')
                                                             ->columnSpan(['md' => 2]),
                                                     ])
                                             ])
-                                    ])
-                                    ->columnSpan(['md' => 1])
-                                    ->helperText('Select or create specific breed'),
+                                    ]),
                             ])
                             ->columns(2),
-
+                        
+                        // Main Photo Upload - Enhanced UI
                         Forms\Components\FileUpload::make('thumbnail')
                             ->label('Main Photo')
                             ->image()
@@ -253,9 +259,11 @@ class AnimalsResource extends Resource
                             ->imageEditor()
                             ->imageResizeMode('cover')
                             ->imageCropAspectRatio('1:1')
-                            ->columnSpanFull()
-                            ->hint('Primary display image (1:1 ratio recommended)'),
-
+                            ->panelLayout('integrated')
+                            ->hint('Primary display image (1:1 ratio recommended)')
+                            ->columnSpanFull(),
+                            
+                        // Additional Photos Repeater - Enhanced UI
                         Forms\Components\Repeater::make('photos')
                             ->relationship('animalsPhotos')
                             ->label('Additional Photos')
@@ -264,15 +272,16 @@ class AnimalsResource extends Resource
                                     ->image()
                                     ->directory('animal-gallery')
                                     ->imageEditor()
+                                    ->panelLayout('integrated')
                                     ->required(),
-                            ])
-                            ->grid(3)
-                            ->defaultItems(1)
-                            ->columnSpanFull()
-                            ->createItemButtonLabel('Add another photo'),
-                    ])
-                    ->columns(2),
-
+                        ])
+                        ->grid(3)
+                        ->defaultItems(1)
+                        ->columnSpanFull()
+                        ->createItemButtonLabel('Add another photo'),
+                    ]),
+                
+                // Physical Attributes Section - Keep exactly as is
                 Forms\Components\Section::make('Physical Attributes')
                     ->icon('heroicon-o-scale')
                     ->schema([
@@ -284,14 +293,14 @@ class AnimalsResource extends Resource
                                     ->minValue(0)
                                     ->suffix('months')
                                     ->columnSpan(['md' => 1]),
-
+    
                                 Forms\Components\TextInput::make('weight')
                                     ->required()
                                     ->numeric()
                                     ->minValue(0)
                                     ->suffix('kg')
                                     ->columnSpan(['md' => 1]),
-
+    
                                 Forms\Components\Select::make('gender')
                                     ->options([
                                         'male' => 'Male',
@@ -304,12 +313,15 @@ class AnimalsResource extends Resource
                             ])
                             ->columns(3),
                     ]),
-
+    
+                // Health Information Section - Keep exactly as is
                 Forms\Components\Section::make('Health Information')
                     ->icon('heroicon-o-heart')
                     ->schema([
                         Forms\Components\Grid::make()
                             ->schema([
+
+                                                                
                                 Forms\Components\Select::make('health_status')
                                     ->options([
                                         'excellent' => 'Excellent',
@@ -321,6 +333,13 @@ class AnimalsResource extends Resource
                                     ->required()
                                     ->native(false)
                                     ->columnSpan(['md' => 1]),
+                                    
+                                Forms\Components\TextInput::make('stock')
+                                    ->required()
+                                    ->numeric()
+                                    ->minValue(0)
+                                    ->prefixIcon('heroicon-o-archive-box')
+                                    ->columnSpan(['md' => 1]),
 
                                 Forms\Components\Toggle::make('vaccination_status')
                                     ->label('Vaccinated')
@@ -330,8 +349,8 @@ class AnimalsResource extends Resource
                                     ->inline(false)
                                     ->columnSpan(['md' => 1]),
                             ])
-                            ->columns(2),
-
+                            ->columns(3),
+    
                         Forms\Components\Textarea::make('description')
                             ->required()
                             ->maxLength(500)
@@ -340,7 +359,8 @@ class AnimalsResource extends Resource
                             ->columnSpanFull()
                             ->hint('Max 500 characters'),
                     ]),
-
+    
+                // Financial Information Section - Keep exactly as is
                 Forms\Components\Section::make('Financial Information')
                     ->icon('heroicon-o-currency-dollar')
                     ->schema([
@@ -352,14 +372,14 @@ class AnimalsResource extends Resource
                                     ->minValue(0)
                                     ->prefix('Rp')
                                     ->columnSpan(['md' => 1]),
-
+    
                                 Forms\Components\TextInput::make('selling_price')
                                     ->required()
                                     ->numeric()
                                     ->minValue(0)
                                     ->prefix('Rp')
                                     ->columnSpan(['md' => 1]),
-
+    
                                 Forms\Components\Toggle::make('is_active')
                                     ->label('Available for sale')
                                     ->required()
@@ -377,55 +397,61 @@ class AnimalsResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\ImageColumn::make('image')
-                    ->label('')
-                    ->toggleable(),
+                Tables\Columns\ImageColumn::make('thumbnail')
+                    ->label('Photo')
+                    ->circular()
+                    ->size(40),
 
                 Tables\Columns\TextColumn::make('name')
-                    ->searchable()
-                    ->sortable(),
-                // ->description(fn(Animals $record): string => $record->breeds->name ?? ''),
+                        ->label('Name')
+                        ->searchable()
+                        ->sortable()
+                        ->weight('medium')
+                        ->description(fn(Animals $record): string => $record->breeds->name ?? ''),
 
                 Tables\Columns\TextColumn::make('categoryAnimals.name')
                     ->label('Category')
-                    ->sortable()
-                    ->toggleable(),
+                    ->badge()
+                    ->color('primary'),
 
                 Tables\Columns\TextColumn::make('age')
                     ->sortable()
-                    ->suffix(' Month')
-                    ->toggleable(),
+                    ->formatStateUsing(fn ($state): string => "{$state} months"),
 
-                Tables\Columns\TextColumn::make('weight')
-                    ->sortable()
-                    ->suffix(' kg')
-                    ->toggleable(),
+                //Tables\Columns\TextColumn::make('weight')
+                    //->sortable()
+                    //->suffix(' kg')
+                   // ->toggleable(),
 
                 Tables\Columns\TextColumn::make('gender')
+                    ->label('Gender')
                     ->badge()
-                    ->color(fn(string $state): string => match ($state) {
+                    ->color(fn (string $state): string => match ($state) {
                         'male' => 'info',
                         'female' => 'warning',
                         default => 'gray',
-                    })
-                    ->toggleable(),
-
+                    }),
+                    
                 Tables\Columns\TextColumn::make('health_status')
+                    ->label('Health')
                     ->badge()
-                    ->color(fn(string $state): string => match ($state) {
+                    ->color(fn (string $state): string => match ($state) {
                         'excellent' => 'success',
                         'good' => 'primary',
                         'fair' => 'warning',
                         'poor' => 'danger',
                         'critical' => 'danger',
                         default => 'gray',
-                    })
-                    ->toggleable(),
+                    }),
+                    
+                //Tables\Columns\TextColumn::make('stock')
+                    //->searchable(),
 
                 Tables\Columns\IconColumn::make('vaccination_status')
                     ->label('Vaccinated')
                     ->boolean()
-                    ->toggleable(),
+                    ->trueIcon('heroicon-o-check-badge')
+                    ->falseIcon('heroicon-o-x-mark'),
 
                 Tables\Columns\TextColumn::make('selling_price')
                     ->label('selling price')
@@ -437,7 +463,8 @@ class AnimalsResource extends Resource
                 Tables\Columns\IconColumn::make('is_active')
                     ->label('Available')
                     ->boolean()
-                    ->toggleable(),
+                    ->trueIcon('heroicon-o-check-circle')
+                    ->falseIcon('heroicon-o-x-circle'),
 
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -474,22 +501,42 @@ class AnimalsResource extends Resource
                     ->label('Availability'),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make()
+                    ->iconButton()
+                    ->color('primary') // Blue color
+                    ->tooltip('View'),
+                    
+                Tables\Actions\EditAction::make()
+                    ->iconButton()
+                    ->tooltip('Edit'),
+                    
+                Tables\Actions\DeleteAction::make()
+                    ->iconButton()
+                    ->tooltip('Delete'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->icon('heroicon-o-trash'),
                 ]),
             ])
             ->defaultSort('created_at', 'desc')
             ->groups([
-                'categoryAnimal.name',
-                'gender',
-                'health_status',
-            ]);
-    }
-
+                Tables\Grouping\Group::make('categoryAnimals.name')
+                ->label('Category')
+                ->collapsible(),
+            Tables\Grouping\Group::make('gender')
+                ->collapsible(),
+            Tables\Grouping\Group::make('health_status')
+                ->label('Health Status')
+                ->collapsible(),
+        ])
+        ->persistFiltersInSession()
+        ->persistSearchInSession()
+        ->striped()
+        ->paginated([10, 25, 50, 100])
+        ->deferLoading();
+}
     public static function getRelations(): array
     {
         return [

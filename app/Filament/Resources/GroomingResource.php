@@ -9,6 +9,7 @@ use App\Models\Grooming;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use App\Models\CategoryAnimals;
+use App\Models\CategoryGrooming;
 use Filament\Resources\Resource;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\GroomingResource\Pages;
@@ -69,7 +70,7 @@ class GroomingResource extends Resource
 
                                 Forms\Components\TextInput::make('price')
                                     ->numeric()
-                                    ->prefix('$')
+                                    ->prefix('Rp')
                                     ->minValue(0),
 
                                 Forms\Components\Textarea::make('description')
@@ -158,12 +159,12 @@ class GroomingResource extends Resource
                                             ->maxLength(1000),
 
                                         Forms\Components\FileUpload::make('photo')
-                                            ->directory('category-photos')
-                                            ->image()
-                                            ->imageEditor()
-                                            ->imageResizeMode('cover')
-                                            ->imageCropAspectRatio('16:9')
-                                            ->columnSpanFull(),
+                                        ->label('Product Image')
+                                        ->directory('product-photos') // Harus sama dengan path di ImageColumn
+                                        ->disk('public') // Pastikan sama dengan disk di ImageColumn
+                                        ->image()
+                                        ->imageEditor()
+                                        ->columnSpanFull(),
                                     ])
                             ]),
                     ])
@@ -180,14 +181,14 @@ class GroomingResource extends Resource
 
                         Forms\Components\TextInput::make('purchase_price')
                             ->numeric()
-                            ->prefix('$')
+                            ->prefix('Rp')
                             ->minValue(0)
                             ->columnSpan(['md' => 1]),
 
                         Forms\Components\TextInput::make('selling_price')
                             ->required()
                             ->numeric()
-                            ->prefix('$')
+                            ->prefix('Rp')
                             ->minValue(0)
                             ->columnSpan(['md' => 1]),
 
@@ -226,61 +227,128 @@ class GroomingResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\ImageColumn::make('photo')
+                ->label('Photo')
+                ->disk('public')
+                ->circular()
+                ->size(40)
+                ->defaultImageUrl(url('/images/default-grooming.png')),
+                
                 Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('slug')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('category_animals_id')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('category_grooming_id')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('photo')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable()
+                    ->label('Product Name')
+                    ->weight('medium')
+                    //->description(fn ($record) => $record->slug, position: 'below')
+                    ->wrap(),
+                    
+                    Tables\Columns\TextColumn::make('category_animals_id')
+                    ->label('Animal Category')
+                    ->formatStateUsing(function ($state) {
+                        return match($state) {
+                            1 => 'Cat', // Replace with your actual category names
+                            2 => 'Dog',
+                            3 => 'Bird',
+                            default => 'Other'
+                        };
+                    })
+                    ->badge()
+                    ->color(fn ($state) => match($state) {
+                        1 => 'primary', // Cat - blue
+                        2 => 'warning', // Dog - orange
+                        3 => 'success', // Bird - green
+                        default => 'gray' // Other
+                    }),
+                    
+                    Tables\Columns\TextColumn::make('category_grooming_id')
+                        ->formatStateUsing(function ($state) {
+                            return CategoryGrooming::find($state)?->name ?? 'Belum dikategorikan';
+                        })
+                        ->badge()
+                        ->color('success')
+                        ->searchable()
+                        ->sortable(),
+                    
                 Tables\Columns\TextColumn::make('stock')
-                    ->searchable(),
+                    ->searchable()
+                    ->label('Stock')
+                    ->color(fn ($record) => $record->stock <= 5 ? 'danger' : 'success')
+                    ->alignCenter(),
+                    
                 Tables\Columns\TextColumn::make('purchase_price')
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->money('IDR', locale: 'id')
+                    ->alignStart(),
+                    
                 Tables\Columns\TextColumn::make('selling_price')
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->money('IDR', locale: 'id')
+                    ->color('success')
+                    ->alignStart(),
+                    
                 Tables\Columns\IconColumn::make('is_active')
-                    ->boolean(),
+                    ->boolean()
+                    ->label('Active')
+                    ->trueIcon('heroicon-o-check-circle')
+                    ->falseIcon('heroicon-o-x-circle')
+                    ->trueColor('success')
+                    ->falseColor('danger')
+                    ->alignCenter(),
+                    
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+                    
                 Tables\Columns\TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+                    
                 Tables\Columns\TextColumn::make('deleted_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                // Preserved original empty filters
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                //Tables\Actions\ViewAction::make()
+                    //->iconButton()
+                    //->color('primary') // Blue color
+                    //->tooltip('View'),
+                    
+                Tables\Actions\EditAction::make()
+                    ->iconButton()
+                    ->tooltip('Edit'),
+                    
+                Tables\Actions\DeleteAction::make()
+                    ->iconButton()
+                    ->tooltip('Delete'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->icon('heroicon-o-trash')
+                        ->requiresConfirmation(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('name')
+            ->striped();
     }
-
+    
+    // Preserved original relations
     public static function getRelations(): array
     {
         return [
             //
         ];
     }
-
+    
+    // Preserved original pages
     public static function getPages(): array
     {
         return [

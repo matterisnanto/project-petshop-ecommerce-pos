@@ -18,7 +18,7 @@ class Grooming extends Model
 
     public function categoryGrooming()
     {
-        return $this->belongsTo(CategoryGrooming::class);
+        return $this->belongsTo(CategoryGrooming::class,);
     }
 
     public function groomingPackage()

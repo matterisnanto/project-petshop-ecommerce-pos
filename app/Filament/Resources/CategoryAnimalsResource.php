@@ -33,8 +33,8 @@ class CategoryAnimalsResource extends Resource
             ->schema([
                 Forms\Components\Section::make('Category Information')
                     ->description('Provide basic details about the animal category')
-                    ->icon('heroicon-o-circle-stack') // Added icon
-                    ->collapsible() // Make section collapsible
+                    ->icon('heroicon-o-tag') // Using a valid icon
+                    ->collapsible()
                     ->schema([
                         Forms\Components\Grid::make()
                             ->schema([
@@ -48,18 +48,23 @@ class CategoryAnimalsResource extends Resource
                                     ->maxLength(255)
                                     ->placeholder('e.g., Dogs, Cats, Birds')
                                     ->helperText('The display name for this animal category')
-                                    ->columnSpan(['md' => 2]),
-
+                                    ->columnSpan(['md' => 2])
+                                    ->prefixIcon('heroicon-o-tag'),
+                                
                                 Forms\Components\TextInput::make('slug')
                                     ->label('URL Identifier')
                                     ->required()
                                     ->readOnly()
                                     ->maxLength(255)
                                     ->helperText('Auto-generated from category name')
-                                    ->columnSpan(['md' => 2]),
+                                    ->columnSpan(['md' => 2])
+                                    ->prefixIcon('heroicon-o-link'),
                             ])
                             ->columns(2),
-
+                        
+                        //Forms\Components\Divider::make()
+                            //->columnSpanFull(),
+                        
                         Forms\Components\Textarea::make('description')
                             ->label('Description')
                             ->maxLength(255)
@@ -67,7 +72,7 @@ class CategoryAnimalsResource extends Resource
                             ->placeholder('Brief description about this animal category')
                             ->helperText('Max 255 characters')
                             ->columnSpanFull(),
-
+                        
                         Forms\Components\FileUpload::make('icon')
                             ->label('Category Icon')
                             ->image()
@@ -76,6 +81,7 @@ class CategoryAnimalsResource extends Resource
                             ->imageResizeMode('contain')
                             ->imageCropAspectRatio('1:1')
                             ->panelAspectRatio('2:1')
+                            ->imagePreviewHeight('150')
                             ->maxSize(512)
                             ->helperText('Recommended size: 200x200px, max 512KB')
                             ->columnSpanFull(),
@@ -113,7 +119,18 @@ class CategoryAnimalsResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make()
+                    ->iconButton()
+                    ->color('primary') // Blue color
+                    ->tooltip('View'),
+                    
+                Tables\Actions\EditAction::make()
+                    ->iconButton()
+                    ->tooltip('Edit'),
+                    
+                Tables\Actions\DeleteAction::make()
+                    ->iconButton()
+                    ->tooltip('Delete'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
