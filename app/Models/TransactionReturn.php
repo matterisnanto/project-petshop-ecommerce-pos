@@ -13,16 +13,16 @@ class TransactionReturn extends Model
 
     public function postransaction()
     {
-        return $this->belongsTo(PosTransaction::class);
+        return $this->belongsTo(PosTransaction::class, 'pos_transaction_id');
     }
 
     public function olshoptransaction()
     {
-        return $this->belongsTo(OlshopTransaction::class);
+        return $this->belongsTo(OlshopTransaction::class, 'olshop_transaction_id');
     }
 
     public function returnItems(): HasMany
     {
-        return $this->hasMany(ReturnItem::class, 'purchase_return_id');
+        return $this->hasMany(ReturnItem::class, 'transaction_return_id');
     }
 }

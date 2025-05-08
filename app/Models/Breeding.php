@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Breeding extends Model
 {
@@ -38,5 +39,10 @@ class Breeding extends Model
             $counter++;
         }
         return $slug;
+    }
+
+    public function order(): HasMany
+    {
+        return $this->hasMany(Order::class);
     }
 }

@@ -34,7 +34,7 @@ class PurchasesResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Purchasing';
 
-    protected static ?int $navigationSort = 5;
+    protected static ?int $navigationSort = 6;
 
     protected static ?string $navigationGroup = 'Purchasing Resource';
 
@@ -764,8 +764,6 @@ class PurchasesResource extends Resource
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('status'),
-                Tables\Columns\TextColumn::make('proof')
-                    ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

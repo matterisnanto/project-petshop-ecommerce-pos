@@ -23,7 +23,7 @@ class BreedsResource extends Resource
     protected static ?string $modelLabel = 'Breeds';
     protected static ?string $pluralModelLabel = 'Breeds';
     protected static ?string $navigationGroup = 'Animals Resource';
-    protected static ?int $navigationSort = 10;
+    protected static ?int $navigationSort = 12;
 
     public static function getNavigationIcon(): string
     {

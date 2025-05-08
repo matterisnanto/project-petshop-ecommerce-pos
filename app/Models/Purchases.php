@@ -15,7 +15,8 @@ class Purchases extends Model
         'supplier_id',
         'total_amount',
         'notes',
-        'status'
+        'status',
+        'proof',
     ];
 
     // Relasi ke Supplier
@@ -25,7 +26,7 @@ class Purchases extends Model
     }
 
     // Tambahkan relasi ke supplier
-    public function suppliers()
+    public function supplier()
     {
         return $this->belongsTo(Supplier::class, 'supplier_id');
     }

@@ -23,7 +23,7 @@ class CategoryAnimalsResource extends Resource
     protected static ?string $modelLabel = 'Animal Category';
     protected static ?string $pluralModelLabel = 'Animal Category';
     protected static ?string $navigationGroup = 'Animals Resource';
-    protected static ?int $navigationSort = 9;
+    protected static ?int $navigationSort = 11;
 
     protected static ?string $navigationIcon = 'heroicon-o-circle-stack';
 

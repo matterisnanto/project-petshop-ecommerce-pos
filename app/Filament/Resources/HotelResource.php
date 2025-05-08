@@ -23,7 +23,7 @@ class HotelResource extends Resource
     protected static ?string $modelLabel = 'Hotel';
     protected static ?string $pluralModelLabel = 'Hotel';
     protected static ?string $navigationGroup = 'Service Resource';
-    protected static ?int $navigationSort = 15;
+    protected static ?int $navigationSort = 17;
 
     public static function getNavigationIcon(): string
     {

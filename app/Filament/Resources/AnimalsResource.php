@@ -24,7 +24,7 @@ class AnimalsResource extends Resource
     protected static ?string $modelLabel = 'Animals';
     protected static ?string $pluralModelLabel = 'Animals';
     protected static ?string $navigationGroup = 'Animals Resource';
-    protected static ?int $navigationSort = 11;
+    protected static ?int $navigationSort = 13;
 
     // protected static ?string $navigationIcon = 'pawprint';
     public static function getNavigationIcon(): string
