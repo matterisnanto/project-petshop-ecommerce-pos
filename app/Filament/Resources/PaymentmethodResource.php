@@ -35,86 +35,107 @@ class PaymentmethodResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Payment Method Details')
-                    ->icon('heroicon-o-credit-card')  // Added icon
-                    ->description('Configure payment method information')
+                Forms\Components\Section::make('Payment Method Configuration')
+                    ->icon('heroicon-o-cog-6-tooth')
+                    ->description('Set up your payment method details and preferences')
                     ->columns(2)
                     ->collapsible()
                     ->schema([
-                        // Name Field
-                        Forms\Components\TextInput::make('name')
-                            ->label('Payment Method Name')
-                            ->required()
-                            ->maxLength(255)
-                            ->placeholder('e.g. Bank Transfer, E-Wallet, Cash')
-                            ->prefixIcon('heroicon-o-credit-card')
-                            ->columnSpan(['md' => 2])
-                            ->helperText('Enter the display name for this payment method'),
-
-                        // Account Number Field
-                        Forms\Components\TextInput::make('account_number')
-                            ->label('Account/Reference Number')
-                            ->maxLength(50)
-                            ->placeholder('e.g. 1234567890')
-                            ->columnSpan(['md' => 2])
-                            ->helperText('Optional account or reference number'),
-
-                        // Image Upload
-                        Forms\Components\FileUpload::make('image')
-                            ->label('Payment Method Logo')
-                            ->image()
-                            ->directory('payment-method-images')
-                            ->imageEditor()
-                            ->imageResizeMode('contain')
-                            ->imagePreviewHeight('120')
-                            ->panelAspectRatio('1:1')
-                            ->panelLayout('integrated')
-                            ->required()
-                            ->columnSpan(['md' => 2])
-                            ->helperText('Upload the payment method logo/icon (1:1 ratio recommended)'),
-
-                        // Payment Type Toggles
-                        Forms\Components\Fieldset::make('Payment Type')
-                            ->columns(3)
+                         // Basic Information Section
+                         Forms\Components\Section::make('Basic Information')
+                         ->icon('heroicon-o-information-circle')
+                         ->schema([
+                             Forms\Components\TextInput::make('name')
+                                 ->label('Display Name')
+                                 ->required()
+                                 ->maxLength(255)
+                                 ->placeholder('e.g. Bank Transfer, PayPal, Cash')
+                                 ->prefixIcon('heroicon-o-tag')
+                                 ->columnSpanFull()
+                                 ->helperText('This name will be shown to customers'),
+ 
+                             Forms\Components\TextInput::make('account_number')
+                                 ->label('Account/Reference Number')
+                                 ->maxLength(50)
+                                 ->placeholder('e.g. 1234567890')
+                                 ->prefixIcon('heroicon-o-identification')
+                                 ->columnSpanFull()
+                                 ->helperText('Required for bank transfers or similar methods'),
+                         ])
+                         ->columnSpan(['lg' => 1]),
+                        
+                        // Visual Identity Section
+                        Forms\Components\Section::make('Visual Identity')
+                            ->icon('heroicon-o-photo')
+                            ->description('Branding and display settings')
                             ->schema([
-                                Forms\Components\Toggle::make('olshop_transaction')
-                                    ->label('Online Payment')
-                                    ->inline(false)
-                                    ->onColor('primary')
-                                    ->offColor('gray')
-                                    ->required(),
-
-                                Forms\Components\Toggle::make('pos_transaction')
-                                    ->label('Offline Payment')
-                                    ->inline(false)
-                                    ->onColor('warning')
-                                    ->offColor('gray')
-                                    ->required(),
-
-                                Forms\Components\Toggle::make('is_cash')
-                                    ->label('Cash Payment')
-                                    ->inline(false)
-                                    ->onColor('success')
-                                    ->offColor('gray')
-                                    ->required(),
+                                Forms\Components\FileUpload::make('image')
+                                    ->label('Payment Logo')
+                                    ->image()
+                                    ->directory('payment-method-images')
+                                    ->imageEditor()
+                                    ->imageResizeMode('contain')
+                                    ->imagePreviewHeight('120')
+                                    ->panelAspectRatio('1:1')
+                                    ->panelLayout('integrated')
+                                    ->required()
+                                    ->columnSpanFull()
+                                    ->helperText('Upload a square logo (1:1 ratio) for this payment method'),
                             ])
-                            ->columnSpan(['md' => 2]),
+                            ->columnSpan(['lg' => 1]),
+    
+    
+                        // Payment Type Settings
+                        Forms\Components\Section::make('Payment Type Settings')
+                            ->icon('heroicon-o-adjustments-horizontal')
+                            ->description('Configure where this payment method can be used')
+                            ->schema([
+                                Forms\Components\Grid::make()
+                                    ->schema([
+                                        Forms\Components\Toggle::make('olshop_transaction')
+                                            ->label('Online Payments')
+                                            ->inline(false)
+                                            ->onColor('primary')
+                                            ->offColor('gray')
+                                            ->helperText('Enable for e-commerce transactions')
+                                            ->required(),
+    
+                                        Forms\Components\Toggle::make('pos_transaction')
+                                            ->label('Point of Sale')
+                                            ->inline(false)
+                                            ->onColor('warning')
+                                            ->offColor('gray')
+                                            ->helperText('Enable for in-person/store payments')
+                                            ->required(),
+    
+                                        Forms\Components\Toggle::make('is_cash')
+                                            ->label('Cash Payment')
+                                            ->inline(false)
+                                            ->onColor('success')
+                                            ->offColor('gray')
+                                            ->helperText('Mark as cash payment method')
+                                            ->required(),
+                                    ])
+                                    ->columns(3),
+                            ])
+                            ->columnSpanFull(),
                     ])
                     ->columnSpanFull(),
             ]);
     }
-
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
                 Tables\Columns\ImageColumn::make('image')
                     ->label('Image'),
-                Tables\Columns\TextColumn::make('name')
+                    Tables\Columns\TextColumn::make('name')
                     ->searchable()
-                    ->label('Name'),
-                Tables\Columns\TextColumn::make('account_number')
-                    ->label('Account Number'),
+                    ->sortable()
+                    ->description(fn ($record) => $record->account_number ? 'No. Rek: '.$record->account_number : null),
+    
+               // Tables\Columns\TextColumn::make('account_number')
+                   // ->label('Account Number'),
                 Tables\Columns\ToggleColumn::make('olshop_transaction')
                     ->label('Olshop')
                     ->onColor('success')
@@ -165,8 +186,18 @@ class PaymentmethodResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\ViewAction::make()
+                    ->iconButton()
+                    
+                    ->tooltip('View'),
+                    
+                Tables\Actions\EditAction::make()
+                    ->iconButton()
+                    ->tooltip('Edit'),
+                    
+                Tables\Actions\DeleteAction::make()
+                    ->iconButton()
+                    ->tooltip('Delete'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

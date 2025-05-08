@@ -12,6 +12,7 @@ use App\Models\Supplier;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
+use Filament\Support\Enums\FontWeight;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\ProductResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -309,71 +310,102 @@ class ProductResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\ImageColumn::make('thumbnail')
-                    ->label('Product Photo')
-                    ->square(),
+                //Tables\Columns\ImageColumn::make('thumbnail')
+                    //->label('')
+                    //->square()
+                    //->width(60)
+                    //->height(60)
+                    //->grow(false),
+                
                 Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
+                    ->searchable()
+                    ->label('PRODUCT NAME')
+                    ->alignCenter()
+                    ->weight(FontWeight::Bold)
+                    ->description(fn ($record) => $record->barcode)
+                    ->wrap(),
+                
                 Tables\Columns\TextColumn::make('brand.name')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('barcode')
-                    ->searchable(),
+                    ->label('BRAND')
+                    ->sortable()
+                    ->color('primary'),
+                
                 Tables\Columns\TextColumn::make('category.name')
-                    ->numeric()
-                    ->sortable(),
+                    ->label('CATEGORY')
+                    ->sortable()
+                    ->color('gray'),
+                
                 Tables\Columns\TextColumn::make('selling_price')
-                    ->label('selling price')
+                    ->label('PRICE')
                     ->sortable()
-                    ->formatStateUsing(function ($state) {
-                        // Format nilai sebagai Rupiah
-                        return 'Rp ' . number_format($state, 0, ',', '.');
-                    }),
+                    ->alignEnd()
+                    ->money('IDR', locale: 'id')
+                    ->color('success')
+                    ->weight(FontWeight::Bold),
+                
                 Tables\Columns\TextColumn::make('stock')
+                    ->label('STOCK')
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->alignCenter()
+                    ->weight(fn ($state) => $state <= 5 ? 'bold' : null)
+                    ->color(fn ($state) => $state <= 5 ? 'danger' : 'success')
+                    ->icon(fn ($state) => $state <= 5 ? 'heroicon-o-exclamation-triangle' : null)
+                    ->iconPosition('right')
+                    ->tooltip(fn ($state) => $state <= 5 
+                        ? 'Low stock! Please restock soon' 
+                        : 'Stock available'
+                    ),
+                
                 Tables\Columns\IconColumn::make('is_active')
+                    ->label('ACTIVE')
                     ->boolean()
-                    ->label('Active'),
+                    ->alignCenter(),
+                
                 Tables\Columns\IconColumn::make('is_popular')
+                    ->label('POPULAR') 
                     ->boolean()
-                    ->label('Popular'),
+                    ->alignCenter(),
+                
                 Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('deleted_at')
-                    ->dateTime()
+                    ->label('ADDED ON')
+                    ->dateTime('d M Y')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('category_id')
-                    ->label('category')
-                    ->relationship('category', 'name'),
+                    ->label('Category')
+                    ->relationship('category', 'name')
+                    ->searchable(),
+                    
                 Tables\Filters\SelectFilter::make('brand_id')
-                    ->label('brand')
-                    ->relationship('brand', 'name'),
+                    ->label('Brand')
+                    ->relationship('brand', 'name')
+                    ->searchable(),
+                    
                 Tables\Filters\SelectFilter::make('supplier_id')
-                    ->label('supplier')
-                    ->relationship('supplier', 'name'),
+                    ->label('Supplier')
+                    ->relationship('supplier', 'name')
+                    ->searchable(),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->label('Delete Selected')
+                        ->icon('heroicon-o-trash'),
                 ]),
-            ]);
+            ])
+            ->defaultSort('created_at', 'desc')
+            ->emptyStateHeading('No products found')
+            ->emptyStateDescription('Create your first product')
+            ->striped()
+            ->deferLoading();
     }
-
     public static function getRelations(): array
     {
         return [

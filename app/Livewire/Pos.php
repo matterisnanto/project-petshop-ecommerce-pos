@@ -36,6 +36,7 @@ class Pos extends Component implements HasForms
 {
     use InteractsWithForms;
 
+    public $trx_id;
     public $search = '';
     public $name_customer = '';
     public $phone = '';
@@ -248,6 +249,7 @@ class Pos extends Component implements HasForms
             $this->order_items = session('orderItems');
         }
         $this->payment_methods = PaymentMethod::all();
+        $this->trx_id = $this->trx_id ?? 'TRX-' . now()->format('Ymd') . '-' . Str::upper(Str::random(6));
         $this->form->fill([
             'total_price' => $this->calculateTotal(),
             'payment_method_id' => $this->payment_method_id,
@@ -507,6 +509,7 @@ class Pos extends Component implements HasForms
         $formState = $this->form->getState();
 
         $postransaction = PosTransaction::create([
+            'trx_id' => $this->trx_id,
             'name' => $this->name_customer,
             'phone' => $this->phone,
             'email' => $this->email,

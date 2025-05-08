@@ -35,6 +35,8 @@ class BreedingResource extends Resource
             ->schema([
                 Forms\Components\Section::make('Basic Information')
                     ->description('Primary details about the breeding')
+                    ->icon('heroicon-o-information-circle')
+                    ->collapsible()
                     ->schema([
                         Forms\Components\TextInput::make('name')
                             ->required()
@@ -44,97 +46,123 @@ class BreedingResource extends Resource
                             ->live(onBlur: true)
                             ->maxLength(100)
                             ->columnSpan(2)
-                            ->label('Breeding Name'),
-
+                            ->label('Breeding Name')
+                            ->prefixIcon('heroicon-o-tag'),
+    
                         Forms\Components\TextInput::make('slug')
                             ->label('URL Identifier')
                             ->required()
                             ->readOnly()
                             ->columnSpan(2)
                             ->maxLength(255)
-                            ->helperText('Auto-generated from product name'),
-
+                            ->prefixIcon('heroicon-o-link')
+                            ->helperText('Auto-generated from breeding name'),
+    
                         Forms\Components\Select::make('category_animals_id')
                             ->relationship('categoryAnimals', 'name')
                             ->searchable()
                             ->preload()
                             ->required()
-                            ->label('Animal Category'),
-
+                            ->label('Animal Category')
+                            ->prefixIcon('heroicon-o-tag'),
+    
                         Forms\Components\Select::make('breeds_id')
                             ->relationship('breeds', 'name')
                             ->searchable()
                             ->preload()
                             ->required()
-                            ->label('Breed'),
-
+                            ->label('Breed')
+                            ->prefixIcon('heroicon-o-sparkles'),
+    
                         Forms\Components\FileUpload::make('photo')
                             ->image()
                             ->directory('breeding-photos')
                             ->imageEditor()
                             ->columnSpanFull()
-                            ->label('Breeding Photo'),
-
+                            ->label('Breeding Photo')
+                            ->imagePreviewHeight('50')
+                            ->panelAspectRatio('2:1')
+                            ->panelLayout('integrated')
+                            ->uploadingMessage('Uploading breeding photo...')
+                            ->loadingIndicatorPosition('right'),
+    
                         Forms\Components\Textarea::make('description')
-                            ->rows(2)
+                            ->rows(3)
                             ->maxLength(500)
-                            ->columnSpan(2),
+                            ->columnSpan(2)
+                            ->helperText('Max 500 characters'),
                     ])->columns(2),
+    
                 Forms\Components\Section::make('Breeding Packages')
                     ->description('Available Breeding service packages')
+                    ->icon('heroicon-o-gift')
+                    ->collapsible()
+                    ->collapsed()
                     ->schema([
                         Forms\Components\Repeater::make('breedingPackage')
                             ->relationship('breedingPackage')
                             ->schema([
                                 Forms\Components\TextInput::make('name')
                                     ->required()
-                                    ->placeholder('Package name'),
-
+                                    ->placeholder('Package name')
+                                    ->columnSpan(1)
+                                    ->prefixIcon('heroicon-o-cube'),
+    
                                 Forms\Components\TextInput::make('price')
-                                    ->numeric()
-                                    ->prefix('$')
-                                    ->minValue(0),
-
+                                ->numeric()
+                                ->prefix('Rp')
+                                ->minValue(0),
+    
                                 Forms\Components\Textarea::make('description')
                                     ->rows(2)
-                                    ->maxLength(500),
+                                    ->maxLength(500)
+                                    ->columnSpan(1)
+                                    ->placeholder('Package details...'),
                             ])
                             ->columns(3)
                             ->columnSpanFull()
                             ->addActionLabel('Add Package')
-                            ->defaultItems(1),
+                            ->defaultItems(1)
+                            ->itemLabel(fn (array $state): ?string => $state['name'] ?? null)
+                            ->grid(2),
                     ]),
+    
                 Forms\Components\Section::make('Inventory & Pricing')
                     ->description('Stock and financial information')
+                    ->icon('heroicon-o-currency-dollar')
+                    ->collapsible()
                     ->schema([
                         Forms\Components\TextInput::make('stock')
                             ->required()
                             ->numeric()
                             ->minValue(0)
                             ->default(0)
-                            ->label('Available Stock'),
-
+                            ->label('Available Stock')
+                            ->prefixIcon('heroicon-o-archive-box'),
+    
                         Forms\Components\TextInput::make('purchase_price')
-                            ->numeric()
-                            ->minValue(0)
-                            ->prefix('$')
-                            ->default(null)
-                            ->label('Purchase Price'),
-
+                        ->numeric()
+                        ->prefix('Rp')
+                        ->minValue(0)
+                        ->columnSpan(['md' => 1]),
+    
                         Forms\Components\TextInput::make('selling_price')
-                            ->required()
-                            ->numeric()
-                            ->minValue(0)
-                            ->prefix('$')
-                            ->label('Selling Price'),
-
+                        ->required()
+                        ->numeric()
+                        ->prefix('Rp')
+                        ->minValue(0)
+                        ->columnSpan(['md' => 1]),
+    
                         Forms\Components\Toggle::make('is_active')
                             ->required()
                             ->inline(false)
                             ->onColor('success')
                             ->offColor('danger')
-                            ->label('Active Breeding'),
+                            ->label('Active Breeding')
+                            ->onIcon('heroicon-o-check')
+                            ->offIcon('heroicon-o-x-mark'),
                     ])->columns(3),
+    
             ]);
     }
 
@@ -142,53 +170,108 @@ class BreedingResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\ImageColumn::make('photo')
+                    ->label('')
+                    ->size(40)
+                    ->circular()
+                    ->toggleable(),
+                    
                 Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('slug')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('category_animals_id')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('breeds_id')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('photo')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable()
+                    ->weight('medium')
+                    
+                    ->toggleable(),
+                    
+                Tables\Columns\TextColumn::make('categoryAnimals.name')
+                    ->label('Category')
+                    ->sortable()
+                    ->badge()
+                    ->color('info')
+                    
+                    ->toggleable(),
+                    
+                Tables\Columns\TextColumn::make('breeds.name')
+                    ->label('Breed')
+                    ->sortable()
+                    ->badge()
+                    ->color('warning')
+                    ->toggleable(),
+                    
                 Tables\Columns\TextColumn::make('stock')
                     ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('purchase_price')
-                    ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->color(fn (Breeding $record): string => $record->stock > 0 ? 'success' : 'danger')
+                    ->toggleable(),
+                    
                 Tables\Columns\TextColumn::make('selling_price')
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->money('IDR', locale: 'id')
+                    ->color('success')
+                    ->weight('bold')
+                    ->alignEnd()
+                    ->toggleable(),
+                    
                 Tables\Columns\IconColumn::make('is_active')
-                    ->boolean(),
+                    ->label('Status')
+                    ->boolean()
+                    ->trueIcon('heroicon-o-check-badge')
+                    ->falseIcon('heroicon-o-x-mark')
+                    ->trueColor('success')
+                    ->falseColor('danger')
+                    ->toggleable(),
+                    
                 Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('deleted_at')
-                    ->dateTime()
+                    ->label('Created')
+                    ->dateTime('d M Y')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('category_animals_id')
+                    ->relationship('categoryAnimals', 'name')
+                    ->label('Filter by Category')
+                    ->preload()
+                    ->multiple(),
+                    
+                Tables\Filters\SelectFilter::make('breeds_id')
+                    ->relationship('breeds', 'name')
+                    ->label('Filter by Breed')
+                    ->preload()
+                    ->multiple(),
+                    
+                Tables\Filters\TernaryFilter::make('is_active')
+                    ->label('Active Status')
+                    ->trueLabel('Active')
+                    ->falseLabel('Inactive')
+                    ->nullable(),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->iconButton()
+                    ->tooltip('Edit'),
+                    
+                Tables\Actions\DeleteAction::make()
+                    ->iconButton()
+                    ->tooltip('Delete'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->label('Delete Selected'),
                 ]),
-            ]);
+            ])
+            ->emptyStateActions([
+                Tables\Actions\CreateAction::make()
+                    ->label('New Breeding'),
+            ])
+            ->groups([
+                Tables\Grouping\Group::make('categoryAnimals.name')
+                    ->label('Category')
+                    ->collapsible(),
+            ])
+            ->defaultSort('created_at', 'desc');
     }
 
     public static function getRelations(): array

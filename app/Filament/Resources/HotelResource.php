@@ -34,13 +34,14 @@ class HotelResource extends Resource
     {
         return $form
             ->schema([
+                // Basic Information Section
                 Forms\Components\Section::make('Basic Information')
                     ->icon('heroicon-o-identification')
                     ->description('Provide core details about the animal')
                     ->columns(2)
                     ->schema([
                         Forms\Components\TextInput::make('name')
-                            ->label('Name')
+                            ->label(' Name')
                             ->afterStateUpdated(function (Set $set, $state) {
                                 $set('slug', Hotel::generateUniqueSlug($state));
                             })
@@ -50,13 +51,16 @@ class HotelResource extends Resource
                             ->placeholder('E.g., Package 1 day')
                             ->prefixIcon('heroicon-o-tag')
                             ->columnSpan(['md' => 2]),
+                            
                         Forms\Components\TextInput::make('slug')
                             ->label('URL Identifier')
                             ->required()
                             ->readOnly()
                             ->maxLength(255)
-                            ->helperText('Auto-generated from hotel name')
+                            ->helperText('Auto-generated from animal name')
+                            ->prefixIcon('heroicon-o-link')
                             ->columnSpan(['md' => 2]),
+                            
                         Forms\Components\Select::make('category_animals_id')
                             ->relationship('categoryAnimals', 'name')
                             ->label('Animal Category')
@@ -66,9 +70,9 @@ class HotelResource extends Resource
                             ->prefixIcon('heroicon-o-circle-stack')
                             ->placeholder('Select or create a category')
                             ->createOptionForm([
-                                Forms\Components\Section::make('New Category Animals')
-                                    ->icon('heroicon-o-circle-stack') // Added icon
-                                    ->collapsible() // Make section collapsible
+                                Forms\Components\Section::make('New Animal Category')
+                                    ->icon('heroicon-o-tag')
+                                    ->collapsible()
                                     ->schema([
                                         Forms\Components\Grid::make()
                                             ->schema([
@@ -80,20 +84,22 @@ class HotelResource extends Resource
                                                     ->required()
                                                     ->live(onBlur: true)
                                                     ->maxLength(255)
-                                                    ->placeholder('e.g., Dogs, Cats, Birds')
+                                                    ->placeholder('E.g., Dogs, Cats, Birds')
+                                                    ->prefixIcon('heroicon-o-tag')
                                                     ->helperText('The display name for this animal category')
                                                     ->columnSpan(['md' => 2]),
-
+    
                                                 Forms\Components\TextInput::make('slug')
                                                     ->label('URL Identifier')
                                                     ->required()
                                                     ->readOnly()
                                                     ->maxLength(255)
+                                                    ->prefixIcon('heroicon-o-link')
                                                     ->helperText('Auto-generated from category name')
                                                     ->columnSpan(['md' => 2]),
                                             ])
                                             ->columns(2),
-
+    
                                         Forms\Components\Textarea::make('description')
                                             ->label('Description')
                                             ->maxLength(255)
@@ -101,7 +107,7 @@ class HotelResource extends Resource
                                             ->placeholder('Brief description about this animal category')
                                             ->helperText('Max 255 characters')
                                             ->columnSpanFull(),
-
+    
                                         Forms\Components\FileUpload::make('icon')
                                             ->label('Category Icon')
                                             ->image()
@@ -118,51 +124,59 @@ class HotelResource extends Resource
                             ])
                             ->columnSpan(['md' => 2])
                             ->helperText('Select or create animal category'),
-
-                    ]),
-                Forms\Components\Section::make('Hotel Packages')
-                    ->description('Available hotel service packages')
-                    ->schema([
-                        Forms\Components\Repeater::make('hotelPackage')
-                            ->relationship('hotelPackage')
-                            ->schema([
-                                Forms\Components\TextInput::make('name')
-                                    ->required()
-                                    ->placeholder('Package name'),
-
-                                Forms\Components\TextInput::make('price')
-                                    ->numeric()
-                                    ->prefix('$')
-                                    ->minValue(0),
-
-                                Forms\Components\Textarea::make('description')
-                                    ->rows(2)
-                                    ->maxLength(500),
-                            ])
-                            ->columns(3)
-                            ->columnSpanFull()
-                            ->addActionLabel('Add Package')
-                            ->defaultItems(1),
                     ]),
 
+                      // Packages Section
+                Forms\Components\Section::make('Service Packages')
+                ->icon('heroicon-o-gift')
+                ->collapsible()
+                ->schema([
+                    Forms\Components\Repeater::make('hotelPackage')
+                        ->relationship('hotelPackage')
+                        ->label('Available Packages')
+                        ->schema([
+                            Forms\Components\TextInput::make('name')
+                                ->required()
+                                ->placeholder('Package name')
+                                ->prefixIcon('heroicon-o-cube'),
+                                
+                            Forms\Components\TextInput::make('price')
+                                ->numeric()
+                                ->prefix('Rp')
+                                ->minValue(0),
+                            Forms\Components\Textarea::make('description')
+                                ->rows(2)
+                                ->maxLength(500)
+                                ->placeholder('Package details...'),
+                        ])
+                        ->columns(3)
+                        ->columnSpanFull()
+                        ->addActionLabel('Add New Package')
+                        ->defaultItems(1)
+                        ->itemLabel(fn (array $state): ?string => $state['name'] ?? null),
+                ]),
+                    
+                // Description Section
                 Forms\Components\Section::make('Description')
                     ->icon('heroicon-o-document-text')
+                    ->collapsible()
                     ->schema([
                         Forms\Components\Textarea::make('description')
-                            ->label('Hotel Description')
+                            ->label('Animal Description')
                             ->columnSpanFull()
                             ->rows(5)
-                            ->placeholder('Describe the hotel characteristics, temperament, and special features...')
+                            ->placeholder('Describe the animal characteristics, temperament, and special features...')
                             ->maxLength(1000)
                             ->helperText('Max 1000 characters'),
                     ]),
-
-                Forms\Components\Section::make('Rental Details')
+                    
+                // Pricing & Availability Section
+                Forms\Components\Section::make('Pricing & Availability')
                     ->icon('heroicon-o-currency-dollar')
                     ->columns(2)
                     ->schema([
                         Forms\Components\TextInput::make('price_per_day')
-                            ->label('Daily Rental Price')
+                            ->label('Daily Price')
                             ->required()
                             ->numeric()
                             ->prefix('Rp')
@@ -171,7 +185,7 @@ class HotelResource extends Resource
                             ->minValue(0)
                             ->maxValue(1000000)
                             ->placeholder('E.g., 150000'),
-
+                            
                         Forms\Components\TextInput::make('capacity')
                             ->label('Available Quantity')
                             ->required()
@@ -179,32 +193,40 @@ class HotelResource extends Resource
                             ->minValue(1)
                             ->step(1)
                             ->suffix('animals')
-                            ->placeholder('E.g., 5'),
+                            ->placeholder('E.g., 5')
+                            ->prefixIcon('heroicon-o-archive-box'),
+                            
+                        Forms\Components\Toggle::make('is_active')
+                            ->label('Available for Rental')
+                            ->inline(false)
+                            ->onIcon('heroicon-o-check')
+                            ->offIcon('heroicon-o-x-mark')
+                            ->onColor('success')
+                            ->offColor('danger')
+                            ->default(true)
+                            ->columnSpan(['md' => 2])
+                            ->helperText('Toggle to make this animal available/unavailable'),
                     ]),
-
-                Forms\Components\Section::make('Media & Status')
+                    
+              
+                    
+                // Media Section
+                Forms\Components\Section::make('Media')
                     ->icon('heroicon-o-camera')
-                    ->columns(2)
+                    ->collapsible()
                     ->schema([
                         Forms\Components\FileUpload::make('thumbnail')
-                            ->label('hotel Photo')
-                            ->directory('hotel-thumbnails')
+                            ->label('Animal Photo')
+                            ->directory('animal-photos')
                             ->image()
                             ->imageEditor()
                             ->imageResizeMode('cover')
                             ->imageCropAspectRatio('1:1')
                             ->imagePreviewHeight('200')
                             ->maxSize(2048)
-                            ->helperText('Upload a clear photo of the hotel (max 2MB)')
-                            ->columnSpan(['md' => 2]),
-
-                        Forms\Components\Toggle::make('is_active')
-                            ->label('Available for Rental?')
-                            ->inline(false)
-                            ->onColor('success')
-                            ->offColor('danger')
-                            ->default(true)
-                            ->columnSpan(['md' => 1]),
+                            ->helperText('Upload a clear photo of the animal (max 2MB)')
+                            ->columnSpanFull()
+                            ->panelLayout('integrated'),
                     ]),
             ]);
     }
@@ -214,44 +236,105 @@ class HotelResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\ImageColumn::make('thumbnail')
-                    ->label('photo'),
+                    ->label('Photo')
+                    ->circular()
+                    ->size(50)
+                    ->grow(false),
+                    
                 Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable()
+                    ->weight('medium')
+                    ->wrap()
+                    ->alignCenter(),
+                    
                 Tables\Columns\TextColumn::make('categoryAnimals.name')
-                    ->sortable(),
+                    ->label('Category')
+                    ->sortable()
+                    ->badge()
+                    ->color('primary')
+                    ->alignCenter(),
+                    
                 Tables\Columns\TextColumn::make('price_per_day')
                     ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('capacity')
+                    ->money('IDR', locale: 'id')
+                    ->color('success')
+                    ->weight('bold')
+                    ->sortable()
+                    ->alignCenter(),
+                    
+                    Tables\Columns\TextColumn::make('capacity')
+                    ->label('Room Capacity')
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->alignCenter()
+                    ->description(fn ($record) => $record->capacity <= 5 ? 'Limited space!' : 'Available')
+                    ->icon(fn ($record) => $record->capacity <= 5 
+                        ? 'heroicon-o-exclamation-triangle' 
+                        : 'heroicon-o-check-circle')
+                    ->color(fn ($record) => $record->capacity <= 5 
+                        ? 'danger' 
+                        : ($record->capacity >= 15 ? 'warning' : 'success'))
+                    ->weight(fn ($record) => $record->capacity <= 5 ? 'bold' : 'normal')
+                    ->tooltip(fn ($record) => $record->capacity <= 5 
+                        ? 'Only few rooms left!' 
+                        : 'Rooms available')
+                    ->formatStateUsing(fn ($state) => "{$state} rooms")
+                    ->extraAttributes(['class' => 'py-2']),  // Add vertical padding
+                    
                 Tables\Columns\IconColumn::make('is_active')
-                    ->boolean(),
+                    ->boolean()
+                    ->alignCenter()
+                    ->trueIcon('heroicon-o-check-circle')
+                    ->falseIcon('heroicon-o-x-circle')
+                    ->trueColor('success')
+                    ->falseColor('danger'),
+                    
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->alignEnd(),
+                    
                 Tables\Columns\TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->alignEnd(),
+                    
                 Tables\Columns\TextColumn::make('deleted_at')
                     ->dateTime()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->alignEnd(),
             ])
             ->filters([
-                //
+                // Maintained original empty filters array
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                //Tables\Actions\ViewAction::make()
+                    //->iconButton()
+                    //->color('primary') // Blue color
+                    //->tooltip('View'),
+                    
+                Tables\Actions\EditAction::make()
+                    ->iconButton()
+                    ->tooltip('Edit'),
+                    
+                Tables\Actions\DeleteAction::make()
+                    ->iconButton()
+                    ->tooltip('Delete'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->label('Delete Selected')
+                        ->icon('heroicon-o-trash'),
                 ]),
-            ]);
+            ])
+            ->defaultSort('name', 'asc')
+            ->striped()
+            ->deferLoading();
     }
 
     public static function getRelations(): array
