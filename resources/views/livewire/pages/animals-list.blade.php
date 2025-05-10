@@ -98,10 +98,10 @@
                         <div class="h-30 w-full md:h-56">
                             <a wire:navigate href="/animals/{{ $animal->slug }}">
                                 <img class="mx-auto h-full dark:hidden"
-                                    src="{{ $animal->thumbnail ?: 'https://via.placeholder.com/300' }}"
+                                    src="{{ $animal->image_url ?: 'https://via.placeholder.com/300' }} "
                                     alt="{{ $animal->name }}" />
                                 <img class="mx-auto hidden h-full dark:block"
-                                    src="{{ $animal->thumbnail ?: 'https://via.placeholder.com/300' }}"
+                                    src="{{ $animal->image_url ?: 'https://via.placeholder.com/300' }} "
                                     alt="{{ $animal->name }}" />
                             </a>
                         </div>
@@ -161,9 +161,47 @@
             {{-- end list animals --}}
 
             <!-- Pagination -->
-            <div class="flex justify-center mt-6">
-                {{ $animals->links() }}
-            </div>
+            @if ($animals->total() > $animals->perPage())
+                <div class="flex justify-center mt-6">
+                    <nav aria-label="Pagination" class="shadow-sm rounded-lg overflow-hidden">
+                        <ul class="flex items-center gap-2 bg-white p-2 rounded-lg shadow-sm">
+                            <!-- Previous Button -->
+                            <li>
+                                <button wire:click="previousPage" wire:disabled="$animals->onFirstPage()"
+                                    class="flex items-center justify-center w-10 h-10 rounded-lg bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-700 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
+                                    <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M15 19l-7-7 7-7" />
+                                    </svg>
+                                </button>
+                            </li>
+
+                            <!-- Page Numbers -->
+                            @foreach ($animals->getUrlRange(1, $animals->lastPage()) as $page => $url)
+                                <li>
+                                    <button wire:click="gotoPage({{ $page }})"
+                                        class="px-4 py-2 rounded-lg {{ $animals->currentPage() == $page ? 'bg-primary-500 text-white font-semibold' : 'text-gray-600 hover:bg-gray-200' }} transition">
+                                        {{ $page }}
+                                    </button>
+                                </li>
+                            @endforeach
+
+                            <!-- Next Button -->
+                            <li>
+                                <button wire:click="nextPage" @if ($animals->currentPage() >= $animals->lastPage()) disabled @endif
+                                    class="flex items-center justify-center w-10 h-10 rounded-lg bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-700 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
+                                    <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9 5l7 7-7 7" />
+                                    </svg>
+                                </button>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            @endif
 
         </div>
         <!-- Filter modal -->
@@ -201,7 +239,7 @@
                                     <button
                                         class="inline-block border-b-2 border-transparent px-2 pb-2 pr-1 hover:border-gray-300 hover:text-gray-600 dark:hover:text-gray-300"
                                         id="category-tab" data-tabs-target="#category" type="button" role="tab"
-                                        aria-controls="category" aria-selected="false">Category</button>
+                                        aria-controls="category" aria-selected="false">Category Animal</button>
                                 </li>
                                 <li class="mr-1" role="presentation">
                                     <button

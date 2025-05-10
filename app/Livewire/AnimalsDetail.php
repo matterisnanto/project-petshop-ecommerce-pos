@@ -17,6 +17,8 @@ class AnimalsDetail extends Component
     public function render()
     {
         $this->animals->load('animalsPhotos');
-        return view('livewire.pages.animals-detail');
+        return view('livewire.pages.animals-detail', [
+            'animals' => $this->animals,
+        ]);
     }
 }

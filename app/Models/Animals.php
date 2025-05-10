@@ -33,6 +33,11 @@ class Animals extends Model
         return $this->hasMany(AnimalsPhoto::class, 'animals_id');
     }
 
+    public function getImageUrlAttribute()
+    {
+        return $this->thumbnail ? url('storage/', $this->thumbnail) : null;
+    }
+
     public static function generateUniqueSlug(string $name): string
     {
         $slug = Str::slug($name);

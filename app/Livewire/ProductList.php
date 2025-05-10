@@ -7,6 +7,7 @@ use App\Models\Product;
 use Livewire\Component;
 use App\Models\Category;
 use Livewire\WithPagination;
+use App\Models\CategoryAnimals;
 use Illuminate\Support\Facades\Session;
 
 class ProductList extends Component
@@ -16,6 +17,7 @@ class ProductList extends Component
     public $sortBy = 'default';
     public $selectedBrands = [];
     public $selectedCategories = [];
+    public $selectedAnimalCategories = [];
     public $minPrice = 0;
     public $maxPrice = 5000000;
     public $showFilters = false;
@@ -27,6 +29,7 @@ class ProductList extends Component
         'sortBy' => ['except' => 'default'],
         'selectedBrands' => ['except' => [], 'as' => 'brands'],
         'selectedCategories' => ['except' => [], 'as' => 'categories'],
+        'selectedAnimalCategories' => ['except' => [], 'as' => 'animal_categories'],
         'minPrice' => ['except' => 0],
         'maxPrice' => ['except' => 5000000],
     ];
@@ -37,6 +40,7 @@ class ProductList extends Component
         $this->maxPrice = request('maxPrice', 5000000);
         $this->selectedBrands = request('brands', []);
         $this->selectedCategories = request('categories', []);
+        $this->selectedAnimalCategories = request('animal_categories', []);
         $this->sortBy = request('sortBy', 'default');
 
         if (!empty($this->selectedCategories)) {
@@ -59,6 +63,7 @@ class ProductList extends Component
             ->when($this->sortBy === 'popular', fn($q) => $q->where('is_popular', true))
             ->when(!empty($this->selectedBrands), fn($q) => $q->whereIn('brand_id', $this->selectedBrands))
             ->when(!empty($this->selectedCategories), fn($q) => $q->whereIn('category_id', $this->selectedCategories))
+            ->when(!empty($this->selectedAnimalCategories), fn($q) => $q->whereIn('category_animals_id', $this->selectedAnimalCategories))
             ->when($this->minPrice > 0 || $this->maxPrice < 5000000, fn($q) => $q->whereBetween('selling_price', [$this->minPrice, $this->maxPrice]));
 
         $products = $filteredQuery->paginate(12);
@@ -87,10 +92,23 @@ class ProductList extends Component
             ->orderBy('name')
             ->get();
 
+        $animalCategories = CategoryAnimals::select('id', 'name')
+            ->withCount(['products' => function ($query) {
+                $query->where('is_active', true)
+                    ->where('stock', '>', 5);
+            }])
+            ->whereHas('products', function ($query) {
+                $query->where('is_active', true)
+                    ->where('stock', '>', 5);
+            })
+            ->orderBy('name')
+            ->get();
+
         return view('livewire.pages.product-list', [
             'products' => $products,
             'brands' => $brands,
             'categories' => $categories,
+            'animalCategories' => $animalCategories,
             'currentSort' => $this->sortBy
         ]);
     }
@@ -111,6 +129,7 @@ class ProductList extends Component
     {
         $this->selectedBrands = [];
         $this->selectedCategories = [];
+        $this->selectedAnimalCategories = [];
         $this->minPrice = 0;
         $this->maxPrice = 5000000;
         $this->sortBy = 'default';
@@ -149,6 +168,16 @@ class ProductList extends Component
             $this->selectedCategories = array_diff($this->selectedCategories, [$categoryId]);
         } else {
             $this->selectedCategories[] = $categoryId;
+        }
+        $this->resetPage();
+    }
+
+    public function toggleAnimalCategory($animalCategoryId)
+    {
+        if (in_array($animalCategoryId, $this->selectedAnimalCategories)) {
+            $this->selectedAnimalCategories = array_diff($this->selectedAnimalCategories, [$animalCategoryId]);
+        } else {
+            $this->selectedAnimalCategories[] = $animalCategoryId;
         }
         $this->resetPage();
     }
@@ -197,5 +226,13 @@ class ProductList extends Component
         $cart = Session::get('cart', []);
         $this->cartItemCount = array_sum(array_column($cart, 'quantity'));
         $this->cartTotalWeight = array_sum(array_column($cart, 'total_weight'));
+    }
+
+    public function updating($name, $value)
+    {
+        // Reset page ketika filter/sort diubah
+        if (in_array($name, ['selectedBrands', 'selectedCategories', 'selectedAnimalCategories', 'minPrice', 'maxPrice', 'sortBy'])) {
+            $this->resetPage();
+        }
     }
 }

@@ -636,7 +636,7 @@
                 </button>
             </div>
         </div>
-        <dl
+        {{-- <dl
             class="grid grid-cols-2 gap-8 mx-auto mt-8 max-w-screen-xl text-gray-900 lg:mt-14 sm:grid-cols-3 xl:grid-cols-6 dark:text-white">
             <div class="flex flex-col justify-center items-center">
                 <dt class="mb-2 text-3xl font-extrabold md:text-4xl">73M+</dt>
@@ -662,7 +662,7 @@
                 <dt class="mb-2 text-3xl font-extrabold md:text-4xl">4M+</dt>
                 <dd class="font-light text-gray-500 dark:text-gray-400">Organizations</dd>
             </div>
-        </dl>
+        </dl> --}}
     </section>
     <!-- carousel  end -->
 

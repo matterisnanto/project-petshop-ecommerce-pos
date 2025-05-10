@@ -27,10 +27,10 @@
                     </ul>
                     <ul class="flex flex-wrap justify-center space-x-4">
                         <li>
-                            <a href="#" class="hover:underline">Syarat dan Ketentuan</a>
+                            <a href="#" class="hover:underline">Terms and Conditions</a>
                         </li>
                         <li>
-                            <a href="#" class="hover:underline">Kebijakan dan Privasi</a>
+                            <a href="#" class="hover:underline">Policy and Privacy</a>
                         </li>
                         <li>
                             <a href="#" class="hover:underline">FAQs</a>
@@ -41,7 +41,7 @@
         </div>
         <hr class="my-2 border-pink-300 sm:mx-auto dark:border-gray-700 lg:my-4">
         <div class="sm:items-center sm:justify-between sm:flex">
-            <span class="block text-sm text-gray-500 dark:text-gray-400">© 2025 <a href="#"
+            <span class="block text-sm text-gray-500 dark:text-gray-400">© 2025 <a href="https://wa.me/6288212354913"
                     class="hover:underline">Mamat&Vira™</a>. All Rights Reserved.</span>
             <div class="flex justify-center mt-4 space-x-6 sm:mt-0">
                 <a href="#" class="text-gray-500 hover:text-gray-900 dark:hover:text-white dark:text-gray-400">
