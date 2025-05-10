@@ -4,7 +4,7 @@
             <div class="items-end justify-between space-y-4 sm:flex sm:space-y-0 md:mb-8">
                 <div class="mb-4 sm:mb-0">
                     <livewire:navigation.bread-crumb :links="[
-                        ['text' => 'Home', 'url' => route('home')],
+                        ['text' => 'Home', 'url' => route('products')],
                         [
                             'text' => $product->category->name,
                             'url' =>
@@ -215,7 +215,7 @@
                     <hr class="my-6 md:my-4 border-gray-500 dark:border-gray-800" />
 
                     <p class="text-gray-500 dark:text-gray-400">
-                        {{ $product->description }}
+                        {!! nl2br(e($product->description)) !!}
                     </p>
                 </div>
             </div>

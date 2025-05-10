@@ -502,6 +502,9 @@ class ProductResource extends Resource
                 Tables\Grouping\Group::make('brand.name')
                     ->label('Brand')
                     ->collapsible(),
+                Tables\Grouping\Group::make('categoryAnimals.name')
+                    ->label('Category Animal')
+                    ->collapsible(),
             ])
             ->groupingSettingsInDropdownOnDesktop()
             ->defaultGroup('category.name');
