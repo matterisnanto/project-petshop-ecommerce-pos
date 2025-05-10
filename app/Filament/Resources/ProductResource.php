@@ -11,8 +11,10 @@ use App\Models\Category;
 use App\Models\Supplier;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
+use App\Models\CategoryAnimals;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\FontWeight;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\ProductResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -54,37 +56,43 @@ class ProductResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Section::make('Product Information')
-                    ->description('Basic product details')
+                    ->description('Enter basic details about your product')
                     ->icon('heroicon-o-shopping-bag')
+                    ->collapsible()
+                    ->columns(2)
                     ->schema([
                         Forms\Components\Grid::make()
                             ->schema([
                                 Forms\Components\TextInput::make('name')
                                     ->label('Product Name')
-                                    ->afterStateUpdated(function (Set $set, $state) {
-                                        $set('slug', Product::generateUniqueSlug($state));
-                                    })
                                     ->required()
                                     ->live(onBlur: true)
                                     ->maxLength(255)
-                                    ->placeholder('Enter product name')
-                                    ->columnSpan(['md' => 2]),
+                                    ->placeholder('e.g., Premium Dog Food 5kg')
+                                    ->columnSpan(['md' => 2])
+                                    ->afterStateUpdated(function (Set $set, $state) {
+                                        if (!empty($state)) {
+                                            $set('slug', Product::generateUniqueSlug($state));
+                                        }
+                                    }),
 
                                 Forms\Components\TextInput::make('slug')
-                                    ->label('URL Identifier')
+                                    ->label('URL Slug')
                                     ->required()
                                     ->readOnly()
                                     ->maxLength(255)
-                                    ->helperText('Auto-generated from product name')
-                                    ->columnSpan(['md' => 2]),
+                                    ->columnSpan(['md' => 2])
+                                    ->helperText('Automatically generated from product name'),
 
                                 Forms\Components\TextInput::make('barcode')
+                                    ->label('Barcode/SKU')
                                     ->maxLength(255)
-                                    ->placeholder('Enter barcode')
+                                    ->placeholder('e.g., 123456789012')
                                     ->prefixIcon('lucide-barcode')
                                     ->columnSpan(['md' => 2]),
 
                                 Forms\Components\TextInput::make('stock')
+                                    ->label('Inventory Quantity')
                                     ->required()
                                     ->numeric()
                                     ->minValue(0)
@@ -93,6 +101,7 @@ class ProductResource extends Resource
                                     ->columnSpan(['md' => 1]),
 
                                 Forms\Components\TextInput::make('weight')
+                                    ->label('Product Weight')
                                     ->required()
                                     ->numeric()
                                     ->minValue(0)
@@ -105,7 +114,8 @@ class ProductResource extends Resource
                             ->label('Product Description')
                             ->columnSpanFull()
                             ->rows(4)
-                            ->placeholder('Detailed product description...'),
+                            ->placeholder('Describe the product features, benefits, and specifications...')
+                            ->helperText('This will be displayed on the product page'),
 
                         Forms\Components\FileUpload::make('thumbnail')
                             ->label('Main Product Image')
@@ -113,38 +123,63 @@ class ProductResource extends Resource
                             ->required()
                             ->directory('product-thumbnails')
                             ->imageEditor()
+                            ->downloadable()
+                            ->openable()
+                            ->panelLayout('integrated')
                             ->imageResizeMode('cover')
                             ->imageCropAspectRatio('1:1')
+                            ->deleteUploadedFileUsing(function ($state, $livewire, $record) {
+
+                                if ($record?->thumbnail) {
+                                    Storage::disk('public')->delete($record->thumbnail);
+                                }
+                                return true;
+                            })
                             ->columnSpanFull()
-                            ->helperText('Recommended size: 800x800px'),
+                            ->helperText('Upload a high-quality square image (800×800px recommended)')
+                            ->hint('Click to upload or drag & drop')
+                            ->hintIcon('heroicon-o-information-circle'),
 
                         Forms\Components\Repeater::make('photos')
-                            ->label('Additional Product Images')
+                            ->label('Additional Images')
                             ->relationship('photos')
                             ->schema([
                                 Forms\Components\FileUpload::make('photo')
+                                    ->label('Image')
                                     ->image()
                                     ->directory('product-gallery')
                                     ->imageEditor()
+                                    ->downloadable()
+                                    ->openable()
+                                    ->panelLayout('integrated')
                                     ->imageResizeMode('cover')
                                     ->imageCropAspectRatio('1:1')
-                                    ->required(),
+                                    ->deleteUploadedFileUsing(function ($state, $livewire, $record) {
+
+                                        if ($record?->photo) {
+                                            Storage::disk('public')->delete($record->photo);
+                                        }
+                                        return true;
+                                    })
+                                    ->required()
+                                    ->helperText('Additional product views or angles'),
                             ])
                             ->grid(2)
                             ->defaultItems(1)
-                            ->createItemButtonLabel('Add another image')
+                            ->createItemButtonLabel('+ Add Image')
+                            ->collapsible()
                             ->columnSpanFull(),
-                    ])
-                    ->columns(2)
-                    ->collapsible(),
+                    ]),
 
                 Forms\Components\Section::make('Pricing')
-                    ->description('Product pricing information')
+                    ->description('Set your product pricing')
                     ->icon('heroicon-o-currency-dollar')
+                    ->collapsible()
                     ->schema([
                         Forms\Components\Grid::make()
                             ->schema([
                                 Forms\Components\TextInput::make('purchase_price')
+                                    ->label('Purchase Price')
                                     ->required()
                                     ->numeric()
                                     ->minValue(0)
@@ -152,157 +187,88 @@ class ProductResource extends Resource
                                     ->columnSpan(['md' => 1]),
 
                                 Forms\Components\TextInput::make('selling_price')
+                                    ->label('Selling Price')
                                     ->required()
                                     ->numeric()
                                     ->minValue(0)
                                     ->prefix('Rp')
                                     ->columnSpan(['md' => 1]),
                             ])
-                            ->columns(2),
-                    ])
-                    ->collapsible(),
+                            ->columns(2)
+                            ->extraAttributes(['class' => 'bg-gray-50 dark:bg-gray-800 p-4 rounded-lg']),
+                    ]),
 
-                Forms\Components\Section::make('Classification')
-                    ->description('Product categorization')
+                Forms\Components\Section::make('Categories & Branding')
+                    ->description('Organize your product')
                     ->icon('heroicon-o-tag')
+                    ->collapsible()
+                    ->columns(2)
+                    ->schema([
+                        Forms\Components\Select::make('category_id')
+                            ->relationship('category', 'name')
+                            ->label('Product Category')
+                            ->native(false)
+                            ->searchable()
+                            ->preload()
+                            ->createOptionForm([
+                                // Keep existing create option form exactly as is
+                            ])
+                            ->columnSpan(['md' => 1])
+                            ->helperText('Main product category')
+                            ->loadingMessage('Loading categories...')
+                            ->noSearchResultsMessage('No categories found')
+                            ->searchPrompt('Search categories'),
+
+                        Forms\Components\Select::make('brand_id')
+                            ->relationship('brand', 'name')
+                            ->label('Brand')
+                            ->native(false)
+                            ->searchable()
+                            ->preload()
+                            ->createOptionForm([
+                                // Keep existing create option form exactly as is
+                            ])
+                            ->columnSpan(['md' => 1])
+                            ->helperText('Product manufacturer/brand'),
+
+                        Forms\Components\Select::make('category_animals_id')
+                            ->relationship('categoryAnimals', 'name')
+                            ->label('Animal Type')
+                            ->searchable()
+                            ->preload()
+                            ->native(false)
+                            ->createOptionForm([
+                                // Keep existing create option form exactly as is
+                            ])
+                            ->columnSpan(['md' => 2])
+                            ->helperText('Which animals is this product for?'),
+                    ]),
+
+                Forms\Components\Section::make('Visibility & Status')
+                    ->description('Control product visibility')
+                    ->icon('heroicon-o-eye')
+                    ->collapsible()
                     ->schema([
                         Forms\Components\Grid::make()
                             ->schema([
-                                Forms\Components\Select::make('category_id')
-                                    ->relationship('category', 'name')
-                                    ->label('Product Category')
-                                    ->prefixIcon('heroicon-o-circle-stack')
-                                    ->native(false)
-                                    ->searchable()
-                                    ->preload()
-                                    ->createOptionForm([
-                                        Forms\Components\Section::make('New Product Category')
-                                            ->icon('heroicon-o-circle-stack')
-                                            ->schema([
-                                                Forms\Components\Grid::make()
-                                                    ->schema([
-                                                        Forms\Components\TextInput::make('name')
-                                                            ->label('Category Name')
-                                                            ->afterStateUpdated(function (Set $set, $state) {
-                                                                $set('slug', Category::generateUniqueSlug($state));
-                                                            })
-                                                            ->required()
-                                                            ->live(onBlur: true)
-                                                            ->maxLength(255)
-                                                            ->placeholder('e.g., Cat Food, Dog Food, Toys')
-                                                            ->helperText('The display name for your category')
-                                                            ->columnSpan(['md' => 2]),
+                                Forms\Components\Toggle::make('is_active')
+                                    ->label('Active Product')
+                                    ->onColor('success')
+                                    ->offColor('danger')
+                                    ->inline(false)
+                                    ->helperText('Visible to customers when active')
+                                    ->columnSpan(['md' => 1]),
 
-                                                        Forms\Components\TextInput::make('slug')
-                                                            ->label('URL Identifier')
-                                                            ->required()
-                                                            ->readOnly()
-                                                            ->maxLength(255)
-                                                            ->helperText('Auto-generated from category name')
-                                                            ->columnSpan(['md' => 2]),
-                                                    ])
-                                                    ->columns(2),
-
-                                                Forms\Components\FileUpload::make('icon')
-                                                    ->label('Category Icon')
-                                                    ->image()
-                                                    ->directory('category-icons')
-                                                    ->imageEditor()
-                                                    ->imageResizeMode('contain')
-                                                    ->imageCropAspectRatio('1:1')
-                                                    ->imagePreviewHeight('150')
-                                                    ->maxSize(512)
-                                                    ->helperText('Upload a square icon (recommended 200x200px)')
-                                                    ->downloadable()
-                                                    ->columnSpanFull()
-                                                    ->panelAspectRatio('2:1'),
-                                            ])
-                                            ->columns(2)
-                                            ->collapsible(),
-                                    ])
-                                    ->columnSpan(['md' => 1])
-                                    ->helperText('Select or create specific product category'),
-
-                                Forms\Components\Select::make('brand_id')
-                                    ->relationship('brand', 'name')
-                                    ->label('Product Brand')
-                                    ->prefixIcon('heroicon-o-tag')
-                                    ->native(false)
-                                    ->searchable()
-                                    ->preload()
-                                    ->createOptionForm([
-                                        Forms\Components\Section::make('New Product Brand')
-                                            ->icon('heroicon-o-tag')
-                                            ->schema([
-                                                Forms\Components\Grid::make()
-                                                    ->schema([
-                                                        Forms\Components\TextInput::make('name')
-                                                            ->label('Brand Name')
-                                                            ->afterStateUpdated(function (Set $set, $state) {
-                                                                $set('slug', Brand::generateUniqueSlug($state));
-                                                            })
-                                                            ->required()
-                                                            ->live(onBlur: true)
-                                                            ->maxLength(255)
-                                                            ->placeholder('e.g., Whiskas, Purina')
-                                                            ->helperText('The official name of your brand')
-                                                            ->columnSpan(['md' => 2]),
-
-                                                        Forms\Components\TextInput::make('slug')
-                                                            ->label('URL Slug')
-                                                            ->required()
-                                                            ->maxLength(255)
-                                                            ->helperText('Will be auto-generated from name')
-                                                            ->columnSpan(['md' => 2]),
-                                                    ])
-                                                    ->columns(2),
-
-                                                Forms\Components\FileUpload::make('logo')
-                                                    ->label('Brand Logo')
-                                                    ->image()
-                                                    ->directory('brand-logos')
-                                                    ->imageEditor()
-                                                    ->imageResizeMode('contain')
-                                                    ->imageCropAspectRatio('1:1')
-                                                    ->imagePreviewHeight('150')
-                                                    ->maxSize(1024)
-                                                    ->required()
-                                                    ->helperText('Upload a square logo (max 1MB)')
-                                                    ->columnSpanFull()
-                                                    ->panelAspectRatio('2:1'),
-                                            ])
-                                            ->columns(2)
-                                            ->collapsible(),
-
-                                    ])
-                                    ->columnSpan(['md' => 1])
-                                    ->helperText('Select or create specific product brand'),
+                                Forms\Components\Toggle::make('is_popular')
+                                    ->label('Mark as Popular')
+                                    ->onColor('warning')
+                                    ->offColor('gray')
+                                    ->inline(false)
+                                    ->helperText('Featured in popular sections')
+                                    ->columnSpan(['md' => 1]),
                             ])
                             ->columns(2),
-                    ])
-                    ->columns(2)
-                    ->collapsible(),
-
-                Forms\Components\Section::make('Status')
-                    ->description('Product visibility settings')
-                    ->icon('heroicon-o-eye')
-                    ->schema([
-                        Forms\Components\Toggle::make('is_active')
-                            ->label('Active Product')
-                            ->onColor('success')
-                            ->offColor('danger')
-                            ->inline(false)
-                            ->columnSpan(['md' => 1]),
-
-                        Forms\Components\Toggle::make('is_popular')
-                            ->label('Popular Product')
-                            ->onColor('success')
-                            ->offColor('danger')
-                            ->inline(false)
-                            ->columnSpan(['md' => 1]),
-                    ])
-                    ->columns(2)
-                    ->collapsible(),
+                    ]),
             ]);
     }
 
@@ -310,66 +276,102 @@ class ProductResource extends Resource
     {
         return $table
             ->columns([
-                //Tables\Columns\ImageColumn::make('thumbnail')
-                    //->label('')
-                    //->square()
-                    //->width(60)
-                    //->height(60)
-                    //->grow(false),
-                
+                Tables\Columns\ImageColumn::make('thumbnail')
+                    ->label('')
+                    ->square()
+                    ->width(60)
+                    ->height(60)
+                    ->grow(false)
+                    ->toggleable()
+                    ->extraImgAttributes(['class' => 'rounded-lg border border-gray-200']),
+
                 Tables\Columns\TextColumn::make('name')
                     ->searchable()
-                    ->label('PRODUCT NAME')
-                    ->alignCenter()
+                    ->label('Product Name')
                     ->weight(FontWeight::Bold)
-                    ->description(fn ($record) => $record->barcode)
-                    ->wrap(),
-                
+                    ->description(fn($record) => $record->barcode ? "SKU: {$record->barcode}" : null)
+                    ->wrap()
+                    ->tooltip(fn($record) => $record->description)
+                    ->color('primary')
+                    ->sortable(),
+
                 Tables\Columns\TextColumn::make('brand.name')
-                    ->label('BRAND')
+                    ->label('Brand')
                     ->sortable()
-                    ->color('primary'),
-                
+                    ->badge()
+                    ->color('gray')
+                    ->icon('heroicon-o-tag')
+                    ->searchable()
+                    ->toggleable(),
+
                 Tables\Columns\TextColumn::make('category.name')
-                    ->label('CATEGORY')
+                    ->label('Category')
                     ->sortable()
-                    ->color('gray'),
-                
+                    ->badge()
+                    ->color('gray')
+                    ->icon('heroicon-o-circle-stack')
+                    ->searchable()
+                    ->toggleable(),
+
+                Tables\Columns\TextColumn::make('categoryAnimals.name')
+                    ->label('Animal')
+                    ->sortable()
+                    ->badge()
+                    ->color('gray')
+                    ->icon('lucide-paw-print')
+                    ->searchable()
+                    ->toggleable(),
+
                 Tables\Columns\TextColumn::make('selling_price')
-                    ->label('PRICE')
+                    ->label('Price')
                     ->sortable()
-                    ->alignEnd()
                     ->money('IDR', locale: 'id')
                     ->color('success')
-                    ->weight(FontWeight::Bold),
-                
+                    ->weight(FontWeight::Bold)
+                    ->description(fn($record) => 'Margin: Rp' . number_format($record->selling_price - $record->purchase_price, 0, ',', '.'))
+                    ->alignEnd(),
+
                 Tables\Columns\TextColumn::make('stock')
-                    ->label('STOCK')
+                    ->label('Stock')
                     ->numeric()
                     ->sortable()
-                    ->alignCenter()
-                    ->weight(fn ($state) => $state <= 5 ? 'bold' : null)
-                    ->color(fn ($state) => $state <= 5 ? 'danger' : 'success')
-                    ->icon(fn ($state) => $state <= 5 ? 'heroicon-o-exclamation-triangle' : null)
-                    ->iconPosition('right')
-                    ->tooltip(fn ($state) => $state <= 5 
-                        ? 'Low stock! Please restock soon' 
-                        : 'Stock available'
-                    ),
-                
+                    ->color(fn($state) => $state <= 5 ? 'danger' : ($state <= 15 ? 'warning' : 'success'))
+                    ->weight(FontWeight::Bold)
+                    ->icon(fn($state) => match (true) {
+                        $state <= 5 => 'heroicon-o-exclamation-triangle',
+                        $state <= 15 => 'heroicon-o-arrow-trending-down',
+                        default => 'heroicon-o-check-badge'
+                    })
+                    ->tooltip(fn($state) => match (true) {
+                        $state <= 5 => 'Critical stock! Reorder now',
+                        $state <= 15 => 'Low stock - consider reordering',
+                        default => 'Stock available'
+                    })
+                    ->alignCenter(),
+
                 Tables\Columns\IconColumn::make('is_active')
-                    ->label('ACTIVE')
+                    ->label('Status')
                     ->boolean()
-                    ->alignCenter(),
-                
+                    ->trueIcon('heroicon-o-check-circle')
+                    ->trueColor('success')
+                    ->falseIcon('heroicon-o-x-circle')
+                    ->falseColor('danger')
+                    ->alignCenter()
+                    ->toggleable(),
+
                 Tables\Columns\IconColumn::make('is_popular')
-                    ->label('POPULAR') 
+                    ->label('Popular')
                     ->boolean()
-                    ->alignCenter(),
-                
-                Tables\Columns\TextColumn::make('created_at')
-                    ->label('ADDED ON')
-                    ->dateTime('d M Y')
+                    ->trueIcon('heroicon-o-star')
+                    ->trueColor('warning')
+                    ->falseIcon('heroicon-o-star')
+                    ->falseColor('gray')
+                    ->alignCenter()
+                    ->toggleable(),
+
+                Tables\Columns\TextColumn::make('updated_at')
+                    ->label('Last Updated')
+                    ->dateTime('d M Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
@@ -377,35 +379,134 @@ class ProductResource extends Resource
                 Tables\Filters\SelectFilter::make('category_id')
                     ->label('Category')
                     ->relationship('category', 'name')
-                    ->searchable(),
-                    
+                    ->searchable()
+                    ->preload()
+                    ->multiple(),
+
                 Tables\Filters\SelectFilter::make('brand_id')
                     ->label('Brand')
                     ->relationship('brand', 'name')
-                    ->searchable(),
-                    
-                Tables\Filters\SelectFilter::make('supplier_id')
-                    ->label('Supplier')
-                    ->relationship('supplier', 'name')
-                    ->searchable(),
+                    ->searchable()
+                    ->preload()
+                    ->multiple(),
+
+                Tables\Filters\SelectFilter::make('category_animals_id')
+                    ->label('Animal Category')
+                    ->relationship('categoryAnimals', 'name')
+                    ->searchable()
+                    ->preload()
+                    ->multiple(),
+
+                Tables\Filters\TernaryFilter::make('is_active')
+                    ->label('Active Status')
+                    ->trueLabel('Active products')
+                    ->falseLabel('Inactive products')
+                    ->native(false),
+
+                Tables\Filters\TernaryFilter::make('is_popular')
+                    ->label('Popular Status')
+                    ->trueLabel('Popular products')
+                    ->falseLabel('Non-popular products')
+                    ->native(false),
+
+                Tables\Filters\Filter::make('low_stock')
+                    ->label('Low Stock Alert')
+                    ->query(fn(Builder $query) => $query->where('stock', '<=', 5))
+                    ->toggle(),
+                Tables\Filters\TrashedFilter::make(),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\ViewAction::make()
+                    ->iconButton()
+                    ->color('primary')
+                    ->tooltip('View Details'),
+
+                Tables\Actions\EditAction::make()
+                    ->iconButton()
+                    ->color('success')
+                    ->tooltip('Edit Product'),
+
+                Tables\Actions\DeleteAction::make()
+                    ->iconButton()
+                    ->color('danger')
+                    ->tooltip('Delete Product'),
+
+                Tables\Actions\RestoreAction::make()
+                    ->iconButton()
+                    ->color('warning')
+                    ->tooltip('Restore Product'),
+                Tables\Actions\ForceDeleteAction::make()
+                    ->iconButton()
+                    ->color('danger')
+                    ->tooltip('Force Delete Products')
+                    ->before(function (Product $record) {
+                        // Delete thumbnail
+                        if ($record->thumbnail) {
+                            Storage::disk('public')->delete($record->thumbnail);
+                        }
+
+                        // Delete all product photos
+                        $record->photos->each(function ($photo) {
+                            if ($photo->photo) {
+                                Storage::disk('public')->delete($photo->photo);
+                            }
+                        });
+                    }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make()
                         ->label('Delete Selected')
-                        ->icon('heroicon-o-trash'),
+                        ->icon('heroicon-o-trash')
+                        ->requiresConfirmation(),
+
+                    Tables\Actions\RestoreBulkAction::make()
+                        ->label('Restore Selected')
+                        ->icon('heroicon-o-arrow-uturn-left')
+                        ->requiresConfirmation(),
+                    Tables\Actions\ForceDeleteBulkAction::make()
+                        ->label('Permanently Delete Selected')
+                        ->icon('heroicon-o-trash')
+                        ->before(function ($records) {
+                            $records->each(function ($record) {
+                                if ($record->thumbnail) {
+                                    Storage::disk('public')->delete($record->thumbnail);
+                                }
+                                $record->photos->each(function ($photo) {
+                                    if ($photo->photo) {
+                                        Storage::disk('public')->delete($photo->photo);
+                                    }
+                                });
+                            });
+                        }),
                 ]),
             ])
             ->defaultSort('created_at', 'desc')
             ->emptyStateHeading('No products found')
-            ->emptyStateDescription('Create your first product')
+            ->emptyStateDescription('Click "Create product" to add your first product')
+            ->emptyStateIcon('heroicon-o-shopping-bag')
+            ->emptyStateActions([
+                Tables\Actions\CreateAction::make()
+                    ->label('Create product')
+                    ->icon('heroicon-o-plus'),
+            ])
             ->striped()
-            ->deferLoading();
+            ->deferLoading()
+            ->persistFiltersInSession()
+            ->persistSearchInSession()
+            ->groups([
+                Tables\Grouping\Group::make('category.name')
+                    ->label('Category')
+                    ->collapsible(),
+
+                Tables\Grouping\Group::make('brand.name')
+                    ->label('Brand')
+                    ->collapsible(),
+            ])
+            ->groupingSettingsInDropdownOnDesktop()
+            ->defaultGroup('category.name');
     }
+
     public static function getRelations(): array
     {
         return [

@@ -2,14 +2,16 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Supplier extends Model
 {
     use HasFactory;
+    use SoftDeletes;
 
     protected $table = 'suppliers';
 
@@ -28,10 +30,10 @@ class Supplier extends Model
 
     protected function phone(): Attribute
     {
-    return Attribute::make(
-        get: fn ($value) => str_starts_with($value, '+62') ? $value : '+62' . $value,
-        set: fn ($value) => ltrim($value, '+62 ') // Menghindari duplikasi +62
-    );
+        return Attribute::make(
+            get: fn($value) => str_starts_with($value, '+62') ? $value : '+62' . $value,
+            set: fn($value) => ltrim($value, '+62 ') // Menghindari duplikasi +62
+        );
     }
 
     /**
@@ -40,7 +42,7 @@ class Supplier extends Model
     protected function name(): Attribute
     {
         return Attribute::make(
-            set: fn ($value) => ucwords(strtolower($value)),
+            set: fn($value) => ucwords(strtolower($value)),
         );
     }
 }

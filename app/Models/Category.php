@@ -4,12 +4,15 @@ namespace App\Models;
 
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Category extends Model
 {
     use HasFactory;
+    use SoftDeletes;
     protected $table = 'categories';
     //
     protected $fillable = ['name', 'slug', 'icon'];
@@ -40,7 +43,6 @@ class Category extends Model
         }]);
     }
 
-    // Di model Category
     public function parent()
     {
         return $this->belongsTo(Category::class, 'parent_id');
@@ -62,5 +64,27 @@ class Category extends Model
         }
 
         return $breadcrumbs;
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Hapus file logo saat brand dihapus permanen
+        static::deleting(function ($category) {
+            if ($category->isForceDeleting() && $category->icon) {
+                Storage::disk('public')->delete($category->icon);
+            }
+        });
+
+        // Hapus icon lama saat icon diupdate
+        static::updating(function ($category) {
+            $originalicon = $category->getOriginal('icon');
+            $newicon = $category->icon;
+
+            if ($originalicon && $originalicon !== $newicon) {
+                Storage::disk('public')->delete($originalicon);
+            }
+        });
     }
 }

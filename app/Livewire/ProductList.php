@@ -50,7 +50,7 @@ class ProductList extends Component
     public function render()
     {
         $query = Product::where('is_active', true)
-            ->where('stock', '>', 5)
+            ->where('stock', '>', 2)
             ->with(['category', 'brand']);
 
         $filteredQuery = (clone $query)

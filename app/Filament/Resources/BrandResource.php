@@ -9,6 +9,11 @@ use Filament\Forms\Set;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
+use Illuminate\Support\Collection;
+use Illuminate\Support\HtmlString;
+use Filament\Forms\Components\Grid;
+use Illuminate\Support\Facades\Storage;
+use Filament\Tables\Columns\Layout\Stack;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\BrandResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -20,11 +25,11 @@ class BrandResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-tag';
 
-    protected static ?string $navigationLabel = 'Brand';
+    protected static ?string $navigationLabel = 'Brands';
 
     protected static ?string $modelLabel = 'Brand';
 
-    protected static ?string $pluralModelLabel = 'Brand';
+    protected static ?string $pluralModelLabel = 'Brands';
 
     protected static ?int $navigationSort = 8;
 
@@ -36,14 +41,16 @@ class BrandResource extends Resource
             ->schema([
                 Forms\Components\Section::make('Brand Information')
                     ->description('Enter your brand details')
-                    ->icon('heroicon-o-tag')
+                    ->icon('heroicon-o-information-circle')
                     ->schema([
-                        Forms\Components\Grid::make()
+                        Grid::make()
                             ->schema([
                                 Forms\Components\TextInput::make('name')
                                     ->label('Brand Name')
                                     ->afterStateUpdated(function (Set $set, $state) {
-                                        $set('slug', Brand::generateUniqueSlug($state));
+                                        if (!empty($state)) {
+                                            $set('slug', Brand::generateUniqueSlug($state));
+                                        }
                                     })
                                     ->required()
                                     ->live(onBlur: true)
@@ -57,7 +64,7 @@ class BrandResource extends Resource
                                     ->required()
                                     ->readOnly()
                                     ->maxLength(255)
-                                    ->helperText('Will be auto-generated from name')
+                                    ->helperText('Auto-generated from name')
                                     ->columnSpan(['md' => 2]),
                             ])
                             ->columns(2),
@@ -69,12 +76,24 @@ class BrandResource extends Resource
                             ->imageEditor()
                             ->imageResizeMode('contain')
                             ->imageCropAspectRatio('1:1')
+                            ->imageResizeTargetWidth('300')
+                            ->imageResizeTargetHeight('300')
+                            ->deleteUploadedFileUsing(function ($state, $livewire, $record) {
+
+                                if ($record?->logo) {
+                                    Storage::disk('public')->delete($record->logo);
+                                }
+                                return true;
+                            })
                             ->imagePreviewHeight('150')
+                            ->panelAspectRatio('1:1')
+                            ->panelLayout('integrated')
                             ->maxSize(1024)
                             ->required()
+                            ->downloadable()
+                            ->openable()
                             ->helperText('Upload a square logo (max 1MB)')
-                            ->columnSpanFull()
-                            ->panelAspectRatio('2:1'),
+                            ->columnSpanFull(),
                     ])
                     ->columns(2)
                     ->collapsible(),
@@ -85,50 +104,128 @@ class BrandResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\ImageColumn::make('logo'),
+                Tables\Columns\ImageColumn::make('logo')
+                    ->size(60)
+                    ->extraImgAttributes(['class' => 'rounded-lg']),
+
                 Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable()
+                    ->weight('medium')
+                    ->description(fn(Brand $record) => $record->slug)
+                    ->wrap(),
+
+                Tables\Columns\TextColumn::make('products_count')
+                    ->label('Products')
+                    ->counts('products')
+                    ->badge()
+                    ->color(fn(int $state): string => match (true) {
+                        $state === 0 => 'gray',
+                        $state < 5 => 'warning',
+                        default => 'success',
+                    }),
+
                 Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
+                    ->label('Added')
+                    ->dateTime('M d, Y')
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(isToggledHiddenByDefault: false),
+
                 Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('deleted_at')
-                    ->dateTime()
+                    ->label('Updated')
+                    ->dateTime('M d, Y')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->defaultSort('name', 'asc')
             ->filters([
-                //
+                Tables\Filters\TrashedFilter::make(),
+                Tables\Filters\SelectFilter::make('products_count')
+                    ->label('Products Count')
+                    ->options([
+                        '0' => 'No products',
+                        '1-5' => '1-5 products',
+                        '5+' => '5+ products',
+                    ])
+                    ->query(function (Builder $query, array $data) {
+                        return match ($data['value']) {
+                            '0' => $query->has('products', '=', 0),
+                            '1-5' => $query->has('products', '<=', 5)->has('products', '>', 0),
+                            '5+' => $query->has('products', '>', 5),
+                            default => $query,
+                        };
+                    }),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make()
                     ->iconButton()
-                    ->color('primary') // Blue color
-                    ->tooltip('View'),
-                    
+                    ->color('primary')
+                    ->tooltip('View Details'),
+
                 Tables\Actions\EditAction::make()
                     ->iconButton()
-                    ->tooltip('Edit'),
-                    
+                    ->color('success')
+                    ->tooltip('Edit Brand'),
+
                 Tables\Actions\DeleteAction::make()
                     ->iconButton()
-                    ->tooltip('Delete'),
+                    ->color('danger')
+                    ->tooltip('Delete Brand'),
+
+                Tables\Actions\RestoreAction::make()
+                    ->iconButton()
+                    ->color('warning')
+                    ->tooltip('Restore Brand'),
+                Tables\Actions\ForceDeleteAction::make()
+                    ->iconButton()
+                    ->color('danger')
+                    ->tooltip('Force Delete Brand')
+                    ->before(function (Brand $record) {
+                        // Hapus file sebelum record dihapus
+                        if ($record->logo) {
+                            Storage::disk('public')->delete($record->logo);
+                        }
+                    }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->label('Delete Selected')
+                        ->icon('heroicon-o-trash')
+                        ->modalHeading('Delete selected brands')
+                        ->modalDescription('Are you sure you want to delete these brands? This action cannot be undone.'),
+
+                    Tables\Actions\RestoreBulkAction::make()
+                        ->label('Restore Selected')
+                        ->icon('heroicon-o-arrow-uturn-left'),
+                    Tables\Actions\ForceDeleteBulkAction::make()
+                        ->label('Permanently Delete Selected')
+                        ->icon('heroicon-o-trash')
+                        ->before(function (Collection $records) {
+                            $records->each(function ($record) {
+                                if ($record->logo) {
+                                    Storage::disk('public')->delete($record->logo);
+                                }
+                            });
+                        }),
                 ]),
-            ]);
+            ])
+            ->emptyStateActions([
+                Tables\Actions\CreateAction::make()
+                    ->label('Add New Brand')
+                    ->icon('heroicon-o-plus'),
+            ])
+            ->emptyStateDescription('No brands found. Click the button below to add one.')
+            ->emptyStateIcon('heroicon-o-sparkles')
+            ->deferLoading()
+            ->persistSearchInSession()
+            ->persistColumnSearchesInSession();
     }
 
     public static function getRelations(): array
     {
         return [
-            //
+            // RelationManagers\ProductsRelationManager::class,
         ];
     }
 
@@ -137,7 +234,14 @@ class BrandResource extends Resource
         return [
             'index' => Pages\ListBrands::route('/'),
             'create' => Pages\CreateBrand::route('/create'),
+            // 'view' => Pages\ViewBrand::route('/{record}'),
             // 'edit' => Pages\EditBrand::route('/{record}/edit'),
         ];
     }
+
+    // public static function getEloquentQuery(): Builder
+    // {
+    //     return parent::getEloquentQuery()
+    //         ->withCount('products');
+    // }
 }

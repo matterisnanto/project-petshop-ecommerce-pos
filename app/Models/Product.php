@@ -4,19 +4,20 @@ namespace App\Models;
 
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Product extends Model
 {
     use HasFactory;
+    use SoftDeletes;
     protected $table = 'products';
     //
-    protected $fillable = ['name', 'slug', 'barcode', 'thumbnail', 'description', 'weight', 'purchase_price', 'selling_price', 'is_active', 'is_popular', 'stock', 'category_id', 'brand_id'];
-
-    protected $appends = ['image_url'];
+    protected $fillable = ['name', 'slug', 'barcode', 'thumbnail', 'description', 'weight', 'purchase_price', 'selling_price', 'is_active', 'is_popular', 'stock', 'category_id', 'brand_id', 'category_animals_id'];
 
     public function category(): BelongsTo
     {
@@ -26,6 +27,11 @@ class Product extends Model
     public function brand(): BelongsTo
     {
         return $this->belongsTo(Brand::class, 'brand_id');
+    }
+
+    public function categoryAnimals()
+    {
+        return $this->belongsTo(CategoryAnimals::class, 'category_animals_id');
     }
 
     public function supplier(): BelongsTo

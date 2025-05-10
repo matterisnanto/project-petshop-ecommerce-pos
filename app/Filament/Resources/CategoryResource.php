@@ -9,6 +9,15 @@ use App\Models\Category;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
+use Illuminate\Support\Collection;
+use Illuminate\Support\HtmlString;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Fieldset;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\TextColumn;
+use Illuminate\Support\Facades\Storage;
+use Filament\Tables\Columns\ImageColumn;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\CategoryResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -34,47 +43,60 @@ class CategoryResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Category Details')
-                    ->description('Create or edit a product category')
-                    ->icon('heroicon-o-tag')
+                Section::make('Category Information')
+                    ->description('Create or update category details')
+                    ->icon('heroicon-o-information-circle')
                     ->schema([
-                        Forms\Components\Grid::make()
+                        Grid::make()
                             ->schema([
                                 Forms\Components\TextInput::make('name')
                                     ->label('Category Name')
-                                    ->afterStateUpdated(function (Set $set, $state) {
-                                        $set('slug', Category::generateUniqueSlug($state));
-                                    })
                                     ->required()
-                                    ->live(onBlur: true)
                                     ->maxLength(255)
-                                    ->placeholder('e.g., Cat Food, Dog Food, Toys')
-                                    ->helperText('The display name for your category')
+                                    ->placeholder('e.g., Cat Food, Dog Supplies')
+                                    ->live(onBlur: true)
+                                    ->afterStateUpdated(function (Set $set, $state) {
+                                        if (!empty($state)) {
+                                            $set('slug', Category::generateUniqueSlug($state));
+                                        }
+                                    })
                                     ->columnSpan(['md' => 2]),
 
                                 Forms\Components\TextInput::make('slug')
-                                    ->label('URL Identifier')
+                                    ->label('URL Slug')
                                     ->required()
-                                    ->readOnly()
                                     ->maxLength(255)
-                                    ->helperText('Auto-generated from category name')
+                                    ->hintIcon('heroicon-o-link', tooltip: 'Used in URLs')
                                     ->columnSpan(['md' => 2]),
                             ])
                             ->columns(2),
 
-                        Forms\Components\FileUpload::make('icon')
-                            ->label('Category Icon')
-                            ->image()
-                            ->directory('category-icons')
-                            ->imageEditor()
-                            ->imageResizeMode('contain')
-                            ->imageCropAspectRatio('1:1')
-                            ->imagePreviewHeight('150')
-                            ->maxSize(512)
-                            ->helperText('Upload a square icon (recommended 200x200px)')
-                            ->downloadable()
-                            ->columnSpanFull()
-                            ->panelAspectRatio('2:1'),
+                        Fieldset::make('Visual Representation')
+                            ->schema([
+                                Forms\Components\FileUpload::make('icon')
+                                    ->label('Category Icon/Image')
+                                    ->image()
+                                    ->directory('category-icons')
+                                    ->imageEditor()
+                                    ->imageResizeMode('cover')
+                                    ->imageCropAspectRatio('1:1')
+                                    ->imagePreviewHeight('200')
+                                    ->imageResizeTargetWidth('300')
+                                    ->imageResizeTargetHeight('300')
+                                    ->deleteUploadedFileUsing(function ($state, $livewire, $record) {
+
+                                        if ($record?->icon) {
+                                            Storage::disk('public')->delete($record->icon);
+                                        }
+                                        return true;
+                                    })
+                                    ->panelLayout('integrated')
+                                    ->maxSize(1024)
+                                    ->helperText('Recommended size: 512x512px transparent PNG')
+                                    ->downloadable()
+                                    ->openable()
+                                    ->columnSpanFull(),
+                            ])
                     ])
                     ->columns(2)
                     ->collapsible(),
@@ -85,50 +107,119 @@ class CategoryResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\ImageColumn::make('icon'),
+                Tables\Columns\ImageColumn::make('icon')
+                    ->label('')
+                    ->size(40)
+                    ->circular()
+                    ->defaultImageUrl(url('/images/default-category-icon.png')),
+
                 Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
+                    ->label('Category Name')
+                    ->searchable()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
+                    ->weight('medium')
+                    ->description(fn(Category $record) => $record->slug),
+
+                Tables\Columns\TextColumn::make('products_count')
+                    ->label('Products')
+                    ->counts('products')
+                    ->badge()
+                    ->color(fn(int $state): string => match (true) {
+                        $state === 0 => 'gray',
+                        $state < 5 => 'warning',
+                        default => 'success',
+                    }),
+
+                TextColumn::make('created_at')
+                    ->label('Created')
+                    ->dateTime('M d, Y')
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('deleted_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(isToggledHiddenByDefault: false)
+                    ->alignEnd(),
             ])
+            ->defaultSort('created_at', 'desc')
             ->filters([
-                //
+                Tables\Filters\TrashedFilter::make(),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make()
                     ->iconButton()
-                    ->color('primary') // Blue color
-                    ->tooltip('View'),
-                    
+                    ->color('primary')
+                    ->tooltip('View Details'),
+
                 Tables\Actions\EditAction::make()
                     ->iconButton()
-                    ->tooltip('Edit'),
-                    
+                    ->color('success')
+                    ->tooltip('Edit Category'),
+
                 Tables\Actions\DeleteAction::make()
                     ->iconButton()
-                    ->tooltip('Delete'),
+                    ->color('danger')
+                    ->tooltip('Delete Category'),
+
+                Tables\Actions\RestoreAction::make()
+                    ->iconButton()
+                    ->color('warning')
+                    ->tooltip('Restore Category'),
+                Tables\Actions\ForceDeleteAction::make()
+                    ->iconButton()
+                    ->color('danger')
+                    ->tooltip('Force Delete Category')
+                    ->before(function (Category $record) {
+                        if ($record->icon) {
+                            Storage::disk('public')->delete($record->icon);
+                        }
+                    }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->label('Delete selected')
+                        ->icon('heroicon-o-trash')
+                        ->modalHeading('Delete selected categories')
+                        ->modalDescription('Are you sure you want to delete these categories? This action cannot be undone.'),
+
+                    Tables\Actions\RestoreBulkAction::make()
+                        ->label('Restore Selected')
+                        ->icon('heroicon-o-arrow-uturn-left'),
+
+                    Tables\Actions\ForceDeleteBulkAction::make()
+                        ->label('Permanently Delete Selected')
+                        ->icon('heroicon-o-trash')
+                        ->before(function (Collection $records) {
+                            $records->each(function ($record) {
+                                if ($record->icon) {
+                                    Storage::disk('public')->delete($record->icon);
+                                }
+                            });
+                        }),
                 ]),
+            ])
+            ->emptyStateActions([
+                Tables\Actions\CreateAction::make()
+                    ->label('New Category')
+                    ->icon('heroicon-o-plus'),
+            ])
+            ->emptyStateDescription('No categories found. Create your first one!')
+            ->emptyStateIcon('heroicon-o-tag')
+            ->deferLoading()
+            ->persistSearchInSession()
+            ->persistColumnSearchesInSession();
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->withCount('products')
+            ->withoutGlobalScopes([
+                SoftDeletingScope::class,
             ]);
     }
 
     public static function getRelations(): array
     {
         return [
-            //
+            // RelationManagers\ProductsRelationManager::class,
         ];
     }
 
@@ -137,6 +228,7 @@ class CategoryResource extends Resource
         return [
             'index' => Pages\ListCategories::route('/'),
             'create' => Pages\CreateCategory::route('/create'),
+            // 'view' => Pages\ViewCategory::route('/{record}'),
             // 'edit' => Pages\EditCategory::route('/{record}/edit'),
         ];
     }

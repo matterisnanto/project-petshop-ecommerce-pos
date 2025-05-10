@@ -16,7 +16,6 @@ return new class() extends Migration {
             $table->string('slug', 100)->unique();
             $table->string('barcode', 50)->nullable()->unique();
             $table->decimal('weight', 8, 2);
-            $table->date('exp_date')->nullable();
             $table->string('thumbnail', 255);
             $table->longText('description')->nullable();
             $table->decimal('purchase_price', 12, 2);
@@ -26,6 +25,7 @@ return new class() extends Migration {
             $table->integer('stock')->default(0);
             $table->foreignId('category_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('brand_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignId('category_animals_id')->nullable()->constrained()->nullOnDelete();
             $table->timestamps();
             $table->softDeletes();
         });

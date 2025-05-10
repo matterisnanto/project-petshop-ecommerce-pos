@@ -42,7 +42,6 @@ class ExpenseResource extends Resource
                     ->icon('heroicon-o-currency-dollar')
                     ->columns(2)
                     ->collapsible()
-                    ->compact()
                     ->schema([
                         Forms\Components\TextInput::make('name')
                             ->label('Expense Name')
@@ -53,9 +52,7 @@ class ExpenseResource extends Resource
                             ->columnSpanFull()
                             ->helperText('Name this expense for future reference.')
                             ->hint('Max 255 characters')
-                            ->hintIcon('heroicon-o-information-circle')
-                            ->extraAttributes(['class' => 'focus:ring-2 focus:ring-primary-500']),
-    
+                            ->hintIcon('heroicon-o-information-circle'),
                         Forms\Components\Textarea::make('note')
                             ->label('Notes')
                             ->placeholder('e.g. Paid for 3 months in advance')
@@ -64,12 +61,7 @@ class ExpenseResource extends Resource
                             ->columnSpanFull()
                             ->rows(3)
                             ->helperText('Provide additional info for clarity.')
-                            ->hint('Optional details')
-                            ->extraAttributes([
-                                'class' => 'mt-2 focus:ring-2 focus:ring-primary-500 min-h-[100px]'
-                            ]),
-    
-                        // Amount and Date side by side
+                            ->hint('Optional details'),
                         Forms\Components\TextInput::make('amount')
                             ->label('Amount')
                             ->required()
@@ -77,9 +69,7 @@ class ExpenseResource extends Resource
                             ->prefix('Rp')
                             ->prefixIcon('heroicon-o-banknotes')
                             ->columnSpan(['md' => 1])
-                            ->helperText('Enter amount in Rupiah')
-                            ->extraAttributes(['class' => 'focus:ring-2 focus:ring-primary-500']),
-    
+                            ->helperText('Enter amount in Rupiah'),
                         Forms\Components\DatePicker::make('date_expense')
                             ->label('Expense Date')
                             ->required()
@@ -88,10 +78,8 @@ class ExpenseResource extends Resource
                             ->native(false)
                             ->prefixIcon('heroicon-o-calendar')
                             ->columnSpan(['md' => 1])
-                            ->helperText('Transaction date')
-                            ->extraAttributes(['class' => 'focus:ring-2 focus:ring-primary-500']),
-                    ])
-                    ->extraAttributes(['class' => 'shadow-sm rounded-lg border border-gray-200']),
+                            ->helperText('Transaction date'),
+                    ]),
             ])
             ->columns(1);
     }
@@ -105,9 +93,9 @@ class ExpenseResource extends Resource
                     ->sortable()
                     ->weight('medium')
                     ->alignCenter()
-                    ->description(fn ($record) => Str::limit($record->note, 30))
+                    ->description(fn($record) => Str::limit($record->note, 30))
                     ->wrap(),
-    
+
                 Tables\Columns\TextColumn::make('amount')
                     ->label('Amount')
                     ->numeric()
@@ -115,24 +103,24 @@ class ExpenseResource extends Resource
                     ->money('IDR', locale: 'id')
                     ->weight('bold')
                     ->alignCenter()
-                    ->color(fn ($record) => $record->amount > 1000000 ? 'danger' : 'success')
+                    ->color(fn($record) => $record->amount > 1000000 ? 'danger' : 'success')
                     ->description('Total Expense')
-                    ->icon(fn ($record) => $record->amount > 1000000 ? 'heroicon-o-exclamation-triangle' : null),
-    
+                    ->icon(fn($record) => $record->amount > 1000000 ? 'heroicon-o-exclamation-triangle' : null),
+
                 Tables\Columns\TextColumn::make('date_expense')
                     ->label('Date')
                     ->date('d M Y')
                     ->sortable()
                     ->alignCenter()
                     ->color('primary'),
-    
+
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Created')
                     ->dateTime('d M Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->alignEnd(),
-    
+
                 Tables\Columns\TextColumn::make('updated_at')
                     ->label('Updated')
                     ->dateTime('d M Y H:i')
@@ -160,11 +148,11 @@ class ExpenseResource extends Resource
                     ->iconButton()
                     ->color('primary') // Blue color
                     ->tooltip('View'),
-                    
+
                 Tables\Actions\EditAction::make()
                     ->iconButton()
                     ->tooltip('Edit'),
-                    
+
                 Tables\Actions\DeleteAction::make()
                     ->iconButton()
                     ->tooltip('Delete'),
