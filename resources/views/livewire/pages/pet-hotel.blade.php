@@ -236,7 +236,7 @@
 
                 <!-- Tall rectangle -->
                 <div class="row-span-2">
-                    <img class="w-full h-80 object-cover rounded-lg"
+                    <img class="hidden sm:block w-full h-80 object-cover rounded-lg"
                         src="{{ asset('images\pet-hotel\Pet-Shop-dan-Pet-Hotel.jpg') }}" alt="fasilitas pet hotel 6">
                 </div>
             </div>

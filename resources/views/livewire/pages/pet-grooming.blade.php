@@ -232,7 +232,7 @@
 
                 <!-- Tall rectangle -->
                 <div class="row-span-2">
-                    <img class="w-full h-80 object-cover rounded-lg"
+                    <img class="hidden sm:block w-full h-80 object-cover rounded-lg"
                         src="{{ asset('images/pet-grooming/How-to-start-your-own-pet-care-business-in-post-image-1.jpg') }}"
                         alt="Hewan grooming 6">
                 </div>
@@ -331,140 +331,6 @@
                         reservation via whatsapp
                     </a>
                 </div>
-                <!-- Pricing Card -->
-                {{-- <div
-                    class="flex flex-col p-6 mx-auto max-w-lg text-center text-gray-900 bg-white rounded-lg border border-gray-200 shadow-sm dark:border-gray-700 xl:p-8 dark:text-white dark:bg-gray-800">
-                    <h3 class="mb-4 text-2xl font-semibold">Kucing</h3>
-                    <p class="text-gray-500 text-light sm:text-lg dark:text-gray-400">Relevant for multiple users,
-                        extended & premium support.</p>
-                    <div class="flex justify-center items-baseline my-8">
-                        <span class="mr-2 text-5xl font-extrabold">$99</span>
-                        <span class="text-gray-500">/month</span>
-                    </div>
-                    <!-- List -->
-                    <ul role="list" class="mb-8 space-y-4 text-left">
-                        <li class="flex items-center space-x-3">
-                            <!-- Icon -->
-                            <svg class="flex-shrink-0 w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path fill-rule="evenodd"
-                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                    clip-rule="evenodd"></path>
-                            </svg>
-                            <span>Individual configuration</span>
-                        </li>
-                        <li class="flex items-center space-x-3">
-                            <!-- Icon -->
-                            <svg class="flex-shrink-0 w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path fill-rule="evenodd"
-                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                    clip-rule="evenodd"></path>
-                            </svg>
-                            <span>No setup, monthly, or hidden fees</span>
-                        </li>
-                        <li class="flex items-center space-x-3">
-                            <!-- Icon -->
-                            <svg class="flex-shrink-0 w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path fill-rule="evenodd"
-                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                    clip-rule="evenodd"></path>
-                            </svg>
-                            <span>Team size: <span class="font-semibold">10 developers</span></span>
-                        </li>
-                        <li class="flex items-center space-x-3">
-                            <!-- Icon -->
-                            <svg class="flex-shrink-0 w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path fill-rule="evenodd"
-                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                    clip-rule="evenodd"></path>
-                            </svg>
-                            <span>Premium support: <span class="font-semibold">24 months</span></span>
-                        </li>
-                        <li class="flex items-center space-x-3">
-                            <!-- Icon -->
-                            <svg class="flex-shrink-0 w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path fill-rule="evenodd"
-                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                    clip-rule="evenodd"></path>
-                            </svg>
-                            <span>Free updates: <span class="font-semibold">24 months</span></span>
-                        </li>
-                    </ul>
-                    <a href="#"
-                        class="text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:ring-primary-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:focus:ring-primary-900">Get
-                        started</a>
-                </div>
-                <!-- Pricing Card -->
-                <div
-                    class="flex flex-col p-6 mx-auto max-w-lg text-center text-gray-900 bg-white rounded-lg border border-gray-200 shadow-sm dark:border-gray-700 xl:p-8 dark:text-white dark:bg-gray-800">
-                    <h3 class="mb-4 text-2xl font-semibold">Hewan Lainnya</h3>
-                    <p class="text-gray-500 text-light sm:text-lg dark:text-gray-400">Best for large scale uses and
-                        extended redistribution rights.</p>
-                    <div class="flex justify-center items-baseline my-8">
-                        <span class="mr-2 text-5xl font-extrabold">$499</span>
-                        <span class="text-gray-500">/month</span>
-                    </div>
-                    <!-- List -->
-                    <ul role="list" class="mb-8 space-y-4 text-left">
-                        <li class="flex items-center space-x-3">
-                            <!-- Icon -->
-                            <svg class="flex-shrink-0 w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path fill-rule="evenodd"
-                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                    clip-rule="evenodd"></path>
-                            </svg>
-                            <span>Individual configuration</span>
-                        </li>
-                        <li class="flex items-center space-x-3">
-                            <!-- Icon -->
-                            <svg class="flex-shrink-0 w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path fill-rule="evenodd"
-                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                    clip-rule="evenodd"></path>
-                            </svg>
-                            <span>No setup, monthly, or hidden fees</span>
-                        </li>
-                        <li class="flex items-center space-x-3">
-                            <!-- Icon -->
-                            <svg class="flex-shrink-0 w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path fill-rule="evenodd"
-                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                    clip-rule="evenodd"></path>
-                            </svg>
-                            <span>Team size: <span class="font-semibold">100+ developers</span></span>
-                        </li>
-                        <li class="flex items-center space-x-3">
-                            <!-- Icon -->
-                            <svg class="flex-shrink-0 w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path fill-rule="evenodd"
-                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                    clip-rule="evenodd"></path>
-                            </svg>
-                            <span>Premium support: <span class="font-semibold">36 months</span></span>
-                        </li>
-                        <li class="flex items-center space-x-3">
-                            <!-- Icon -->
-                            <svg class="flex-shrink-0 w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path fill-rule="evenodd"
-                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                    clip-rule="evenodd"></path>
-                            </svg>
-                            <span>Free updates: <span class="font-semibold">36 months</span></span>
-                        </li>
-                    </ul>
-                    <a href="#"
-                        class="text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:ring-primary-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:focus:ring-primary-900">Get
-                        started</a>
-                </div> --}}
             </div>
         </div>
     </section>
