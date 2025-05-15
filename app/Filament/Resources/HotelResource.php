@@ -112,7 +112,8 @@ class HotelResource extends Resource
                             ->columnSpanFull()
                             ->addActionLabel('Add Package')
                             ->defaultItems(1)
-                            ->collapsible(),
+                            ->collapsible()
+                            ->maxItems(10),
                     ]),
 
                 Forms\Components\Section::make('Categories')

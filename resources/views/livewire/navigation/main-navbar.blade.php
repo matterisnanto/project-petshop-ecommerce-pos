@@ -7,7 +7,7 @@
                     <a wire:navigate href="/" title="" class="">
                         <img class="block w-auto h-10 dark:hidden" src="{{ asset('images\logo\Logonameblack.png') }}"
                             alt="">
-                        <img class="hidden w-auto h-8 dark:block" src="{{ asset('images\logo\Logobrown.png') }}"
+                        <img class="hidden w-auto h-10 dark:block" src="{{ asset('images\logo\Logonamewhite.png') }}"
                             alt="">
                         {{-- <h1>CindyPetshop</h1> --}}
                     </a>
@@ -102,7 +102,7 @@
                                         class="{{ $activeRoute === 'breeding' ? 'text-primary-500' : 'text-gray-500 dark:text-white' }} flex items-center py-2 px-4 w-full hover:text-primary-600 dark:hover:text-primary-500">
                                         <svg class="mr-2 w-4 h-4" fill="currentColor" xmlns="http://www.w3.org/2000/svg"
                                             xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512"
-                                            xml:space="preserve">
+                                            stroke="#808080" xml:space="preserve">
                                             <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
                                             <g id="SVGRepo_tracerCarrier" stroke-linecap="round"
                                                 stroke-linejoin="round"></g>

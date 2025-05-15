@@ -168,7 +168,7 @@
                             <!-- Previous Button -->
                             <li>
                                 <button wire:click="previousPage" wire:disabled="$animals->onFirstPage()"
-                                    class="flex items-center justify-center w-10 h-10 rounded-lg bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-700 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
+                                    class="flex items-center justify-center w-10 h-10 rounded-lg bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-700 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed dark:border-gray-700 dark:text-white dark:hover:text-white dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-primary-800">
                                     <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none"
                                         viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -181,7 +181,7 @@
                             @foreach ($animals->getUrlRange(1, $animals->lastPage()) as $page => $url)
                                 <li>
                                     <button wire:click="gotoPage({{ $page }})"
-                                        class="px-4 py-2 rounded-lg {{ $animals->currentPage() == $page ? 'bg-primary-500 text-white font-semibold' : 'text-gray-600 hover:bg-gray-200' }} transition">
+                                        class="px-4 py-2 rounded-lg {{ $animals->currentPage() == $page ? 'bg-primary-500 text-white font-semibold dark:bg-primary-600 dark:hover:bg-primary-800 dark:focus:ring-primary-800' : 'text-gray-600 hover:bg-gray-200 dark:border-gray-700 dark:text-white dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-primary-800' }} transition">
                                         {{ $page }}
                                     </button>
                                 </li>
@@ -190,7 +190,7 @@
                             <!-- Next Button -->
                             <li>
                                 <button wire:click="nextPage" @if ($animals->currentPage() >= $animals->lastPage()) disabled @endif
-                                    class="flex items-center justify-center w-10 h-10 rounded-lg bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-700 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
+                                    class="flex items-center justify-center w-10 h-10 rounded-lg bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-700 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed dark:border-gray-700 dark:text-white dark:hover:text-white dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-primary-800">
                                     <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none"
                                         viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

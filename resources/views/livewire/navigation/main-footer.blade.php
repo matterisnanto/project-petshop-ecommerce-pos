@@ -5,7 +5,10 @@
             <!-- Logo Petshop (Centered on Mobile) -->
             <a href="#"
                 class="flex mb-2 items-center justify-center text-2xl font-semibold text-gray-900 lg:justify-start lg:mb-2 dark:text-white">
-                Petshop
+                <img class="block w-auto h-10 dark:hidden" src="{{ asset('images\logo\Logonameblack.png') }}"
+                    alt="">
+                <img class="hidden w-auto h-8 dark:block" src="{{ asset('images\logo\Logonamewhite.png') }}"
+                    alt="">
             </a>
 
             <!-- List Menu (Centered) -->

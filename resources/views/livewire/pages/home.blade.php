@@ -341,7 +341,9 @@
     <section class="bg-primary-100 dark:bg-gray-900">
         <div
             class="gap-8 items-center py-4 px-4 mx-auto max-w-screen-xl lg:grid lg:grid-cols-2 xl:gap-16 sm:py-4 lg:px-6 ">
-            <img class="mb-4 w-full lg:mb-0 rounded-lg" {{-- src="https://www.pethouse.co.id/cfind/source/images/retail/51%20jansen%20petshop.jpg" --}} alt="feature image">
+            <img class="mb-4 w-full lg:mb-0 rounded-lg"
+                src="{{ asset('images\testimonial\Gambar WhatsApp 2025-05-15 pukul 16.15.07_21ca179f.jpg') }}"
+                alt="feature image">
             <div class="text-gray-500 dark:text-gray-400 sm:text-lg">
                 <h2 class="mb-2 text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">Petshop
                 </h2>
@@ -580,30 +582,30 @@
                 <div class="overflow-hidden relative h-48 rounded-lg sm:h-64 xl:h-80 2xl:h-80">
                     <div class="grid hidden absolute inset-0 gap-8 transition-all duration-700 ease-linear transform lg:grid-cols-2"
                         data-carousel-item="">
-                        <img src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/social-proof/carousel-slider/office-work.png"
+                        <img src="{{ asset('images\testimonial\Gambar WhatsApp 2025-05-15 pukul 15.45.00_33e82462.jpg') }}"
                             class="block w-full h-full rounded-lg" alt="...">
-                        <img src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/social-proof/carousel-slider/office.png"
+                        <img src="{{ asset('images\testimonial\Gambar WhatsApp 2025-05-15 pukul 15.45.00_c7454573.jpg') }}"
                             class="hidden w-full h-full rounded-lg lg:block" alt="...">
                     </div>
                     <div class="grid hidden absolute inset-0 gap-8 transition-all duration-700 ease-linear transform lg:grid-cols-2"
                         data-carousel-item="">
-                        <img src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/social-proof/carousel-slider/conference.png"
+                        <img src="{{ asset('images\testimonial\Gambar WhatsApp 2025-05-15 pukul 15.45.00_d7b4044c.jpg') }}"
                             class="block w-full h-full rounded-lg" alt="...">
-                        <img src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/social-proof/carousel-slider/girl-with-phone.png"
+                        <img src="{{ asset('images\testimonial\Gambar WhatsApp 2025-05-15 pukul 15.45.00_eaa2f8db.jpg') }}"
                             class="hidden w-full h-full rounded-lg lg:block" alt="...">
                     </div>
                     <div class="grid hidden absolute inset-0 gap-8 transition-all duration-700 ease-linear transform lg:grid-cols-2"
                         data-carousel-item="">
-                        <img src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/social-proof/carousel-slider/man-at-office.png"
+                        <img src="{{ asset('images\testimonial\Gambar WhatsApp 2025-05-15 pukul 15.45.01_3d7523db.jpg') }}"
                             class="block w-full h-full rounded-lg" alt="...">
-                        <img src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/social-proof/carousel-slider/meeting.png"
+                        <img src="{{ asset('images\testimonial\Gambar WhatsApp 2025-05-15 pukul 15.45.01_8c024f00.jpg') }}"
                             class="hidden w-full h-full rounded-lg lg:block" alt="...">
                     </div>
                     <div class="grid hidden absolute inset-0 gap-8 transition-all duration-700 ease-linear transform lg:grid-cols-2"
                         data-carousel-item="">
-                        <img src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/social-proof/carousel-slider/work-from-home.png"
+                        <img src="{{ asset('images\testimonial\Gambar WhatsApp 2025-05-15 pukul 15.59.25_26bfb1d3.jpg') }}"
                             class="block w-full h-full rounded-lg" alt="...">
-                        <img src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/social-proof/carousel-slider/workspace.png"
+                        <img src="{{ asset('images\testimonial\Gambar WhatsApp 2025-05-15 pukul 15.59.25_197cba66.jpg') }}"
                             class="hidden w-full h-full rounded-lg lg:block" alt="...">
                     </div>
                 </div>
@@ -670,60 +672,102 @@
     <section class="bg-white dark:bg-gray-900">
         <div class="py-8 px-4 mx-auto max-w-screen-xl text-center lg:py-16 lg:px-6">
             <div class="mx-auto max-w-screen-sm mb-8 lg:mb-16">
-                <h2 class="mb-4 text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">Testimonials</h2>
-                <p class="font-light text-gray-500 sm:text-xl dark:text-gray-400">Explore the whole collection of
-                    open-source web components and elements built with the utility classes from Tailwind</p>
+                <h2 class="mb-4 text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">Apa Kata
+                    Pelanggan Kami</h2>
+                <p class="font-light text-gray-500 sm:text-xl dark:text-gray-400">Baca pengalaman nyata dari pelanggan
+                    setia CindyPetShop yang telah menggunakan berbagai layanan kami</p>
             </div>
             <div id="testimonial-carousel" class="relative" data-carousel="slide">
                 <div
                     class="overflow-x-hidden overflow-y-visible relative mx-auto max-w-screen-md h-52 rounded-lg sm:h-48">
+                    <!-- Adoption Testimonial -->
                     <figure class="hidden mx-auto w-full max-w-screen-md" data-carousel-item>
                         <blockquote>
-                            <p class="text-lg font-medium text-gray-900 sm:text-2xl dark:text-white">"Flowbite is just
-                                awesome. It contains tons of predesigned components and pages starting from login screen
-                                to complex dashboard. Perfect choice for your next SaaS application."</p>
+                            <p class="text-lg font-medium text-gray-900 sm:text-2xl dark:text-white">"Adopsi kucing
+                                dari CindyPetShop mengubah hidup saya! Prosesnya transparan, hewannya sehat, dan timnya
+                                sangat membantu. Mereka bahkan memberikan panduan perawatan lengkap setelah adopsi."</p>
                         </blockquote>
                         <figcaption class="flex justify-center items-center mt-6 space-x-3">
-                            <img class="w-6 h-6 rounded-full"
-                                src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/bonnie-green.png"
+                            <img class="w-6 h-6 rounded-full" src="https://randomuser.me/api/portraits/women/65.jpg"
                                 alt="profile picture">
                             <div class="flex items-center divide-x-2 divide-gray-500 dark:divide-gray-700">
-                                <div class="pr-3 font-medium text-gray-900 dark:text-white">Bonnie Green</div>
-                                <div class="pl-3 text-sm font-light text-gray-500 dark:text-gray-400">Web developer at
-                                    Google</div>
+                                <div class="pr-3 font-medium text-gray-900 dark:text-white">Desvira Saputri</div>
+                                <div class="pl-3 text-sm font-light text-gray-500 dark:text-gray-400">Pemilik Mochi
+                                </div>
                             </div>
                         </figcaption>
                     </figure>
+
+                    <!-- Grooming Testimonial -->
                     <figure class="hidden mx-auto w-full max-w-screen-md" data-carousel-item>
                         <blockquote>
-                            <p class="text-lg font-medium text-gray-900 sm:text-2xl dark:text-white">"As someone who
-                                mainly designs in the browser, I've been a casual user of Figma, but as soon as I saw
-                                and started playing with FlowBite my mind was blown and became so productive."</p>
+                            <p class="text-lg font-medium text-gray-900 sm:text-2xl dark:text-white">"Layanan grooming
+                                di CindyPetShop selalu memuaskan! Stafnya profesional, perlengkapan lengkap, dan mereka
+                                sangat sabar dengan anjing saya yang agak pemalu. Kini Bulu selalu rapi dan wangi."</p>
                         </blockquote>
                         <figcaption class="flex justify-center items-center mt-6 space-x-3">
-                            <img class="w-6 h-6 rounded-full"
-                                src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/helene-engels.png"
+                            <img class="w-6 h-6 rounded-full" src="https://randomuser.me/api/portraits/men/32.jpg"
                                 alt="profile picture">
                             <div class="flex items-center divide-x-2 divide-gray-500 dark:divide-gray-700">
-                                <div class="pr-3 font-medium text-gray-900 dark:text-white">Helene Engels</div>
-                                <div class="pl-3 text-sm font-light text-gray-500 dark:text-gray-400">Creative designer
-                                    at Adobe</div>
+                                <div class="pr-3 font-medium text-gray-900 dark:text-white">Budi Santoso</div>
+                                <div class="pl-3 text-sm font-light text-gray-500 dark:text-gray-400">Pemilik Bulu
+                                </div>
                             </div>
                         </figcaption>
                     </figure>
+
+                    <!-- Pet Hotel Testimonial -->
                     <figure class="hidden mx-auto w-full max-w-screen-md" data-carousel-item>
                         <blockquote>
-                            <p class="text-lg font-medium text-gray-900 sm:text-2xl dark:text-white">"Flowbite has code
-                                in one place and I'm not joking when I say it took me a matter of minutes to copy the
-                                code, customise it and integrate within a Laravel + Vue application."</p>
+                            <p class="text-lg font-medium text-gray-900 sm:text-2xl dark:text-white">"Selalu tenang
+                                saat traveling karena tahu kucing saya dirawat dengan baik di pet hotel CindyPetShop.
+                                Mereka mengupdate foto setiap hari dan fasilitasnya sangat nyaman untuk hewan
+                                peliharaan."</p>
                         </blockquote>
                         <figcaption class="flex justify-center items-center mt-6 space-x-3">
-                            <img class="w-6 h-6 rounded-full"
-                                src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/neil-sims.png"
+                            <img class="w-6 h-6 rounded-full" src="https://randomuser.me/api/portraits/men/44.jpg"
                                 alt="profile picture">
                             <div class="flex items-center divide-x-2 divide-gray-500 dark:divide-gray-700">
-                                <div class="pr-3 font-medium text-gray-900 dark:text-white">Neil Sims</div>
-                                <div class="pl-3 text-sm font-light text-gray-500 dark:text-gray-400">CTO at Microsoft
+                                <div class="pr-3 font-medium text-gray-900 dark:text-white">Rachmat Trisnanto</div>
+                                <div class="pl-3 text-sm font-light text-gray-500 dark:text-gray-400">Pemilik Momo
+                                </div>
+                            </div>
+                        </figcaption>
+                    </figure>
+
+                    <!-- Product Testimonial -->
+                    <figure class="hidden mx-auto w-full max-w-screen-md" data-carousel-item>
+                        <blockquote>
+                            <p class="text-lg font-medium text-gray-900 sm:text-2xl dark:text-white">"Produk di
+                                CindyPetShop lengkap dan berkualitas. Saya khususnya suka makanan organik mereka -
+                                anjing saya lebih sehat sejak beralih ke produk mereka. Pelayanan deliverynya juga
+                                cepat!"</p>
+                        </blockquote>
+                        <figcaption class="flex justify-center items-center mt-6 space-x-3">
+                            <img class="w-6 h-6 rounded-full" src="https://randomuser.me/api/portraits/men/75.jpg"
+                                alt="profile picture">
+                            <div class="flex items-center divide-x-2 divide-gray-500 dark:divide-gray-700">
+                                <div class="pr-3 font-medium text-gray-900 dark:text-white">Andi Pratama</div>
+                                <div class="pl-3 text-sm font-light text-gray-500 dark:text-gray-400">Pemilik Blacky
+                                </div>
+                            </div>
+                        </figcaption>
+                    </figure>
+
+                    <!-- Breeding Testimonial -->
+                    <figure class="hidden mx-auto w-full max-w-screen-md" data-carousel-item>
+                        <blockquote>
+                            <p class="text-lg font-medium text-gray-900 sm:text-2xl dark:text-white">"Pengalaman
+                                breeding dengan CindyPetShop sangat profesional. Mereka memberikan saran genetik,
+                                perawatan prenatal, dan membantu menemukan keluarga yang tepat untuk anak kucing kami."
+                            </p>
+                        </blockquote>
+                        <figcaption class="flex justify-center items-center mt-6 space-x-3">
+                            <img class="w-6 h-6 rounded-full" src="https://randomuser.me/api/portraits/women/68.jpg"
+                                alt="profile picture">
+                            <div class="flex items-center divide-x-2 divide-gray-500 dark:divide-gray-700">
+                                <div class="pr-3 font-medium text-gray-900 dark:text-white">Siti Nurbaeti</div>
+                                <div class="pl-3 text-sm font-light text-gray-500 dark:text-gray-400">Breeder Persian
                                 </div>
                             </div>
                         </figcaption>
@@ -760,7 +804,6 @@
             </div>
         </div>
     </section>
-    <!-- Block end -->
     <!-- testimonial end -->
 
 </div>
