@@ -443,8 +443,8 @@
                             <h3 class="mb-2 text-xl font-bold text-gray-900 dark:text-white">Layanan Profesional dan
                                 Terpercaya</h3>
                             <p class="mb-2 font-light text-gray-500 dark:text-gray-400">Petshop kami didukung oleh tim
-                                ahli, dari groomer profesional hingga dokter hewan bersertifikat. Layanan grooming kami
-                                membuat hewan peliharaan tampil menawan sekaligus menjaga kesehatan kulit dan bulunya,
+                                ahli. Layanan grooming kami membuat hewan peliharaan tampil menawan sekaligus menjaga
+                                kesehatan kulit dan bulunya,
                                 Kami juga menyediakan pet hotel nyaman dengan fasilitas lengkap, pengawasan 24 jam, dan
                                 perawatan penuh kasih. Anabul dapat menikmati akomodasi bersih, makanan berkualitas, dan
                                 aktivitas seru selama menginap. Tenang berpergian, peliharaan Anda dalam tangan ahli!

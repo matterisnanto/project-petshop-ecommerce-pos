@@ -7,9 +7,11 @@ use App\Models\Product;
 use Livewire\Component;
 use App\Models\Category;
 use Livewire\WithPagination;
+use Livewire\Attributes\Title;
 use App\Models\CategoryAnimals;
 use Illuminate\Support\Facades\Session;
 
+#[Title('Product - Cindy Petshop')]
 class ProductList extends Component
 {
     use WithPagination;

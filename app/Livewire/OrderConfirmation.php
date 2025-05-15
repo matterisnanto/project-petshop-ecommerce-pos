@@ -2,10 +2,12 @@
 
 namespace App\Livewire;
 
-use Livewire\Component;
-use App\Models\OlshopTransaction;
 use App\Models\Order;
+use Livewire\Component;
+use Livewire\Attributes\Title;
+use App\Models\OlshopTransaction;
 
+#[Title('Order Confirmation - Cindy Petshop')]
 class OrderConfirmation extends Component
 {
     public $transactionId;

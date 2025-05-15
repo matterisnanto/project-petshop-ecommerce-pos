@@ -4,7 +4,9 @@ namespace App\Livewire;
 
 use App\Models\Animals;
 use Livewire\Component;
+use Livewire\Attributes\Title;
 
+#[Title('Animals - Cindy Petshop')]
 class AnimalsDetail extends Component
 {
     public Animals $animals;

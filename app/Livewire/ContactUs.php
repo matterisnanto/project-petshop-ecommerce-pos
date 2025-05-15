@@ -3,8 +3,10 @@
 namespace App\Livewire;
 
 use Livewire\Component;
+use Livewire\Attributes\Title;
 use Illuminate\Support\Facades\Session;
 
+#[Title('Contact Us - Cindy Petshop')]
 class ContactUs extends Component
 {
     // public function mount()
