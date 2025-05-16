@@ -326,7 +326,7 @@
                 </li>
                 <li>
                     <a wire:navigate href="/animals"
-                        class="{{ request()->is('animals*') ? 'text-primary-500' : 'text-gray-900 dark:text-white' }} hover:text-primary-700 dark:hover:text-primary-500">Products</a>
+                        class="{{ request()->is('animals*') ? 'text-primary-500' : 'text-gray-900 dark:text-white' }} hover:text-primary-700 dark:hover:text-primary-500">Animals</a>
                 </li>
                 <li>
                     <a wire:navigate href="/products"

@@ -30,13 +30,14 @@
                     </ul>
                     <ul class="flex flex-wrap justify-center space-x-4">
                         <li>
-                            <a href="#" class="hover:underline">Terms and Conditions</a>
+                            <a wire:navigate href="/term-and-conditions" class="hover:underline">Terms and
+                                Conditions</a>
                         </li>
                         <li>
-                            <a href="#" class="hover:underline">Policy and Privacy</a>
+                            <a wire:navigate href="/policy-and-privacy" class="hover:underline">Policy and Privacy</a>
                         </li>
                         <li>
-                            <a href="#" class="hover:underline">FAQs</a>
+                            <a wire:navigate href="/faqs" class="hover:underline">FAQs</a>
                         </li>
                     </ul>
                 </ul>
