@@ -5,14 +5,14 @@
         <div class="mx-auto grid max-w-screen-xl  px-4 pb-8 md:grid-cols-12 lg:gap-12 lg:pb-16 xl:gap-0">
             <!-- Gambar untuk layar mobile -->
             <div class="md:hidden mb-6">
-                <img src="{{ url('/img/Catanddog-amico.png') }}" alt="shopping illustration" class="w-full" />
+                <img src="{{ url('img/Catanddog-amico.png') }}" alt="shopping illustration" class="w-full" />
             </div>
 
             <!-- Teks dan tombol -->
             <div class="content-center justify-self-start md:col-span-7 md:text-start">
                 <h1
                     class="mb-4 text-3xl font-extrabold leading-none tracking-tight dark:text-white md:max-w-2xl md:text-5xl xl:text-6xl">
-                    Sayangi hewan peliharaan Anda, Manjakan Disisni!
+                    Sayangi hewan peliharaan Anda, Manjakan Disini!
                 </h1>
                 <p class="mb-4 max-w-2xl text-gray-500 dark:text-gray-400 md:mb-12 md:text-lg lg:mb-5 lg:text-xl">
                     Berikan makanan dan fasilitas yang baik
@@ -336,7 +336,7 @@
         <div
             class="gap-8 items-center py-4 px-4 mx-auto max-w-screen-xl lg:grid lg:grid-cols-2 xl:gap-16 sm:py-4 lg:px-6 ">
             <img class="mb-4 w-full lg:mb-0 rounded-lg"
-                src="{{ asset('images\testimonial\Gambar WhatsApp 2025-05-15 pukul 16.15.07_21ca179f.jpg') }}"
+                src="{{ asset('img\testimonial\Gambar WhatsApp 2025-05-15 pukul 16.15.07_21ca179f.jpg') }}"
                 alt="feature image">
             <div class="text-gray-500 dark:text-gray-400 sm:text-lg">
                 <h2 class="mb-2 text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">Cindy Petshop
@@ -576,30 +576,30 @@
                 <div class="overflow-hidden relative h-48 rounded-lg sm:h-64 xl:h-80 2xl:h-80">
                     <div class="grid hidden absolute inset-0 gap-8 transition-all duration-700 ease-linear transform lg:grid-cols-2"
                         data-carousel-item="">
-                        <img src="{{ asset('images\testimonial\Gambar WhatsApp 2025-05-15 pukul 15.45.00_33e82462.jpg') }}"
+                        <img src="{{ asset('img\testimonial\Gambar WhatsApp 2025-05-15 pukul 15.45.00_33e82462.jpg') }}"
                             class="block w-full h-full rounded-lg" alt="...">
-                        <img src="{{ asset('images\testimonial\Gambar WhatsApp 2025-05-15 pukul 15.45.00_c7454573.jpg') }}"
+                        <img src="{{ asset('img\testimonial\Gambar WhatsApp 2025-05-15 pukul 15.45.00_c7454573.jpg') }}"
                             class="hidden w-full h-full rounded-lg lg:block" alt="...">
                     </div>
                     <div class="grid hidden absolute inset-0 gap-8 transition-all duration-700 ease-linear transform lg:grid-cols-2"
                         data-carousel-item="">
-                        <img src="{{ asset('images\testimonial\Gambar WhatsApp 2025-05-15 pukul 15.45.00_d7b4044c.jpg') }}"
+                        <img src="{{ asset('img\testimonial\Gambar WhatsApp 2025-05-15 pukul 15.45.00_d7b4044c.jpg') }}"
                             class="block w-full h-full rounded-lg" alt="...">
-                        <img src="{{ asset('images\testimonial\Gambar WhatsApp 2025-05-15 pukul 15.45.00_eaa2f8db.jpg') }}"
+                        <img src="{{ asset('img\testimonial\Gambar WhatsApp 2025-05-15 pukul 15.45.00_eaa2f8db.jpg') }}"
                             class="hidden w-full h-full rounded-lg lg:block" alt="...">
                     </div>
                     <div class="grid hidden absolute inset-0 gap-8 transition-all duration-700 ease-linear transform lg:grid-cols-2"
                         data-carousel-item="">
-                        <img src="{{ asset('images\testimonial\Gambar WhatsApp 2025-05-15 pukul 15.45.01_3d7523db.jpg') }}"
+                        <img src="{{ asset('img\testimonial\Gambar WhatsApp 2025-05-15 pukul 15.45.01_3d7523db.jpg') }}"
                             class="block w-full h-full rounded-lg" alt="...">
-                        <img src="{{ asset('images\testimonial\Gambar WhatsApp 2025-05-15 pukul 15.45.01_8c024f00.jpg') }}"
+                        <img src="{{ asset('img\testimonial\Gambar WhatsApp 2025-05-15 pukul 15.45.01_8c024f00.jpg') }}"
                             class="hidden w-full h-full rounded-lg lg:block" alt="...">
                     </div>
                     <div class="grid hidden absolute inset-0 gap-8 transition-all duration-700 ease-linear transform lg:grid-cols-2"
                         data-carousel-item="">
-                        <img src="{{ asset('images\testimonial\Gambar WhatsApp 2025-05-15 pukul 15.59.25_26bfb1d3.jpg') }}"
+                        <img src="{{ asset('img\testimonial\Gambar WhatsApp 2025-05-15 pukul 15.59.25_26bfb1d3.jpg') }}"
                             class="block w-full h-full rounded-lg" alt="...">
-                        <img src="{{ asset('images\testimonial\Gambar WhatsApp 2025-05-15 pukul 15.59.25_197cba66.jpg') }}"
+                        <img src="{{ asset('img\testimonial\Gambar WhatsApp 2025-05-15 pukul 15.59.25_197cba66.jpg') }}"
                             class="hidden w-full h-full rounded-lg lg:block" alt="...">
                     </div>
                 </div>

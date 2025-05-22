@@ -64,13 +64,12 @@
                     </p>
                 </div>
                 <img class="hidden mb-4 w-full lg:mb-0 lg:flex rounded-lg"
-                    src="{{ asset('images\breeding\326294-6000x4000-cats-playing.jpg') }}"
-                    alt="breeding facility image">
+                    src="{{ asset('img\breeding\326294-6000x4000-cats-playing.jpg') }}" alt="breeding facility image">
             </div>
             <!-- Row -->
             <div class="gap-8 items-center lg:grid lg:grid-cols-2 xl:gap-16">
                 <img class="hidden mb-4 w-full lg:mb-0 lg:flex rounded-lg"
-                    src="{{ asset('images\breeding\media_1a20768d2cbe4dd2bb895e471ad63a53f0c22785a.jpeg') }}"
+                    src="{{ asset('img\breeding\media_1a20768d2cbe4dd2bb895e471ad63a53f0c22785a.jpeg') }}"
                     alt="breeding process image">
                 <div class="text-gray-500 sm:text-lg dark:text-gray-400">
                     <h2 class="mb-4 text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">
@@ -145,7 +144,7 @@
             <div class="grid gap-6 mt-12 lg:mt-14 lg:gap-12 md:grid-cols-3">
                 <div class="flex mb-2 md:flex-col md:mb-0">
                     <img class="mr-4 w-auto h-36 md:w-full md:h-100 rounded-lg"
-                        src="{{ asset('images\breeding\golden-retriever-bitch-with-her-litter-royalty-free-image-1652373892.avif') }}"
+                        src="{{ asset('img\breeding\golden-retriever-bitch-with-her-litter-royalty-free-image-1652373892.avif') }}"
                         alt="breeding process image" />
                     <div>
                         <h3 class="text-xl font-bold md:mt-4 mb-2.5 text-gray-900 dark:text-white">Seleksi Indukan Ketat
@@ -156,8 +155,7 @@
                 </div>
                 <div class="flex mb-2 md:flex-col md:mb-0">
                     <img class="mr-4 w-auto h-36 md:w-full md:h-100 rounded-lg"
-                        src="{{ asset('images\breeding\260107_25-2-2021_12-13-0.jpg') }}"
-                        alt="breeding facility image" />
+                        src="{{ asset('img\breeding\260107_25-2-2021_12-13-0.jpg') }}" alt="breeding facility image" />
                     <div>
                         <h3 class="text-xl font-bold md:mt-4 mb-2.5 text-gray-900 dark:text-white">Perawatan Khusus</h3>
                         <p class="text-gray-500 dark:text-gray-400">Setiap tahap breeding mendapatkan perhatian khusus,
@@ -166,7 +164,7 @@
                 </div>
                 <div class="flex md:flex-col">
                     <img class="mr-4 w-auto h-36 md:w-full md:h-100 rounded-lg"
-                        src="{{ asset('images\breeding\dog-care2.jpg') }}" alt="breeding consultation image" />
+                        src="{{ asset('img\breeding\dog-care2.jpg') }}" alt="breeding consultation image" />
                     <div>
                         <h3 class="text-xl font-bold md:mt-4 mb-2.5 text-gray-900 dark:text-white">Konsultasi Breeding
                         </h3>
@@ -197,38 +195,38 @@
             <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
                 <!-- Big square -->
                 <div class="row-span-2 col-span-2 md:col-span-1">
-                    <img class="w-full h-full object-cover rounded-lg" src="{{ asset('images\breeding\442154.jpg') }}"
+                    <img class="w-full h-full object-cover rounded-lg" src="{{ asset('img\breeding\442154.jpg') }}"
                         alt="breeding process 1">
                 </div>
 
                 <!-- Portrait -->
                 <div class="row-span-2">
-                    <img class="w-full h-full object-cover rounded-lg" src="{{ asset('images\breeding\images.jpg') }}"
+                    <img class="w-full h-full object-cover rounded-lg" src="{{ asset('img\breeding\images.jpg') }}"
                         alt="breeding process 2">
                 </div>
 
                 <!-- Small square -->
                 <div>
                     <img class="w-full h-48 object-cover rounded-lg"
-                        src="{{ asset('images\breeding\French_Bulldog_with_puppies.jpg') }}" alt="breeding process 3">
+                        src="{{ asset('img\breeding\French_Bulldog_with_puppies.jpg') }}" alt="breeding process 3">
                 </div>
 
                 <!-- Small square -->
                 <div>
                     <img class="w-full h-48 object-cover rounded-lg"
-                        src="{{ asset('images\breeding\litter-of-kittens.jpg.webp') }}" alt="breeding process 4">
+                        src="{{ asset('img\breeding\litter-of-kittens.jpg.webp') }}" alt="breeding process 4">
                 </div>
 
                 <!-- Wide rectangle -->
                 <div class="col-span-2">
                     <img class="w-full h-80 object-cover rounded-lg"
-                        src="{{ asset('images\breeding\Kittens-300x187.jpg') }}" alt="breeding process 5">
+                        src="{{ asset('img\breeding\Kittens-300x187.jpg') }}" alt="breeding process 5">
                 </div>
 
                 <!-- Tall rectangle -->
                 <div class="row-span-2">
                     <img class="hidden sm:block w-full h-80 object-cover rounded-lg"
-                        src="{{ asset('images\breeding\golden-retriever-bitch-with-her-litter-royalty-free-image-1652373892.avif') }}"
+                        src="{{ asset('img\breeding\golden-retriever-bitch-with-her-litter-royalty-free-image-1652373892.avif') }}"
                         alt="breeding process 6">
                 </div>
             </div>

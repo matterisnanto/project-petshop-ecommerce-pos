@@ -30,9 +30,9 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             // logo & favicon configuration
             ->brandName('Cindypetshop')
-            ->brandLogo(asset('images/logo.png'))
+            ->brandLogo(asset('img/logo.png'))
             ->brandLogoHeight('3rem')
-            ->favicon(asset('images/favicon.ico'))
+            ->favicon(asset('img/favicon.ico'))
             // user configuration
             ->login()
             ->registration()

@@ -61,13 +61,13 @@
                     </p>
                 </div>
                 <img class="hidden mb-4 w-full lg:mb-0 lg:flex rounded-lg"
-                    src="{{ asset('images\pet-hotel\top-10-websites-for-buying-pet-related-goods-in-the-united-states-2023-mymallbox-1024x512.jpg') }}"
+                    src="{{ asset('img\pet-hotel\top-10-websites-for-buying-pet-related-goods-in-the-united-states-2023-mymallbox-1024x512.jpg') }}"
                     alt="pet hotel feature image">
             </div>
             <!-- Row -->
             <div class="gap-8 items-center lg:grid lg:grid-cols-2 xl:gap-16">
                 <img class="hidden mb-4 w-full lg:mb-0 lg:flex rounded-lg"
-                    src="{{ asset('images\pet-hotel\cat-gfd3deb394_1280.jpg') }}" alt="pet hotel feature image 2">
+                    src="{{ asset('img\pet-hotel\cat-gfd3deb394_1280.jpg') }}" alt="pet hotel feature image 2">
                 <div class="text-gray-500 sm:text-lg dark:text-gray-400">
                     <h2 class="mb-4 text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">
                         Kenyamanan dan Keamanan adalah Prioritas Kami
@@ -145,7 +145,7 @@
             <div class="grid gap-6 mt-12 lg:mt-14 lg:gap-12 md:grid-cols-3">
                 <div class="flex mb-2 md:flex-col md:mb-0">
                     <img class="mr-4 w-auto h-36 md:w-auto md:h-100 rounded-lg"
-                        src="{{ asset('images\pet-hotel\acc-cta-v4.jpg') }}" alt="pet hotel staff" />
+                        src="{{ asset('img\pet-hotel\acc-cta-v4.jpg') }}" alt="pet hotel staff" />
                     <div>
                         <h3 class="text-xl font-bold md:mt-4 mb-2.5 text-gray-900 dark:text-white">Tim Perawat
                             Profesional &
@@ -157,7 +157,7 @@
                 </div>
                 <div class="flex mb-2 md:flex-col md:mb-0">
                     <img class="mr-4 w-auto h-36 md:w-full md:h-100 rounded-lg"
-                        src="{{ asset('images\pet-hotel\crowne-plaza-greenbelt-9613300383-220x171.jpg') }}"
+                        src="{{ asset('img\pet-hotel\crowne-plaza-greenbelt-9613300383-220x171.jpg') }}"
                         alt="hotel facility" />
                     <div>
                         <h3 class="text-xl font-bold md:mt-4 mb-2.5 text-gray-900 dark:text-white">Fasilitas Nyaman &
@@ -169,7 +169,7 @@
                 </div>
                 <div class="flex md:flex-col">
                     <img class="mr-4 w-auto h-36 md:w-full md:h-100 rounded-lg"
-                        src="{{ asset('images\pet-hotel\pet-1100229417.jpg') }}" alt="pet monitoring" />
+                        src="{{ asset('img\pet-hotel\pet-1100229417.jpg') }}" alt="pet monitoring" />
                     <div>
                         <h3 class="text-xl font-bold md:mt-4 mb-2.5 text-gray-900 dark:text-white">Monitoring &
                             Komunikasi</h3>
@@ -203,41 +203,40 @@
                 <!-- Big square -->
                 <div class="row-span-2 col-span-2 md:col-span-1">
                     <img class="w-full h-full object-cover rounded-lg"
-                        src="{{ asset('images\pet-hotel\01jq3hkfdd8dvm5htt3gcb3f7j.jpg') }}"
-                        alt="fasilitas pet hotel 1">
+                        src="{{ asset('img\pet-hotel\01jq3hkfdd8dvm5htt3gcb3f7j.jpg') }}" alt="fasilitas pet hotel 1">
                 </div>
 
                 <!-- Portrait -->
                 <div class="row-span-2">
                     <img class="w-full h-full object-cover rounded-lg"
-                        src="{{ asset('images\pet-hotel\pet-cat-sleep-cute-1337721507-3.avif') }}"
+                        src="{{ asset('img\pet-hotel\pet-cat-sleep-cute-1337721507-3.avif') }}"
                         alt="fasilitas pet hotel 2">
                 </div>
 
                 <!-- Small square -->
                 <div>
                     <img class="w-full h-48 object-cover rounded-lg"
-                        src="{{ asset('images\pet-hotel\tucker-candlewood-dog-alone-in hotel-room.jpg') }}"
+                        src="{{ asset('img\pet-hotel\tucker-candlewood-dog-alone-in hotel-room.jpg') }}"
                         alt="fasilitas pet hotel 3">
                 </div>
 
                 <!-- Small square -->
                 <div>
                     <img class="w-full h-48 object-cover rounded-lg"
-                        src="{{ asset('images\pet-hotel\Tips-for-staying-in-a-dog-friendly-hotelTEASER.jpg') }}"
+                        src="{{ asset('img\pet-hotel\Tips-for-staying-in-a-dog-friendly-hotelTEASER.jpg') }}"
                         alt="fasilitas pet hotel 4">
                 </div>
 
                 <!-- Wide rectangle -->
                 <div class="col-span-2">
                     <img class="w-full h-80 object-cover rounded-lg"
-                        src="{{ asset('images\pet-hotel\penitipan-hewan-lebaran.jpg') }}" alt="fasilitas pet hotel 5">
+                        src="{{ asset('img\pet-hotel\penitipan-hewan-lebaran.jpg') }}" alt="fasilitas pet hotel 5">
                 </div>
 
                 <!-- Tall rectangle -->
                 <div class="row-span-2">
                     <img class="hidden sm:block w-full h-80 object-cover rounded-lg"
-                        src="{{ asset('images\pet-hotel\Pet-Shop-dan-Pet-Hotel.jpg') }}" alt="fasilitas pet hotel 6">
+                        src="{{ asset('img\pet-hotel\Pet-Shop-dan-Pet-Hotel.jpg') }}" alt="fasilitas pet hotel 6">
                 </div>
             </div>
         </div>

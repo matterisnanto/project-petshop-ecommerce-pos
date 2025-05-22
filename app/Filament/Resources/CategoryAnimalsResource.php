@@ -124,7 +124,7 @@ class CategoryAnimalsResource extends Resource
                     ->label('')
                     ->size(40)
                     ->circular()
-                    ->defaultImageUrl(url('/images/default-category-icon.png')),
+                    ->defaultImageUrl(url('/img/default-category-icon.png')),
 
                 Tables\Columns\TextColumn::make('name')
                     ->label('Category Name')

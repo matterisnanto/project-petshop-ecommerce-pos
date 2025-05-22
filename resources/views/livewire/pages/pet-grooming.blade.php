@@ -62,13 +62,13 @@
                     </p>
                 </div>
                 <img class="hidden mb-4 w-full lg:mb-0 lg:flex rounded-lg"
-                    src="{{ asset('images\pet-grooming\01hzbvkq2ea9v4dn7tykccsz6r.jpg') }}"
+                    src="{{ asset('img\pet-grooming\01hzbvkq2ea9v4dn7tykccsz6r.jpg') }}"
                     alt="pet grooming feature image">
             </div>
             <!-- Row -->
             <div class="gap-8 items-center lg:grid lg:grid-cols-2 xl:gap-16">
                 <img class="hidden mb-4 w-full lg:mb-0 lg:flex rounded-lg"
-                    src="{{ asset('images\pet-grooming\789367_30-6-2022_17-2-51.jpeg') }}"
+                    src="{{ asset('img\pet-grooming\789367_30-6-2022_17-2-51.jpeg') }}"
                     alt="pet grooming feature image 2">
                 <div class="text-gray-500 sm:text-lg dark:text-gray-400">
                     <h2 class="mb-4 text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">
@@ -143,7 +143,7 @@
             <div class="grid gap-6 mt-12 lg:mt-14 lg:gap-12 md:grid-cols-3">
                 <div class="flex mb-2 md:flex-col md:mb-0">
                     <img class="mr-4 w-auto h-36 md:w-full md:h-100 rounded-lg"
-                        src="{{ asset('images\pet-grooming\cage-free-grooming-Final-768x897.jpg') }}"
+                        src="{{ asset('img\pet-grooming\cage-free-grooming-Final-768x897.jpg') }}"
                         alt="grooming image" />
                     <div>
                         <h3 class="text-xl font-bold md:mt-4 mb-2.5 text-gray-900 dark:text-white">Tim Profesional &
@@ -155,8 +155,7 @@
                 </div>
                 <div class="flex mb-2 md:flex-col md:mb-0">
                     <img class="mr-4 w-auto h-36 md:w-full md:h-100 rounded-lg"
-                        src="{{ asset('images\pet-grooming\layanan-hallo-pets-4.jpg') }}"
-                        alt="grooming facility image" />
+                        src="{{ asset('img\pet-grooming\layanan-hallo-pets-4.jpg') }}" alt="grooming facility image" />
                     <div>
                         <h3 class="text-xl font-bold md:mt-4 mb-2.5 text-gray-900 dark:text-white">Fasilitas Bersih &
                             Aman</h3>
@@ -167,7 +166,7 @@
                 </div>
                 <div class="flex md:flex-col">
                     <img class="mr-4 w-auto h-36 md:w-full md:h-100 rounded-lg"
-                        src="{{ asset('images\pet-grooming\dog-min.webp') }}" alt="pet care image" />
+                        src="{{ asset('img\pet-grooming\dog-min.webp') }}" alt="pet care image" />
                     <div>
                         <h3 class="text-xl font-bold md:mt-4 mb-2.5 text-gray-900 dark:text-white">Edukasi & Konsultasi
                         </h3>
@@ -199,41 +198,41 @@
                 <!-- Big square -->
                 <div class="row-span-2 col-span-2 md:col-span-1">
                     <img class="w-full h-full object-cover rounded-lg"
-                        src="{{ asset('images/pet-grooming/6396df7a4d350.jpg') }}" alt="Hewan grooming 1">
+                        src="{{ asset('img/pet-grooming/6396df7a4d350.jpg') }}" alt="Hewan grooming 1">
                 </div>
 
                 <!-- Portrait -->
                 <div class="row-span-2">
                     <img class="w-full h-full object-cover rounded-lg"
-                        src="{{ asset('images/pet-grooming/Mandi-Kucing-Anti-Berontak-bersama-Water-Heater-Surya.jpg') }}"
+                        src="{{ asset('img/pet-grooming/Mandi-Kucing-Anti-Berontak-bersama-Water-Heater-Surya.jpg') }}"
                         alt="Hewan grooming 2">
                 </div>
 
                 <!-- Small square -->
                 <div>
                     <img class="w-full h-48 object-cover rounded-lg"
-                        src="{{ asset('images/pet-grooming/shaving-process-small-dog-sits-table-dog-shaved-by-professional.webp') }}"
+                        src="{{ asset('img/pet-grooming/shaving-process-small-dog-sits-table-dog-shaved-by-professional.webp') }}"
                         alt="Hewan grooming 3">
                 </div>
 
                 <!-- Small square -->
                 <div>
                     <img class="w-full h-48 object-cover rounded-lg"
-                        src="{{ asset('images/pet-grooming/depositphotos_24388869-stock-photo-grooming-dog.webp') }}"
+                        src="{{ asset('img/pet-grooming/depositphotos_24388869-stock-photo-grooming-dog.webp') }}"
                         alt="Hewan grooming 4">
                 </div>
 
                 <!-- Wide rectangle -->
                 <div class="col-span-2">
                     <img class="w-full h-80 object-cover rounded-lg"
-                        src="{{ asset('images/pet-grooming/Jasa20240421-012820-jasa-grooming-aning-panggilan-di-palembang-2.webp') }}"
+                        src="{{ asset('img/pet-grooming/Jasa20240421-012820-jasa-grooming-aning-panggilan-di-palembang-2.webp') }}"
                         alt="Hewan grooming 5">
                 </div>
 
                 <!-- Tall rectangle -->
                 <div class="row-span-2">
                     <img class="hidden sm:block w-full h-80 object-cover rounded-lg"
-                        src="{{ asset('images/pet-grooming/How-to-start-your-own-pet-care-business-in-post-image-1.jpg') }}"
+                        src="{{ asset('img/pet-grooming/How-to-start-your-own-pet-care-business-in-post-image-1.jpg') }}"
                         alt="Hewan grooming 6">
                 </div>
             </div>
