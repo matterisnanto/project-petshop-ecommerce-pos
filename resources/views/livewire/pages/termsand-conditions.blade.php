@@ -62,8 +62,8 @@
                                     unboxing</strong></li>
                             <li class="mb-1">Klaim harus diajukan maksimal <strong>3 hari</strong> setelah produk
                                 diterima</li>
-                            <li class="mb-1">Pengembalian dana hanya diproses setelah verifikasi video</li>
-                            <li>Pengembalian dana berupa kode promo yang dapat digunakan di transaksi selanjutnya</li>
+                            <li class="mb-1">Pengembalian dana hanya diproses setelah barang dikembalikan</li>
+                            <li>Segala biaya pengembalian ditanggung pembeli</li>
                         </ul>
                     </div>
 
