@@ -5,14 +5,16 @@ namespace App\Livewire;
 use session;
 use Carbon\Carbon;
 
+use Dompdf\Dompdf;
+use Dompdf\Options;
+
 use Filament\Forms;
 use App\Models\Hotel;
-
 use App\Models\Order;
 use App\Models\Animals;
+
 use App\Models\Product;
 use Filament\Forms\Get;
-
 use Filament\Forms\Set;
 use Livewire\Component;
 use App\Models\Breeding;
@@ -22,6 +24,7 @@ use Illuminate\Support\Str;
 use App\Models\PaymentMethod;
 use App\Models\PetInformation;
 use App\Models\POSTransaction;
+use Illuminate\Support\Facades\Log;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Textarea;
@@ -54,7 +57,8 @@ class Pos extends Component implements HasForms
     public $petInformation = [];
 
     protected $listeners = [
-        'scanResult' => 'handleScanResult'
+        'scanResult' => 'handleScanResult',
+        'download-receipt' => 'downloadReceipt'
     ];
 
     public function render()
@@ -249,6 +253,7 @@ class Pos extends Component implements HasForms
         $this->payment_methods = PaymentMethod::all();
         $this->trx_id = $this->trx_id ?? 'TRX-' . now()->format('Ymd') . '-' . Str::upper(Str::random(6));
         $this->form->fill([
+            'trx_id' => $this->trx_id,
             'total_price' => $this->calculateTotal(),
             'payment_method_id' => $this->payment_method_id,
         ]);
@@ -511,6 +516,54 @@ class Pos extends Component implements HasForms
         return $total;
     }
 
+    public function downloadReceipt($transactionId)
+    {
+
+        $transaction = POSTransaction::with([
+            'order.product',
+            'order.animal',
+            'order.grooming',
+            'order.hotel',
+            'order.breeding',
+            'order.petInformation',
+            'paymentMethod'
+        ])->find($transactionId);
+
+        if (!$transaction) {
+            Notification::make()
+                ->title('Transaksi tidak ditemukan')
+                ->danger()
+                ->send();
+            return;
+        }
+
+        $html = view('receipt', compact('transaction'))->render();
+
+        $options = new Options();
+        $options->set('isRemoteEnabled', true);
+        $options->set('isHtml5ParserEnabled', true);
+        $options->set('defaultFont', 'Arial');
+        $options->set('isPhpEnabled', true);
+        $options->set('chroot', public_path());
+
+        $dompdf = new Dompdf($options);
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        $filename = 'receipt-' . $transaction->trx_id . '.pdf';
+
+        return response()->streamDownload(
+            function () use ($dompdf) {
+                echo $dompdf->output();
+            },
+            $filename,
+            [
+                'Content-Type' => 'application/pdf',
+            ]
+        );
+    }
+
     public function checkout()
     {
         $this->validate([
@@ -523,7 +576,7 @@ class Pos extends Component implements HasForms
 
         $formState = $this->form->getState();
 
-        $postransaction = PosTransaction::create([
+        $postransaction = POSTransaction::create([
             'trx_id' => $this->trx_id,
             'name' => $this->name_customer,
             'phone' => $this->phone,
@@ -535,6 +588,7 @@ class Pos extends Component implements HasForms
             'change_amount' => $formState['change_amount'],
             'is_cash' => $this->is_cash,
         ]);
+
 
         foreach ($this->order_items as $item) {
             $orderData = [
@@ -597,10 +651,14 @@ class Pos extends Component implements HasForms
         $this->gender = '';
         $this->payment_method_id = 0;
 
+        $this->trx_id = 'TRX-' . now()->format('Ymd') . '-' . Str::upper(Str::random(6));
+
         Notification::make()
             ->title('Checkout successful!')
             ->success()
             ->send();
+
+        return $this->downloadReceipt($postransaction->id);
     }
 
     public function handleScanResult($decodedText)

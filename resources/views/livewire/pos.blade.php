@@ -168,4 +168,19 @@
         </form>
     </div>
 </div>
+
+@script
+    <script>
+        // Handle download setelah checkout
+        $wire.on('receipt-downloaded', (event) => {
+            // Trigger download
+            const link = document.createElement('a');
+            link.href = event.url;
+            link.download = event.filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+    </script>
+@endscript
 <script src="https://unpkg.com/html5-qrcode"></script>

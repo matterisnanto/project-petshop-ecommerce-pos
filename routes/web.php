@@ -63,6 +63,8 @@ Route::get('/debug-cart', function () {
     ]);
 });
 
+Route::get('/pos/receipt/{transaction}', [Pos::class, 'downloadReceipt'])
+    ->name('pos.receipt');
 
 Route::get('/download-template', function () {
     return Excel::download(new TemplateExport, 'templateProduct.xlsx');
