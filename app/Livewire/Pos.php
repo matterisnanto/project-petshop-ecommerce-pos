@@ -143,7 +143,6 @@ class Pos extends Component implements HasForms
                                 FileUpload::make('photo')
                                     ->image()
                                     ->directory('pet-photos')
-                                    ->required()
                                     ->label('Pet Photo'),
                                 Textarea::make('description')
                                     ->required()
