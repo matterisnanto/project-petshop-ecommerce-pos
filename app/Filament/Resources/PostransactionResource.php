@@ -16,7 +16,7 @@ use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
 use App\Models\PaymentMethod;
-use App\Models\PosTransaction;
+use App\Models\POSTransaction;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\Group;
 use Filament\Forms\Components\Hidden;

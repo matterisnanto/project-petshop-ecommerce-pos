@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\PosTransaction;
+use App\Models\POSTransaction;
 use App\Models\Product;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -36,7 +36,7 @@ class PosTransactionController extends Controller
                         'product_id' => optional($order->product)->id,
                         'product_name' => optional($order->product)->name ?? '-',
                         'quantity' => $order->quantity,
-                        'unit_price' => $order->unit_price ?? 0 ,
+                        'unit_price' => $order->unit_price ?? 0,
                     ];
                 }),
                 'created_at' => $transaction->created_at,
@@ -181,7 +181,14 @@ class PosTransactionController extends Controller
         }
 
         $transaction->update($request->only([
-            'name', 'email', 'gender', 'total_price', 'note', 'payment_method_id', 'paid_amount', 'change_amount'
+            'name',
+            'email',
+            'gender',
+            'total_price',
+            'note',
+            'payment_method_id',
+            'paid_amount',
+            'change_amount'
         ]));
 
         return response()->json([

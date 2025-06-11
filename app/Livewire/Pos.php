@@ -21,7 +21,7 @@ use Filament\Forms\Form;
 use Illuminate\Support\Str;
 use App\Models\PaymentMethod;
 use App\Models\PetInformation;
-use App\Models\PosTransaction;
+use App\Models\POSTransaction;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Textarea;
@@ -214,7 +214,6 @@ class Pos extends Component implements HasForms
                                     ->visible(fn() => $this->hasHotelOrBreedingService())
                                     ->afterOrEqual('check_in'),
                                 TextInput::make('days')
-                                    ->readOnly()
                                     ->visible(fn() => $this->hasHotelOrBreedingService()),
                             ])
                             ->columns(2)

@@ -2,7 +2,7 @@
 
 namespace App\Filament\Widgets;
 
-use App\Models\PosTransaction;
+use App\Models\POSTransaction;
 use App\Models\OlshopTransaction;
 use Filament\Widgets\TableWidget;
 use Illuminate\Support\Collection;

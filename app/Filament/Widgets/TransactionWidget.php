@@ -3,7 +3,7 @@
 namespace App\Filament\Widgets;
 
 use App\Models\OlshopTransaction;
-use App\Models\PosTransaction;
+use App\Models\POSTransaction;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 
