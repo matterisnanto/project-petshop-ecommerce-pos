@@ -446,24 +446,41 @@ class Pos extends Component implements HasForms
     {
         $item = $this->order_items[$itemKey];
 
-        if ($item['type'] === 'product') {
-            $product = Product::find($item['product_id']);
-            if (!$product || $item['quantity'] + 1 > $product->stock) {
+        switch ($item['type']) {
+            case 'product':
+                $product = Product::find($item['product_id']);
+                if (!$product || $item['quantity'] + 1 > $product->stock) {
+                    Notification::make()
+                        ->title('Stok produk tidak mencukupi')
+                        ->danger()
+                        ->send();
+                    return;
+                }
+                break;
+
+            case 'animal':
+                $animal = Animals::find($item['animal_id']);
+                if (!$animal || $item['quantity'] + 1 > $animal->stock) {
+                    Notification::make()
+                        ->title('Stok hewan tidak mencukupi')
+                        ->danger()
+                        ->send();
+                    return;
+                }
+                break;
+
+            case 'grooming':
+            case 'hotel':
+            case 'breeding':
+                // These services don't have stock limitations, so we can just increase quantity
+                break;
+
+            default:
                 Notification::make()
-                    ->title('Stok produk tidak mencukupi')
+                    ->title('Jenis item tidak valid')
                     ->danger()
                     ->send();
                 return;
-            }
-        } else {
-            $animal = Animals::find($item['animal_id']);
-            if (!$animal || $item['quantity'] + 1 > $animal->stock) {
-                Notification::make()
-                    ->title('Stok hewan tidak mencukupi')
-                    ->danger()
-                    ->send();
-                return;
-            }
         }
 
         $this->order_items[$itemKey]['quantity']++;
