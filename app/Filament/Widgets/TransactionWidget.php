@@ -32,7 +32,7 @@ class TransactionWidget extends BaseWidget
         $revenuePos = PosTransaction::sum('total_price');
 
         return [
-            Stat::make('Total Transactions', $totalOlshop)
+            Stat::make('Total Olshop Transactions ', $totalOlshop)
                 ->description($mustVerify . ' must verify, ' . $verified . ' verified, ' . $onCourier . ' on courier, ' . $success . ' success')
                 ->descriptionIcon($mustVerify > 0 ? 'heroicon-m-exclamation-triangle' : 'heroicon-m-check-circle')
                 ->color($mustVerify > 0 ? 'warning' : 'success')
@@ -42,7 +42,7 @@ class TransactionWidget extends BaseWidget
                 ->description('From all online transactions')
                 ->descriptionIcon('heroicon-m-currency-dollar')
                 ->color('primary'),
-            Stat::make('Total Transactions', $totalPos)
+            Stat::make('Total POS Transactions', $totalPos)
                 ->description($today . ' transactions today')
                 ->descriptionIcon($today > 0 ? 'heroicon-m-arrow-trending-up' : 'heroicon-m-arrow-trending-down')
                 ->color($today > 0 ? 'success' : 'gray')

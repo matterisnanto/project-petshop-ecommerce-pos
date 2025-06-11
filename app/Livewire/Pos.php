@@ -111,6 +111,37 @@ class Pos extends Component implements HasForms
     {
         return $form
             ->schema([
+                Forms\Components\Section::make('Pet Information')
+                    ->visible(fn() => $this->hasServiceWithPetInfo())
+                    ->schema([
+                        Repeater::make('petInformation')
+                            ->schema([
+                                TextInput::make('name')
+                                    ->required()
+                                    ->label('Pet Name'),
+                                TextInput::make('age')
+                                    ->numeric()
+                                    ->required()
+                                    ->label('Pet Age'),
+                                FileUpload::make('photo')
+                                    ->image()
+                                    ->directory('pet-photos')
+                                    ->required()
+                                    ->label('Pet Photo'),
+                                Textarea::make('description')
+                                    ->required()
+                                    ->label('Pet Description'),
+                                DatePicker::make('check_in')
+                                    ->visible(fn() => $this->hasHotelOrBreedingService()),
+                                DatePicker::make('check_out')
+                                    ->visible(fn() => $this->hasHotelOrBreedingService())
+                                    ->afterOrEqual('check_in'),
+                                TextInput::make('days')
+                                    ->visible(fn() => $this->hasHotelOrBreedingService()),
+                            ])
+                            ->columns(2)
+                            ->columnSpanFull()
+                    ]),
                 Forms\Components\Section::make('Form Checkout')
                     ->schema([
                         Forms\Components\Hidden::make('trx_id')
@@ -186,38 +217,6 @@ class Pos extends Component implements HasForms
                             ->numeric()
                             ->label('Change')
                             ->readOnly(),
-                    ]),
-                // Add pet information section for services that need it
-                Forms\Components\Section::make('Pet Information')
-                    ->visible(fn() => $this->hasServiceWithPetInfo())
-                    ->schema([
-                        Repeater::make('petInformation')
-                            ->schema([
-                                TextInput::make('name')
-                                    ->required()
-                                    ->label('Pet Name'),
-                                TextInput::make('age')
-                                    ->numeric()
-                                    ->required()
-                                    ->label('Pet Age'),
-                                FileUpload::make('photo')
-                                    ->image()
-                                    ->directory('pet-photos')
-                                    ->required()
-                                    ->label('Pet Photo'),
-                                Textarea::make('description')
-                                    ->required()
-                                    ->label('Pet Description'),
-                                DatePicker::make('check_in')
-                                    ->visible(fn() => $this->hasHotelOrBreedingService()),
-                                DatePicker::make('check_out')
-                                    ->visible(fn() => $this->hasHotelOrBreedingService())
-                                    ->afterOrEqual('check_in'),
-                                TextInput::make('days')
-                                    ->visible(fn() => $this->hasHotelOrBreedingService()),
-                            ])
-                            ->columns(2)
-                            ->columnSpanFull()
                     ])
             ]);
     }
