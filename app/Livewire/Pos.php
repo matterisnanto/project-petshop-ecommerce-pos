@@ -158,7 +158,9 @@ class Pos extends Component implements HasForms
                                             $days = Carbon::parse($state)->diffInDays(Carbon::parse($checkOut));
                                             $set('days', $days);
                                         }
-                                    }),
+                                    })
+                                    ->minDate(now()->format('Y-m-d'))
+                                    ->default(now()->format('Y-m-d')),
                                 DatePicker::make('check_out')
                                     ->visible(fn(Get $get): bool =>
                                     isset($this->order_items[$get('service_item')]) &&
