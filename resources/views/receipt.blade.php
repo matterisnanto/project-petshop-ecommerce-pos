@@ -105,8 +105,8 @@
         <img src="{{ public_path('img/logo/Logonameblack.png') }}" alt="Pet Shop Logo" class="logo">
         <div class="title">Pet Shop Receipt</div>
         <div class="shop-info">
-            123 Pet Street, Animal City<br>
-            Phone: (123) 456-7890 | Website: cindypetshop.my.id<br>
+            Jl. H. Minang No.55, RT.03/RW.01, Karadenan, Kec. Cibinong, Kabupaten Bogor, Jawa Barat 16913<br>
+            Phone: +6285776104835 | Website: cindypetshop.my.id<br>
             Email: info@petshopexample.com
         </div>
     </div>
