@@ -61,14 +61,15 @@ class TransactionReturnResource extends Resource
                                         'pending' => 'Pending',
                                         'approved' => 'Approved',
                                         'rejected' => 'Rejected',
-                                        'completed' => 'Completed',
+                                        'processed' => 'Processed',
+                                        'refunded' => 'Refunded'
                                     ])
                                     ->required()
                                     ->default('pending')
                                     ->live()
                                     ->columnSpan(1)
                                     ->afterStateUpdated(function ($state, Forms\Set $set) {
-                                        if (in_array($state, ['approved', 'completed'])) {
+                                        if (in_array($state, ['approved', 'processed', 'refunded'])) {
                                             $set('return_approved_date', now());
                                         } else {
                                             $set('return_approved_date', null);
@@ -122,9 +123,9 @@ class TransactionReturnResource extends Resource
                                     ->columnSpan(1),
 
                                 Forms\Components\DatePicker::make('return_approved_date')
-                                    ->visible(fn($get) => in_array($get('status'), ['approved', 'completed']))
+                                    ->visible(fn($get) => in_array($get('status'), ['approved', 'processed', 'refunded']))
                                     ->disabled(fn($get) => $get('status') !== 'pending')
-                                    ->required(fn($get) => in_array($get('status'), ['approved', 'completed']))
+                                    ->required(fn($get) => in_array($get('status'), ['approved', 'processed', 'refunded']))
                                     ->native(false)
                                     ->displayFormat('d M Y')
                                     ->columnSpan(1),
@@ -352,11 +353,30 @@ class TransactionReturnResource extends Resource
                         'pending' => 'warning',
                         'approved' => 'success',
                         'rejected' => 'danger',
-                        'completed' => 'primary',
+                        'processed' => 'primary',
+                        'refunded' => 'info'
                     }),
-                Tables\Columns\TextColumn::make('returnItems.count')
-                    ->label('Items Count')
-                    ->counts('returnItems'),
+                Tables\Columns\TextColumn::make('returnItems')
+                    ->label('Items')
+                    ->formatStateUsing(function (TransactionReturn $record) {
+                        $count = $record->returnItems()->count();
+                        $productCount = $record->returnItems()->where('type', 'product')->count();
+                        $animalCount = $record->returnItems()->where('type', 'animal')->count();
+                        $groomingCount = $record->returnItems()->where('type', 'grooming')->count();
+                        $breedingCount = $record->returnItems()->where('type', 'breeding')->count();
+                        $hotelCount = $record->returnItems()->where('type', 'hotel')->count();
+
+                        if ($count === 0) return 'No Items';
+
+                        $details = [];
+                        if ($productCount > 0) $details[] = "{$productCount} products";
+                        if ($animalCount > 0) $details[] = "{$animalCount} animals";
+                        if ($groomingCount > 0) $details[] = "{$groomingCount} grooming";
+                        if ($breedingCount > 0) $details[] = "{$breedingCount} breeding";
+                        if ($hotelCount > 0) $details[] = "{$hotelCount} hotel";
+
+                        return $count . ' (' . implode(', ', $details) . ')';
+                    }),
                 Tables\Columns\TextColumn::make('return_approved_date')
                     ->date()
                     ->sortable(),
@@ -376,8 +396,9 @@ class TransactionReturnResource extends Resource
                     ]),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
                 Tables\Actions\ViewAction::make(),
+                Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -398,7 +419,7 @@ class TransactionReturnResource extends Resource
         return [
             'index' => Pages\ListTransactionReturns::route('/'),
             'create' => Pages\CreateTransactionReturn::route('/create'),
-            'edit' => Pages\EditTransactionReturn::route('/{record}/edit'),
+            // 'edit' => Pages\EditTransactionReturn::route('/{record}/edit'),
         ];
     }
 }
