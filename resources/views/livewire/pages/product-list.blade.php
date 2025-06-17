@@ -139,7 +139,7 @@
                                     {{ format_currency($product->selling_price) }}</p>
 
                                 <button type="button" wire:click="addToCart('{{ $product->id }}')"
-                                    class="inline-flex items-center rounded-lg bg-primary-500 px-2 py-1 text-xs font-medium text-white hover:bg-primary-600 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-600 dark:focus:ring-primary-800 md:px-2 md:py-1.5 md:text-sm">
+                                    class="inline-flex items-center rounded-lg bg-primary-500 px-2 py-1 text-xs font-medium text-white hover:bg-primary-600 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-800 dark:focus:ring-primary-800 md:px-2 md:py-1.5 md:text-sm">
                                     <svg class="-ms-1 me-1 h-3 w-3 md:h-5 md:w-5" aria-hidden="true"
                                         xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                         fill="none" viewBox="0 0 24 24">
@@ -162,46 +162,49 @@
             {{-- end list produk --}}
 
             <!-- Pagination -->
-            <div class="flex justify-center mt-6">
-                <nav aria-label="Pagination" class="shadow-sm rounded-lg overflow-hidden">
-                    <ul class="flex items-center gap-2 bg-white p-2 rounded-lg shadow-sm">
-                        <!-- Previous Button -->
-                        <li>
-                            <a href="#"
-                                class="flex items-center justify-center w-10 h-10 rounded-lg bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-700 transition duration-300">
-                                <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                    viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M15 19l-7-7 7-7" />
-                                </svg>
-                            </a>
-                        </li>
-                        <!-- Page Numbers -->
-                        <li><a href="#"
-                                class="px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-200 transition">1</a></li>
-                        <li><a href="#"
-                                class="px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-200 transition">2</a></li>
-                        <li><a href="#" {{-- class="px-4 py-2 rounded-lg bg-primary-500 text-white font-semibold shadow-lg">3</a> --}}
-                                class="px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-200 transition">3</a></li>
-                        </li>
-                        <li><a href="#"
-                                class="px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-200 transition">4</a></li>
-                        <li><a href="#"
-                                class="px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-200 transition">5</a></li>
-                        <!-- Next Button -->
-                        <li>
-                            <a href="#"
-                                class="flex items-center justify-center w-10 h-10 rounded-lg bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-700 transition duration-300">
-                                <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                    viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M9 5l7 7-7 7" />
-                                </svg>
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
+            <!-- Pagination -->
+            @if ($products->total() > $products->perPage())
+                <div class="flex justify-center mt-6">
+                    <nav aria-label="Pagination" class="shadow-sm rounded-lg overflow-hidden">
+                        <ul
+                            class="flex items-center gap-2 bg-white p-2 rounded-lg shadow-sm dark:border-gray-700 dark:bg-gray-800">
+                            <!-- Previous Button -->
+                            <li>
+                                <button wire:click="previousPage" wire:disabled="$products->onFirstPage()"
+                                    class="flex items-center justify-center w-10 h-10 rounded-lg bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-700 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed dark:border-gray-700 dark:text-white dark:hover:text-white dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-primary-800">
+                                    <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M15 19l-7-7 7-7" />
+                                    </svg>
+                                </button>
+                            </li>
+
+                            <!-- Page Numbers -->
+                            @foreach ($products->getUrlRange(1, $products->lastPage()) as $page => $url)
+                                <li>
+                                    <button wire:click="gotoPage({{ $page }})"
+                                        class="px-4 py-2 rounded-lg {{ $products->currentPage() == $page ? 'bg-primary-500 text-white font-semibold dark:bg-primary-600 dark:hover:bg-primary-800 dark:focus:ring-primary-800' : 'text-gray-600 hover:bg-gray-200 dark:border-gray-700 dark:text-white dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-primary-800' }} transition">
+                                        {{ $page }}
+                                    </button>
+                                </li>
+                            @endforeach
+
+                            <!-- Next Button -->
+                            <li>
+                                <button wire:click="nextPage" @if ($products->currentPage() >= $products->lastPage()) disabled @endif
+                                    class="flex items-center justify-center w-10 h-10 rounded-lg bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-700 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed dark:border-gray-700 dark:text-white dark:hover:text-white dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-primary-800">
+                                    <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9 5l7 7-7 7" />
+                                    </svg>
+                                </button>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            @endif
 
         </div>
         <!-- Filter modal -->
@@ -240,6 +243,13 @@
                                         class="inline-block border-b-2 border-transparent px-2 pb-2 pr-1 hover:border-gray-300 hover:text-gray-600 dark:hover:text-gray-300"
                                         id="category-tab" data-tabs-target="#category" type="button" role="tab"
                                         aria-controls="category" aria-selected="false">Category</button>
+                                </li>
+                                <li class="mr-1" role="presentation">
+                                    <button
+                                        class="inline-block border-b-2 border-transparent px-2 pb-2 hover:border-gray-300 hover:text-gray-600 dark:hover:text-gray-300"
+                                        id="animal-category-tab" data-tabs-target="#animal-category" type="button"
+                                        role="tab" aria-controls="animal-category" aria-selected="false">Animal
+                                        Category</button>
                                 </li>
                                 <li class="mr-1" role="presentation">
                                     <button
@@ -291,6 +301,31 @@
                                                 <label for="category-{{ $category->id }}"
                                                     class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
                                                     {{ $category->name }} ({{ $category->products_count }})
+                                                </label>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                @endforeach
+                            </div>
+
+                            <div class="hidden grid-cols-2 gap-4 md:grid-cols-3 p-4 rounded-lg bg-gray-50 dark:bg-gray-800"
+                                id="animal-category" role="tabpanel" aria-labelledby="animal-category-tab">
+                                @foreach ($animalCategories->groupBy(function ($item) {
+        return strtoupper(substr($item->name, 0, 1));
+    }) as $initial => $animalCategoryGroup)
+                                    <div class="space-y-2">
+                                        <h5 class="text-lg font-medium uppercase text-black dark:text-white">
+                                            {{ $initial }}</h5>
+                                        @foreach ($animalCategoryGroup as $animalCategory)
+                                            <div class="flex items-center">
+                                                <input id="animal-category-{{ $animalCategory->id }}" type="checkbox"
+                                                    wire:model="selectedAnimalCategories"
+                                                    value="{{ $animalCategory->id }}"
+                                                    class="h-4 w-4 rounded border-gray-300 bg-gray-100 text-primary-600 focus:ring-2 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-primary-600" />
+                                                <label for="animal-category-{{ $animalCategory->id }}"
+                                                    class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
+                                                    {{ $animalCategory->name }}
+                                                    ({{ $animalCategory->products_count }})
                                                 </label>
                                             </div>
                                         @endforeach

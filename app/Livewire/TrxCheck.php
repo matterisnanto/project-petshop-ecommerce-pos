@@ -3,9 +3,11 @@
 namespace App\Livewire;
 
 use Livewire\Component;
+use Livewire\Attributes\Title;
 use App\Models\OlshopTransaction;
 use Illuminate\Support\Facades\Session;
 
+#[Title('TRX Check - Cindy Petshop')]
 class TrxCheck extends Component
 {
     public $transactionId;

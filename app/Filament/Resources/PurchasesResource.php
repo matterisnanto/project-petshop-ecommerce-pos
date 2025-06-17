@@ -191,7 +191,9 @@ class PurchasesResource extends Resource
                                                         Forms\Components\TextInput::make('name')
                                                             ->label('Product Name')
                                                             ->afterStateUpdated(function (Set $set, $state) {
-                                                                $set('slug', Product::generateUniqueSlug($state));
+                                                                if (!empty($state)) {
+                                                                    $set('slug', Product::generateUniqueSlug($state));
+                                                                }
                                                             })
                                                             ->live(onBlur: true)
                                                             ->maxLength(255)
@@ -252,7 +254,9 @@ class PurchasesResource extends Resource
                                                                                 Forms\Components\TextInput::make('name')
                                                                                     ->label('Category Name')
                                                                                     ->afterStateUpdated(function (Set $set, $state) {
-                                                                                        $set('slug', Category::generateUniqueSlug($state));
+                                                                                        if (!empty($state)) {
+                                                                                            $set('slug', Category::generateUniqueSlug($state));
+                                                                                        }
                                                                                     })
                                                                                     ->required()
                                                                                     ->live(onBlur: true)
@@ -306,7 +310,9 @@ class PurchasesResource extends Resource
                                                                                 Forms\Components\TextInput::make('name')
                                                                                     ->label('Brand Name')
                                                                                     ->afterStateUpdated(function (Set $set, $state) {
-                                                                                        $set('slug', Brand::generateUniqueSlug($state));
+                                                                                        if (!empty($state)) {
+                                                                                            $set('slug', Brand::generateUniqueSlug($state));
+                                                                                        }
                                                                                     })
                                                                                     ->required()
                                                                                     ->live(onBlur: true)
@@ -392,7 +398,9 @@ class PurchasesResource extends Resource
                                                                 Forms\Components\TextInput::make('name')
                                                                     ->label('Name')
                                                                     ->afterStateUpdated(function (Set $set, $state) {
-                                                                        $set('slug', Animals::generateUniqueSlug($state));
+                                                                        if (!empty($state)) {
+                                                                            $set('slug', Animals::generateUniqueSlug($state));
+                                                                        }
                                                                     })
                                                                     ->required()
                                                                     ->live(onBlur: true)
@@ -429,7 +437,9 @@ class PurchasesResource extends Resource
                                                                                         Forms\Components\TextInput::make('name')
                                                                                             ->label('Category Name')
                                                                                             ->afterStateUpdated(function (Set $set, $state) {
-                                                                                                $set('slug', CategoryAnimals::generateUniqueSlug($state));
+                                                                                                if (!empty($state)) {
+                                                                                                    $set('slug', CategoryAnimals::generateUniqueSlug($state));
+                                                                                                }
                                                                                             })
                                                                                             ->required()
                                                                                             ->live(onBlur: true)
@@ -507,7 +517,9 @@ class PurchasesResource extends Resource
                                                                                                                 Forms\Components\TextInput::make('name')
                                                                                                                     ->label('Category Name')
                                                                                                                     ->afterStateUpdated(function (Set $set, $state) {
-                                                                                                                        $set('slug', CategoryAnimals::generateUniqueSlug($state));
+                                                                                                                        if (!empty($state)) {
+                                                                                                                            $set('slug', CategoryAnimals::generateUniqueSlug($state));
+                                                                                                                        }
                                                                                                                     })
                                                                                                                     ->required()
                                                                                                                     ->live(onBlur: true)
@@ -557,7 +569,9 @@ class PurchasesResource extends Resource
                                                                                         Forms\Components\TextInput::make('name')
                                                                                             ->label('Breed Name')
                                                                                             ->afterStateUpdated(function (Set $set, $state) {
-                                                                                                $set('slug', Breeds::generateUniqueSlug($state));
+                                                                                                if (!empty($state)) {
+                                                                                                    $set('slug', Breeds::generateUniqueSlug($state));
+                                                                                                }
                                                                                             })
                                                                                             ->required()
                                                                                             ->live(onBlur: true)

@@ -16,7 +16,7 @@ use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
 use App\Models\PaymentMethod;
-use App\Models\PosTransaction;
+use App\Models\POSTransaction;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\Group;
 use Filament\Forms\Components\Hidden;
@@ -30,6 +30,7 @@ use Filament\Notifications\Notification;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use App\Filament\Resources\PostransactionResource\Pages;
+use Illuminate\Database\Eloquent\Builder;
 
 class PostransactionResource extends Resource
 {
@@ -72,6 +73,16 @@ class PostransactionResource extends Resource
                                 Forms\Components\Hidden::make('trx_id')
                                     ->default('TRX-' . now()->format('Ymd') . '-' . Str::upper(Str::random(6))),
                                 Forms\Components\TextInput::make('name')->maxLength(255),
+                                Forms\Components\TextInput::make('phone')
+                                    ->label('Phone Number')
+                                    ->tel()
+                                    ->mask('999-9999-9999')
+                                    ->prefix('+62')
+                                    ->maxLength(255)
+                                    ->dehydrateStateUsing(function ($state) {
+                                        // Menambahkan prefix +62 ke data sebelum disimpan ke database
+                                        return '+62' . str_replace('-', '', $state);
+                                    }),
                                 Forms\Components\TextInput::make('email')->email()->maxLength(255)->default(null),
                                 Forms\Components\Select::make('gender')
                                     ->options([
@@ -330,17 +341,78 @@ class PostransactionResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')->searchable(),
+                Tables\Columns\TextColumn::make('trx_id')->searchable(),
                 Tables\Columns\TextColumn::make('gender'),
-                Tables\Columns\TextColumn::make('total_price')->numeric()->sortable(),
+                Tables\Columns\TextColumn::make('total_price')
+                    ->numeric()
+                    ->sortable()
+                    ->money('IDR'),
                 Tables\Columns\TextColumn::make('paymentMethod.name')
                     ->label('Payment Method')
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('paid_amount')->numeric()->sortable(),
-                Tables\Columns\TextColumn::make('change_amount')->numeric()->sortable(),
-                Tables\Columns\TextColumn::make('created_at')->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('paid_amount')
+                    ->numeric()
+                    ->sortable()
+                    ->money('IDR'),
+                Tables\Columns\TextColumn::make('change_amount')
+                    ->numeric()
+                    ->money('IDR'),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('updated_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+            ])
+            ->filters([
+                // Date filter
+                Tables\Filters\Filter::make('created_at')
+                    ->form([
+                        DatePicker::make('date_from'),
+                        DatePicker::make('date_to'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['date_from'],
+                                fn(Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                            )
+                            ->when(
+                                $data['date_to'],
+                                fn(Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+                            );
+                    }),
+
+                // Month filter
+                Tables\Filters\SelectFilter::make('month')
+                    ->options([
+                        '01' => 'January',
+                        '02' => 'February',
+                        '03' => 'March',
+                        '04' => 'April',
+                        '05' => 'May',
+                        '06' => 'June',
+                        '07' => 'July',
+                        '08' => 'August',
+                        '09' => 'September',
+                        '10' => 'October',
+                        '11' => 'November',
+                        '12' => 'December',
+                    ])
+                    ->query(function (Builder $query, $data) {
+                        if ($data['value']) {
+                            $query->whereMonth('created_at', $data['value']);
+                        }
+                    }),
+
+                // Payment method filter
+                Tables\Filters\SelectFilter::make('payment_method')
+                    ->relationship('paymentMethod', 'name')
+                    ->searchable()
+                    ->preload(),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),

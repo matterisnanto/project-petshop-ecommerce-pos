@@ -17,6 +17,7 @@ return new class extends Migration
             $table->decimal('discount_amount', 12, 2);
             $table->dateTime('start_date')->useCurrent();
             $table->dateTime('end_date');
+            $table->boolean('is_active')->default(false);
             $table->timestamps();
             $table->softDeletes();
         });

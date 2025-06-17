@@ -52,7 +52,7 @@ class PromocodeResource extends Resource
                             ->helperText('Enter uppercase letters and numbers only')
                             ->prefixIcon('heroicon-o-tag')  // Added tag icon
                             ->hint('Max 255 characters'),
-    
+
                         Forms\Components\TextInput::make('discount_amount')
                             ->label('Discount Value')
                             ->required()
@@ -67,7 +67,7 @@ class PromocodeResource extends Resource
                             ->helperText('Enter the discount amount in Rupiah')
                             ->hint('Max Rp 10,000,000')
                             ->hintColor('danger'),
-    
+
                         Forms\Components\DatePicker::make('start_date')
                             ->label('Start Date')
                             ->required()
@@ -76,7 +76,7 @@ class PromocodeResource extends Resource
                             ->prefixIcon('heroicon-o-calendar')  // Changed to play icon
                             ->columnSpan(['md' => 1])
                             ->helperText('When the promo becomes active'),
-    
+
                         Forms\Components\DatePicker::make('end_date')
                             ->label('End Date')
                             ->required()
@@ -86,7 +86,7 @@ class PromocodeResource extends Resource
                             ->prefixIcon('heroicon-o-calendar')  // Changed to stop icon
                             ->columnSpan(['md' => 1])
                             ->helperText('When the promo expires'),
-    
+
                         Forms\Components\Toggle::make('is_active')
                             ->label('Active Status')
                             ->required()
@@ -113,25 +113,25 @@ class PromocodeResource extends Resource
                     ->weight(FontWeight::Bold)
                     ->color('primary')
                     ->alignCenter(),
-                
+
                 Tables\Columns\TextColumn::make('discount_amount')
                     ->numeric()
                     ->sortable()
-                    ->label('DISCOUNT')
+                    ->label('DISCOUNT AMOUNT')
                     ->money('IDR', locale: 'id')
                     ->color('success')
                     ->weight('bold')
                     ->alignCenter(),
-                
+
                 Tables\Columns\TextColumn::make('start_date')
                     ->sortable()
                     ->label('START DATE')
                     ->dateTime('d M Y')
                     ->alignCenter()
-                    ->description(fn ($record) => $record->end_date 
-                        ? 'Until: '.Carbon::parse($record->end_date)->format('d M Y') 
+                    ->description(fn($record) => $record->end_date
+                        ? 'Until: ' . Carbon::parse($record->end_date)->format('d M Y')
                         : null),
-                
+
                 Tables\Columns\ToggleColumn::make('is_active')
                     ->label('STATUS')
                     ->onColor('success')
@@ -145,19 +145,19 @@ class PromocodeResource extends Resource
                             ->send();
                     })
                     ->extraAttributes(['class' => 'px-4']),
-                
+
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('CREATED AT')
                     ->dateTime('d M Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                
+
                 Tables\Columns\TextColumn::make('updated_at')
                     ->label('UPDATED AT')
                     ->dateTime('d M Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                
+
                 Tables\Columns\TextColumn::make('deleted_at')
                     ->label('DELETED AT')
                     ->dateTime('d M Y H:i')
@@ -169,14 +169,14 @@ class PromocodeResource extends Resource
             ])
             ->actions([
                 //Tables\Actions\ViewAction::make()
-                    //->iconButton()
-                    //->color('primary') // Blue color
-                    //->tooltip('View'),
-                    
+                //->iconButton()
+                //->color('primary') // Blue color
+                //->tooltip('View'),
+
                 Tables\Actions\EditAction::make()
                     ->iconButton()
                     ->tooltip('Edit'),
-                    
+
                 Tables\Actions\DeleteAction::make()
                     ->iconButton()
                     ->tooltip('Delete'),

@@ -325,8 +325,7 @@ class OlshoptransactionResource extends Resource
                         ->columns(2),
                 ])
                     ->columnSpan('full')
-                    ->columns(1)
-                    ->skippable(),
+                    ->columns(1),
 
             ]);
     }

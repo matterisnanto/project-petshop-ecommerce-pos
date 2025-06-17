@@ -4,8 +4,10 @@ namespace App\Livewire;
 
 use App\Models\Product;
 use Livewire\Component;
+use Livewire\Attributes\Title;
 use Illuminate\Support\Facades\Session;
 
+#[Title('Product - Cindy Petshop')]
 class ProductDetail extends Component
 {
     public Product $product;

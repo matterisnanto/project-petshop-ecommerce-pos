@@ -8,10 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Animals extends Model
 {
     use HasFactory;
+    use SoftDeletes;
     protected $table = 'animals';
     //
     protected $fillable = ['name', 'slug', 'barcode', 'category_animals_id', 'breeds_id', 'age', 'weight', 'stock', 'gender', 'health_status', 'vaccination_status', 'thumbnail', 'description', 'purchase_price', 'selling_price', 'is_active'];
@@ -29,6 +31,11 @@ class Animals extends Model
     public function animalsPhotos(): HasMany
     {
         return $this->hasMany(AnimalsPhoto::class, 'animals_id');
+    }
+
+    public function getImageUrlAttribute()
+    {
+        return $this->thumbnail ? url('storage/', $this->thumbnail) : null;
     }
 
     public static function generateUniqueSlug(string $name): string

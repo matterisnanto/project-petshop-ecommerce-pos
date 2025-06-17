@@ -20,7 +20,7 @@ class SupplierResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-truck';
 
-    protected static ?string $navigationLabel = 'Supplier';
+    protected static ?string $navigationLabel = 'Suppliers';
 
     protected static ?string $modelLabel = 'Supplier';
 
@@ -28,13 +28,12 @@ class SupplierResource extends Resource
 
     protected static ?int $navigationSort = 5;
 
-    protected static ?string $pluralModelLabel = 'Supplier';
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Supplier Information')
-                    ->description('Enter complete supplier details')
+                Forms\Components\Section::make('Supplier Details')
+                    ->description('Fill in the supplier information')
                     ->icon('heroicon-o-user-circle')
                     ->schema([
                         Forms\Components\Grid::make()
@@ -44,14 +43,15 @@ class SupplierResource extends Resource
                                     ->required()
                                     ->maxLength(255)
                                     ->placeholder('e.g., PT. Supplier Maju Jaya')
-                                    ->columnSpan(['md' => 2]),
+                                    ->columnSpan(['md' => 2])
+                                    ->autofocus(),
 
                                 Forms\Components\TextInput::make('email')
                                     ->label('Email Address')
                                     ->email()
-                                    ->unique()
                                     ->required()
                                     ->maxLength(255)
+                                    ->unique(ignoreRecord: true)
                                     ->placeholder('supplier@example.com')
                                     ->prefixIcon('heroicon-o-envelope')
                                     ->columnSpan(['md' => 2]),
@@ -68,20 +68,19 @@ class SupplierResource extends Resource
                             ->stripCharacters(['-', ' '])
                             ->rule('digits_between:10,13')
                             ->afterStateHydrated(function (TextInput $component, $state) {
-                                // Remove +62 if already present to avoid duplication
                                 $cleaned = str_replace('+62', '', $state);
                                 $component->state($cleaned);
                             })
                             ->dehydrateStateUsing(fn($state) => '+62' . $state)
                             ->placeholder('81234567890')
-                            ->prefixIcon('heroicon-o-phone')
+                            ->prefixIcon('heroicon-o-device-phone-mobile')
                             ->helperText('Enter number without +62 (e.g., 81234567890)')
                             ->columnSpan(['md' => 2]),
 
                         Forms\Components\Textarea::make('address')
                             ->label('Full Address')
                             ->required()
-                            ->maxLength(255)
+                            ->maxLength(500)
                             ->rows(3)
                             ->placeholder('Street, City, Province, Postal Code')
                             ->columnSpanFull(),
@@ -90,25 +89,29 @@ class SupplierResource extends Resource
                     ->collapsible(),
             ]);
     }
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->withoutGlobalScopes([
+                SoftDeletingScope::class,
+            ]);
+    }
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('email')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('phone')
-                    ->label('Phone')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('address')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
+                    ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -118,16 +121,35 @@ class SupplierResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                Tables\Filters\TrashedFilter::make(),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\ViewAction::make()
+                    ->iconButton()
+                    ->color('primary')
+                    ->tooltip('View Details'),
+
+                Tables\Actions\EditAction::make()
+                    ->iconButton()
+                    ->color('success')
+                    ->tooltip('Edit Brand'),
+
+                Tables\Actions\DeleteAction::make()
+                    ->iconButton()
+                    ->color('danger')
+                    ->tooltip('Delete Brand'),
+
+                Tables\Actions\RestoreAction::make()
+                    ->iconButton()
+                    ->color('warning')
+                    ->tooltip('Restore Brand'), // Add restore action
+                Tables\Actions\ForceDeleteAction::make(), // Add force delete action
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\RestoreBulkAction::make(), // Add bulk restore
+                    Tables\Actions\ForceDeleteBulkAction::make(), // Add bulk force delete
                 ]),
             ]);
     }
@@ -135,7 +157,7 @@ class SupplierResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            // RelationManagers\ProductsRelationManager::class,
         ];
     }
 
@@ -144,7 +166,6 @@ class SupplierResource extends Resource
         return [
             'index' => Pages\ListSuppliers::route('/'),
             'create' => Pages\CreateSupplier::route('/create'),
-            // 'edit' => Pages\EditSupplier::route('/{record}/edit'),
         ];
     }
 }

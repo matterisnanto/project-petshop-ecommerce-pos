@@ -5,14 +5,14 @@
         <div class="mx-auto grid max-w-screen-xl  px-4 pb-8 md:grid-cols-12 lg:gap-12 lg:pb-16 xl:gap-0">
             <!-- Gambar untuk layar mobile -->
             <div class="md:hidden mb-6">
-                <img src="{{ url('/img/Catanddog-amico.png') }}" alt="shopping illustration" class="w-full" />
+                <img src="{{ url('img/Catanddog-amico.png') }}" alt="shopping illustration" class="w-full" />
             </div>
 
             <!-- Teks dan tombol -->
             <div class="content-center justify-self-start md:col-span-7 md:text-start">
                 <h1
                     class="mb-4 text-3xl font-extrabold leading-none tracking-tight dark:text-white md:max-w-2xl md:text-5xl xl:text-6xl">
-                    Sayangi hewan peliharaan Anda, Manjakan Disisni!
+                    Sayangi hewan peliharaan Anda, Manjakan Disini!
                 </h1>
                 <p class="mb-4 max-w-2xl text-gray-500 dark:text-gray-400 md:mb-12 md:text-lg lg:mb-5 lg:text-xl">
                     Berikan makanan dan fasilitas yang baik
@@ -176,174 +176,170 @@
     {{-- end card with cta --}}
 
     {{-- product favorites --}}
-    {{-- <div class="hidden xl:mt-8 xl:block">
-                        <h3 class="text-2xl font-semibold text-gray-900 dark:text-white">People also bought</h3>
-                        <div class="mt-6 grid grid-cols-3 gap-4 sm:mt-8">
-                            <div
-                                class="space-y-6 overflow-hidden rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
-                                <a href="#" class="overflow-hidden rounded">
-                                    <img class="mx-auto h-44 w-44 dark:hidden"
-                                        src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/imac-front.svg"
-                                        alt="imac image" />
-                                    <img class="mx-auto hidden h-44 w-44 dark:block"
-                                        src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/imac-front-dark.svg"
-                                        alt="imac image" />
-                                </a>
-                                <div>
-                                    <a href="#"
-                                        class="text-lg font-semibold leading-tight text-gray-900 hover:underline dark:text-white">iMac
-                                        27”</a>
-                                    <p class="mt-2 text-base font-normal text-gray-500 dark:text-gray-400">This generation
-                                        has some improvements, including a longer continuous battery life.</p>
-                                </div>
-                                <div>
-                                    <p class="text-lg font-bold text-gray-900 dark:text-white">
-                                        <span class="line-through"> $399,99 </span>
-                                    </p>
-                                    <p class="text-lg font-bold leading-tight text-red-600 dark:text-red-500">$299</p>
-                                </div>
-                                <div class="mt-6 flex items-center gap-2.5">
-                                    <button data-tooltip-target="favourites-tooltip-1" type="button"
-                                        class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white p-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700">
-                                        <svg class="h-5 w-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                                            fill="none" viewBox="0 0 24 24">
-                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                                stroke-width="2" d="M12 6C6.5 1 1 8 5.8 13l6.2 7 6.2-7C23 8 17.5 1 12 6Z">
-                                            </path>
-                                        </svg>
-                                    </button>
-                                    <div id="favourites-tooltip-1" role="tooltip"
-                                        class="tooltip invisible absolute z-10 inline-block rounded-lg bg-gray-900 px-3 py-2 text-sm font-medium text-white opacity-0 shadow-sm transition-opacity duration-300 dark:bg-gray-700">
-                                        Add to favourites
-                                        <div class="tooltip-arrow" data-popper-arrow></div>
-                                    </div>
-                                    <button type="button"
-                                        class="inline-flex w-full items-center justify-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium  text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-600 dark:focus:ring-primary-800">
-                                        <svg class="-ms-2 me-2 h-5 w-5" aria-hidden="true"
-                                            xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                            fill="none" viewBox="0 0 24 24">
-                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                                stroke-width="2"
-                                                d="M5 4h1.5L9 16m0 0h8m-8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-8.5-3h9.25L19 7h-1M8 7h-.688M13 5v4m-2-2h4" />
-                                        </svg>
-                                        Add to cart
-                                    </button>
-                                </div>
-                            </div>
-                            <div
-                                class="space-y-6 overflow-hidden rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
-                                <a href="#" class="overflow-hidden rounded">
-                                    <img class="mx-auto h-44 w-44 dark:hidden"
-                                        src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/ps5-light.svg"
-                                        alt="imac image" />
-                                    <img class="mx-auto hidden h-44 w-44 dark:block"
-                                        src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/ps5-dark.svg"
-                                        alt="imac image" />
-                                </a>
-                                <div>
-                                    <a href="#"
-                                        class="text-lg font-semibold leading-tight text-gray-900 hover:underline dark:text-white">Playstation
-                                        5</a>
-                                    <p class="mt-2 text-base font-normal text-gray-500 dark:text-gray-400">This generation
-                                        has some improvements, including a longer continuous battery life.</p>
-                                </div>
-                                <div>
-                                    <p class="text-lg font-bold text-gray-900 dark:text-white">
-                                        <span class="line-through"> $799,99 </span>
-                                    </p>
-                                    <p class="text-lg font-bold leading-tight text-red-600 dark:text-red-500">$499</p>
-                                </div>
-                                <div class="mt-6 flex items-center gap-2.5">
-                                    <button data-tooltip-target="favourites-tooltip-2" type="button"
-                                        class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white p-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700">
-                                        <svg class="h-5 w-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                                            fill="none" viewBox="0 0 24 24">
-                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                                stroke-width="2" d="M12 6C6.5 1 1 8 5.8 13l6.2 7 6.2-7C23 8 17.5 1 12 6Z">
-                                            </path>
-                                        </svg>
-                                    </button>
-                                    <div id="favourites-tooltip-2" role="tooltip"
-                                        class="tooltip invisible absolute z-10 inline-block rounded-lg bg-gray-900 px-3 py-2 text-sm font-medium text-white opacity-0 shadow-sm transition-opacity duration-300 dark:bg-gray-700">
-                                        Add to favourites
-                                        <div class="tooltip-arrow" data-popper-arrow></div>
-                                    </div>
-                                    <button type="button"
-                                        class="inline-flex w-full items-center justify-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium  text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-600 dark:focus:ring-primary-800">
-                                        <svg class="-ms-2 me-2 h-5 w-5" aria-hidden="true"
-                                            xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                            fill="none" viewBox="0 0 24 24">
-                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                                stroke-width="2"
-                                                d="M5 4h1.5L9 16m0 0h8m-8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-8.5-3h9.25L19 7h-1M8 7h-.688M13 5v4m-2-2h4" />
-                                        </svg>
-                                        Add to cart
-                                    </button>
-                                </div>
-                            </div>
-                            <div
-                                class="space-y-6 overflow-hidden rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
-                                <a href="#" class="overflow-hidden rounded">
-                                    <img class="mx-auto h-44 w-44 dark:hidden"
-                                        src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/apple-watch-light.svg"
-                                        alt="imac image" />
-                                    <img class="mx-auto hidden h-44 w-44 dark:block"
-                                        src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/apple-watch-dark.svg"
-                                        alt="imac image" />
-                                </a>
-                                <div>
-                                    <a href="#"
-                                        class="text-lg font-semibold leading-tight text-gray-900 hover:underline dark:text-white">Apple
-                                        Watch Series 8</a>
-                                    <p class="mt-2 text-base font-normal text-gray-500 dark:text-gray-400">This generation
-                                        has some improvements, including a longer continuous battery life.</p>
-                                </div>
-                                <div>
-                                    <p class="text-lg font-bold text-gray-900 dark:text-white">
-                                        <span class="line-through"> $1799,99 </span>
-                                    </p>
-                                    <p class="text-lg font-bold leading-tight text-red-600 dark:text-red-500">$1199</p>
-                                </div>
-                                <div class="mt-6 flex items-center gap-2.5">
-                                    <button data-tooltip-target="favourites-tooltip-3" type="button"
-                                        class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white p-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700">
-                                        <svg class="h-5 w-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                                            fill="none" viewBox="0 0 24 24">
-                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                                stroke-width="2" d="M12 6C6.5 1 1 8 5.8 13l6.2 7 6.2-7C23 8 17.5 1 12 6Z">
-                                            </path>
-                                        </svg>
-                                    </button>
-                                    <div id="favourites-tooltip-3" role="tooltip"
-                                        class="tooltip invisible absolute z-10 inline-block rounded-lg bg-gray-900 px-3 py-2 text-sm font-medium text-white opacity-0 shadow-sm transition-opacity duration-300 dark:bg-gray-700">
-                                        Add to favourites
-                                        <div class="tooltip-arrow" data-popper-arrow></div>
-                                    </div>
+    {{-- <div class="hidden xl:mt-8 xl:block mb-10">
+        <h3 class="text-2xl font-semibold text-gray-900 dark:text-white">People also bought</h3>
+        <div class="mt-6 grid grid-cols-3 gap-4 sm:mt-8">
+            <div
+                class="space-y-6 overflow-hidden rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+                <a href="#" class="overflow-hidden rounded">
+                    <img class="mx-auto h-44 w-44 dark:hidden"
+                        src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/imac-front.svg" alt="imac image" />
+                    <img class="mx-auto hidden h-44 w-44 dark:block"
+                        src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/imac-front-dark.svg"
+                        alt="imac image" />
+                </a>
+                <div>
+                    <a href="#"
+                        class="text-lg font-semibold leading-tight text-gray-900 hover:underline dark:text-white">iMac
+                        27”</a>
+                    <p class="mt-2 text-base font-normal text-gray-500 dark:text-gray-400">This generation
+                        has some improvements, including a longer continuous battery life.</p>
+                </div>
+                <div>
+                    <p class="text-lg font-bold text-gray-900 dark:text-white">
+                        <span class="line-through"> $399,99 </span>
+                    </p>
+                    <p class="text-lg font-bold leading-tight text-red-600 dark:text-red-500">$299</p>
+                </div>
+                <div class="mt-6 flex items-center gap-2.5">
+                    <button data-tooltip-target="favourites-tooltip-1" type="button"
+                        class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white p-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700">
+                        <svg class="h-5 w-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                            viewBox="0 0 24 24">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                stroke-width="2" d="M12 6C6.5 1 1 8 5.8 13l6.2 7 6.2-7C23 8 17.5 1 12 6Z">
+                            </path>
+                        </svg>
+                    </button>
+                    <div id="favourites-tooltip-1" role="tooltip"
+                        class="tooltip invisible absolute z-10 inline-block rounded-lg bg-gray-900 px-3 py-2 text-sm font-medium text-white opacity-0 shadow-sm transition-opacity duration-300 dark:bg-gray-700">
+                        Add to favourites
+                        <div class="tooltip-arrow" data-popper-arrow></div>
+                    </div>
+                    <button type="button"
+                        class="inline-flex w-full items-center justify-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium  text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-600 dark:focus:ring-primary-800">
+                        <svg class="-ms-2 me-2 h-5 w-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                            width="24" height="24" fill="none" viewBox="0 0 24 24">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M5 4h1.5L9 16m0 0h8m-8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-8.5-3h9.25L19 7h-1M8 7h-.688M13 5v4m-2-2h4" />
+                        </svg>
+                        Add to cart
+                    </button>
+                </div>
+            </div>
+            <div
+                class="space-y-6 overflow-hidden rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+                <a href="#" class="overflow-hidden rounded">
+                    <img class="mx-auto h-44 w-44 dark:hidden"
+                        src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/ps5-light.svg" alt="imac image" />
+                    <img class="mx-auto hidden h-44 w-44 dark:block"
+                        src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/ps5-dark.svg" alt="imac image" />
+                </a>
+                <div>
+                    <a href="#"
+                        class="text-lg font-semibold leading-tight text-gray-900 hover:underline dark:text-white">Playstation
+                        5</a>
+                    <p class="mt-2 text-base font-normal text-gray-500 dark:text-gray-400">This generation
+                        has some improvements, including a longer continuous battery life.</p>
+                </div>
+                <div>
+                    <p class="text-lg font-bold text-gray-900 dark:text-white">
+                        <span class="line-through"> $799,99 </span>
+                    </p>
+                    <p class="text-lg font-bold leading-tight text-red-600 dark:text-red-500">$499</p>
+                </div>
+                <div class="mt-6 flex items-center gap-2.5">
+                    <button data-tooltip-target="favourites-tooltip-2" type="button"
+                        class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white p-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700">
+                        <svg class="h-5 w-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                            viewBox="0 0 24 24">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                stroke-width="2" d="M12 6C6.5 1 1 8 5.8 13l6.2 7 6.2-7C23 8 17.5 1 12 6Z">
+                            </path>
+                        </svg>
+                    </button>
+                    <div id="favourites-tooltip-2" role="tooltip"
+                        class="tooltip invisible absolute z-10 inline-block rounded-lg bg-gray-900 px-3 py-2 text-sm font-medium text-white opacity-0 shadow-sm transition-opacity duration-300 dark:bg-gray-700">
+                        Add to favourites
+                        <div class="tooltip-arrow" data-popper-arrow></div>
+                    </div>
+                    <button type="button"
+                        class="inline-flex w-full items-center justify-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium  text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-600 dark:focus:ring-primary-800">
+                        <svg class="-ms-2 me-2 h-5 w-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                            width="24" height="24" fill="none" viewBox="0 0 24 24">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M5 4h1.5L9 16m0 0h8m-8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-8.5-3h9.25L19 7h-1M8 7h-.688M13 5v4m-2-2h4" />
+                        </svg>
+                        Add to cart
+                    </button>
+                </div>
+            </div>
+            <div
+                class="space-y-6 overflow-hidden rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+                <a href="#" class="overflow-hidden rounded">
+                    <img class="mx-auto h-44 w-44 dark:hidden"
+                        src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/apple-watch-light.svg"
+                        alt="imac image" />
+                    <img class="mx-auto hidden h-44 w-44 dark:block"
+                        src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/apple-watch-dark.svg"
+                        alt="imac image" />
+                </a>
+                <div>
+                    <a href="#"
+                        class="text-lg font-semibold leading-tight text-gray-900 hover:underline dark:text-white">Apple
+                        Watch Series 8</a>
+                    <p class="mt-2 text-base font-normal text-gray-500 dark:text-gray-400">This generation
+                        has some improvements, including a longer continuous battery life.</p>
+                </div>
+                <div>
+                    <p class="text-lg font-bold text-gray-900 dark:text-white">
+                        <span class="line-through"> $1799,99 </span>
+                    </p>
+                    <p class="text-lg font-bold leading-tight text-red-600 dark:text-red-500">$1199</p>
+                </div>
+                <div class="mt-6 flex items-center gap-2.5">
+                    <button data-tooltip-target="favourites-tooltip-3" type="button"
+                        class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white p-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700">
+                        <svg class="h-5 w-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                            viewBox="0 0 24 24">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                stroke-width="2" d="M12 6C6.5 1 1 8 5.8 13l6.2 7 6.2-7C23 8 17.5 1 12 6Z">
+                            </path>
+                        </svg>
+                    </button>
+                    <div id="favourites-tooltip-3" role="tooltip"
+                        class="tooltip invisible absolute z-10 inline-block rounded-lg bg-gray-900 px-3 py-2 text-sm font-medium text-white opacity-0 shadow-sm transition-opacity duration-300 dark:bg-gray-700">
+                        Add to favourites
+                        <div class="tooltip-arrow" data-popper-arrow></div>
+                    </div>
 
-                                    <button type="button"
-                                        class="inline-flex w-full items-center justify-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium  text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-600 dark:focus:ring-primary-800">
-                                        <svg class="-ms-2 me-2 h-5 w-5" aria-hidden="true"
-                                            xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                            fill="none" viewBox="0 0 24 24">
-                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                                stroke-width="2"
-                                                d="M5 4h1.5L9 16m0 0h8m-8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-8.5-3h9.25L19 7h-1M8 7h-.688M13 5v4m-2-2h4" />
-                                        </svg>
-                                        Add to cart
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div> --}}
+                    <button type="button"
+                        class="inline-flex w-full items-center justify-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium  text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-600 dark:focus:ring-primary-800">
+                        <svg class="-ms-2 me-2 h-5 w-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                            width="24" height="24" fill="none" viewBox="0 0 24 24">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M5 4h1.5L9 16m0 0h8m-8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-8.5-3h9.25L19 7h-1M8 7h-.688M13 5v4m-2-2h4" />
+                        </svg>
+                        Add to cart
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div> --}}
     {{-- end product favorites --}}
 
     <!-- marketing start -->
     <section class="bg-primary-100 dark:bg-gray-900">
         <div
             class="gap-8 items-center py-4 px-4 mx-auto max-w-screen-xl lg:grid lg:grid-cols-2 xl:gap-16 sm:py-4 lg:px-6 ">
-            <img class="mb-4 w-full lg:mb-0 rounded-lg" {{-- src="https://www.pethouse.co.id/cfind/source/images/retail/51%20jansen%20petshop.jpg" --}} alt="feature image">
+            <img class="mb-4 w-full lg:mb-0 rounded-lg"
+                src="{{ asset('img\testimonial\Gambar WhatsApp 2025-05-15 pukul 16.15.07_21ca179f.jpg') }}"
+                alt="feature image">
             <div class="text-gray-500 dark:text-gray-400 sm:text-lg">
-                <h2 class="mb-2 text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">Petshop
+                <h2 class="mb-2 text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">Cindy Petshop
                 </h2>
                 <p class="mb-2 font-light lg:text-xl">Petshop kami adalah rumah bagi kucing dan anjing. Dengan produk
                     terbaik dan layanan lengkap, kami memastikan hewan peliharaan Anda selalu sehat, bahagia, dan
@@ -443,8 +439,8 @@
                             <h3 class="mb-2 text-xl font-bold text-gray-900 dark:text-white">Layanan Profesional dan
                                 Terpercaya</h3>
                             <p class="mb-2 font-light text-gray-500 dark:text-gray-400">Petshop kami didukung oleh tim
-                                ahli, dari groomer profesional hingga dokter hewan bersertifikat. Layanan grooming kami
-                                membuat hewan peliharaan tampil menawan sekaligus menjaga kesehatan kulit dan bulunya,
+                                ahli. Layanan grooming kami membuat hewan peliharaan tampil menawan sekaligus menjaga
+                                kesehatan kulit dan bulunya,
                                 Kami juga menyediakan pet hotel nyaman dengan fasilitas lengkap, pengawasan 24 jam, dan
                                 perawatan penuh kasih. Anabul dapat menikmati akomodasi bersih, makanan berkualitas, dan
                                 aktivitas seru selama menginap. Tenang berpergian, peliharaan Anda dalam tangan ahli!
@@ -580,30 +576,30 @@
                 <div class="overflow-hidden relative h-48 rounded-lg sm:h-64 xl:h-80 2xl:h-80">
                     <div class="grid hidden absolute inset-0 gap-8 transition-all duration-700 ease-linear transform lg:grid-cols-2"
                         data-carousel-item="">
-                        <img src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/social-proof/carousel-slider/office-work.png"
+                        <img src="{{ asset('img\testimonial\Gambar WhatsApp 2025-05-15 pukul 15.45.00_33e82462.jpg') }}"
                             class="block w-full h-full rounded-lg" alt="...">
-                        <img src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/social-proof/carousel-slider/office.png"
+                        <img src="{{ asset('img\testimonial\Gambar WhatsApp 2025-05-15 pukul 15.45.00_c7454573.jpg') }}"
                             class="hidden w-full h-full rounded-lg lg:block" alt="...">
                     </div>
                     <div class="grid hidden absolute inset-0 gap-8 transition-all duration-700 ease-linear transform lg:grid-cols-2"
                         data-carousel-item="">
-                        <img src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/social-proof/carousel-slider/conference.png"
+                        <img src="{{ asset('img\testimonial\Gambar WhatsApp 2025-05-15 pukul 15.45.00_d7b4044c.jpg') }}"
                             class="block w-full h-full rounded-lg" alt="...">
-                        <img src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/social-proof/carousel-slider/girl-with-phone.png"
+                        <img src="{{ asset('img\testimonial\Gambar WhatsApp 2025-05-15 pukul 15.45.00_eaa2f8db.jpg') }}"
                             class="hidden w-full h-full rounded-lg lg:block" alt="...">
                     </div>
                     <div class="grid hidden absolute inset-0 gap-8 transition-all duration-700 ease-linear transform lg:grid-cols-2"
                         data-carousel-item="">
-                        <img src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/social-proof/carousel-slider/man-at-office.png"
+                        <img src="{{ asset('img\testimonial\Gambar WhatsApp 2025-05-15 pukul 15.45.01_3d7523db.jpg') }}"
                             class="block w-full h-full rounded-lg" alt="...">
-                        <img src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/social-proof/carousel-slider/meeting.png"
+                        <img src="{{ asset('img\testimonial\Gambar WhatsApp 2025-05-15 pukul 15.45.01_8c024f00.jpg') }}"
                             class="hidden w-full h-full rounded-lg lg:block" alt="...">
                     </div>
                     <div class="grid hidden absolute inset-0 gap-8 transition-all duration-700 ease-linear transform lg:grid-cols-2"
                         data-carousel-item="">
-                        <img src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/social-proof/carousel-slider/work-from-home.png"
+                        <img src="{{ asset('img\testimonial\Gambar WhatsApp 2025-05-15 pukul 15.59.25_26bfb1d3.jpg') }}"
                             class="block w-full h-full rounded-lg" alt="...">
-                        <img src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/social-proof/carousel-slider/workspace.png"
+                        <img src="{{ asset('img\testimonial\Gambar WhatsApp 2025-05-15 pukul 15.59.25_197cba66.jpg') }}"
                             class="hidden w-full h-full rounded-lg lg:block" alt="...">
                     </div>
                 </div>
@@ -636,7 +632,7 @@
                 </button>
             </div>
         </div>
-        <dl
+        {{-- <dl
             class="grid grid-cols-2 gap-8 mx-auto mt-8 max-w-screen-xl text-gray-900 lg:mt-14 sm:grid-cols-3 xl:grid-cols-6 dark:text-white">
             <div class="flex flex-col justify-center items-center">
                 <dt class="mb-2 text-3xl font-extrabold md:text-4xl">73M+</dt>
@@ -662,7 +658,7 @@
                 <dt class="mb-2 text-3xl font-extrabold md:text-4xl">4M+</dt>
                 <dd class="font-light text-gray-500 dark:text-gray-400">Organizations</dd>
             </div>
-        </dl>
+        </dl> --}}
     </section>
     <!-- carousel  end -->
 
@@ -670,60 +666,102 @@
     <section class="bg-white dark:bg-gray-900">
         <div class="py-8 px-4 mx-auto max-w-screen-xl text-center lg:py-16 lg:px-6">
             <div class="mx-auto max-w-screen-sm mb-8 lg:mb-16">
-                <h2 class="mb-4 text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">Testimonials</h2>
-                <p class="font-light text-gray-500 sm:text-xl dark:text-gray-400">Explore the whole collection of
-                    open-source web components and elements built with the utility classes from Tailwind</p>
+                <h2 class="mb-4 text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">Apa Kata
+                    Pelanggan Kami</h2>
+                <p class="font-light text-gray-500 sm:text-xl dark:text-gray-400">Baca pengalaman nyata dari pelanggan
+                    setia CindyPetShop yang telah menggunakan berbagai layanan kami</p>
             </div>
             <div id="testimonial-carousel" class="relative" data-carousel="slide">
                 <div
                     class="overflow-x-hidden overflow-y-visible relative mx-auto max-w-screen-md h-52 rounded-lg sm:h-48">
+                    <!-- Adoption Testimonial -->
                     <figure class="hidden mx-auto w-full max-w-screen-md" data-carousel-item>
                         <blockquote>
-                            <p class="text-lg font-medium text-gray-900 sm:text-2xl dark:text-white">"Flowbite is just
-                                awesome. It contains tons of predesigned components and pages starting from login screen
-                                to complex dashboard. Perfect choice for your next SaaS application."</p>
+                            <p class="text-lg font-medium text-gray-900 sm:text-2xl dark:text-white">"Adopsi kucing
+                                dari CindyPetShop mengubah hidup saya! Prosesnya transparan, hewannya sehat, dan timnya
+                                sangat membantu. Mereka bahkan memberikan panduan perawatan lengkap setelah adopsi."</p>
                         </blockquote>
                         <figcaption class="flex justify-center items-center mt-6 space-x-3">
-                            <img class="w-6 h-6 rounded-full"
-                                src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/bonnie-green.png"
+                            <img class="w-6 h-6 rounded-full" src="https://randomuser.me/api/portraits/women/65.jpg"
                                 alt="profile picture">
                             <div class="flex items-center divide-x-2 divide-gray-500 dark:divide-gray-700">
-                                <div class="pr-3 font-medium text-gray-900 dark:text-white">Bonnie Green</div>
-                                <div class="pl-3 text-sm font-light text-gray-500 dark:text-gray-400">Web developer at
-                                    Google</div>
+                                <div class="pr-3 font-medium text-gray-900 dark:text-white">Desvira Saputri</div>
+                                <div class="pl-3 text-sm font-light text-gray-500 dark:text-gray-400">Pemilik Mochi
+                                </div>
                             </div>
                         </figcaption>
                     </figure>
+
+                    <!-- Grooming Testimonial -->
                     <figure class="hidden mx-auto w-full max-w-screen-md" data-carousel-item>
                         <blockquote>
-                            <p class="text-lg font-medium text-gray-900 sm:text-2xl dark:text-white">"As someone who
-                                mainly designs in the browser, I've been a casual user of Figma, but as soon as I saw
-                                and started playing with FlowBite my mind was blown and became so productive."</p>
+                            <p class="text-lg font-medium text-gray-900 sm:text-2xl dark:text-white">"Layanan grooming
+                                di CindyPetShop selalu memuaskan! Stafnya profesional, perlengkapan lengkap, dan mereka
+                                sangat sabar dengan anjing saya yang agak pemalu. Kini Bulu selalu rapi dan wangi."</p>
                         </blockquote>
                         <figcaption class="flex justify-center items-center mt-6 space-x-3">
-                            <img class="w-6 h-6 rounded-full"
-                                src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/helene-engels.png"
+                            <img class="w-6 h-6 rounded-full" src="https://randomuser.me/api/portraits/men/32.jpg"
                                 alt="profile picture">
                             <div class="flex items-center divide-x-2 divide-gray-500 dark:divide-gray-700">
-                                <div class="pr-3 font-medium text-gray-900 dark:text-white">Helene Engels</div>
-                                <div class="pl-3 text-sm font-light text-gray-500 dark:text-gray-400">Creative designer
-                                    at Adobe</div>
+                                <div class="pr-3 font-medium text-gray-900 dark:text-white">Budi Santoso</div>
+                                <div class="pl-3 text-sm font-light text-gray-500 dark:text-gray-400">Pemilik Bulu
+                                </div>
                             </div>
                         </figcaption>
                     </figure>
+
+                    <!-- Pet Hotel Testimonial -->
                     <figure class="hidden mx-auto w-full max-w-screen-md" data-carousel-item>
                         <blockquote>
-                            <p class="text-lg font-medium text-gray-900 sm:text-2xl dark:text-white">"Flowbite has code
-                                in one place and I'm not joking when I say it took me a matter of minutes to copy the
-                                code, customise it and integrate within a Laravel + Vue application."</p>
+                            <p class="text-lg font-medium text-gray-900 sm:text-2xl dark:text-white">"Selalu tenang
+                                saat traveling karena tahu kucing saya dirawat dengan baik di pet hotel CindyPetShop.
+                                Mereka mengupdate foto setiap hari dan fasilitasnya sangat nyaman untuk hewan
+                                peliharaan."</p>
                         </blockquote>
                         <figcaption class="flex justify-center items-center mt-6 space-x-3">
-                            <img class="w-6 h-6 rounded-full"
-                                src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/neil-sims.png"
+                            <img class="w-6 h-6 rounded-full" src="https://randomuser.me/api/portraits/men/44.jpg"
                                 alt="profile picture">
                             <div class="flex items-center divide-x-2 divide-gray-500 dark:divide-gray-700">
-                                <div class="pr-3 font-medium text-gray-900 dark:text-white">Neil Sims</div>
-                                <div class="pl-3 text-sm font-light text-gray-500 dark:text-gray-400">CTO at Microsoft
+                                <div class="pr-3 font-medium text-gray-900 dark:text-white">Rachmat Trisnanto</div>
+                                <div class="pl-3 text-sm font-light text-gray-500 dark:text-gray-400">Pemilik Momo
+                                </div>
+                            </div>
+                        </figcaption>
+                    </figure>
+
+                    <!-- Product Testimonial -->
+                    <figure class="hidden mx-auto w-full max-w-screen-md" data-carousel-item>
+                        <blockquote>
+                            <p class="text-lg font-medium text-gray-900 sm:text-2xl dark:text-white">"Produk di
+                                CindyPetShop lengkap dan berkualitas. Saya khususnya suka makanan organik mereka -
+                                anjing saya lebih sehat sejak beralih ke produk mereka. Pelayanan deliverynya juga
+                                cepat!"</p>
+                        </blockquote>
+                        <figcaption class="flex justify-center items-center mt-6 space-x-3">
+                            <img class="w-6 h-6 rounded-full" src="https://randomuser.me/api/portraits/men/75.jpg"
+                                alt="profile picture">
+                            <div class="flex items-center divide-x-2 divide-gray-500 dark:divide-gray-700">
+                                <div class="pr-3 font-medium text-gray-900 dark:text-white">Andi Pratama</div>
+                                <div class="pl-3 text-sm font-light text-gray-500 dark:text-gray-400">Pemilik Blacky
+                                </div>
+                            </div>
+                        </figcaption>
+                    </figure>
+
+                    <!-- Breeding Testimonial -->
+                    <figure class="hidden mx-auto w-full max-w-screen-md" data-carousel-item>
+                        <blockquote>
+                            <p class="text-lg font-medium text-gray-900 sm:text-2xl dark:text-white">"Pengalaman
+                                breeding dengan CindyPetShop sangat profesional. Mereka memberikan saran genetik,
+                                perawatan prenatal, dan membantu menemukan keluarga yang tepat untuk anak kucing kami."
+                            </p>
+                        </blockquote>
+                        <figcaption class="flex justify-center items-center mt-6 space-x-3">
+                            <img class="w-6 h-6 rounded-full" src="https://randomuser.me/api/portraits/women/68.jpg"
+                                alt="profile picture">
+                            <div class="flex items-center divide-x-2 divide-gray-500 dark:divide-gray-700">
+                                <div class="pr-3 font-medium text-gray-900 dark:text-white">Siti Nurbaeti</div>
+                                <div class="pl-3 text-sm font-light text-gray-500 dark:text-gray-400">Breeder Persian
                                 </div>
                             </div>
                         </figcaption>
@@ -760,7 +798,6 @@
             </div>
         </div>
     </section>
-    <!-- Block end -->
     <!-- testimonial end -->
 
 </div>

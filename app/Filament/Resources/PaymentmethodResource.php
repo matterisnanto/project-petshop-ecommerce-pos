@@ -41,29 +41,29 @@ class PaymentmethodResource extends Resource
                     ->columns(2)
                     ->collapsible()
                     ->schema([
-                         // Basic Information Section
-                         Forms\Components\Section::make('Basic Information')
-                         ->icon('heroicon-o-information-circle')
-                         ->schema([
-                             Forms\Components\TextInput::make('name')
-                                 ->label('Display Name')
-                                 ->required()
-                                 ->maxLength(255)
-                                 ->placeholder('e.g. Bank Transfer, PayPal, Cash')
-                                 ->prefixIcon('heroicon-o-tag')
-                                 ->columnSpanFull()
-                                 ->helperText('This name will be shown to customers'),
- 
-                             Forms\Components\TextInput::make('account_number')
-                                 ->label('Account/Reference Number')
-                                 ->maxLength(50)
-                                 ->placeholder('e.g. 1234567890')
-                                 ->prefixIcon('heroicon-o-identification')
-                                 ->columnSpanFull()
-                                 ->helperText('Required for bank transfers or similar methods'),
-                         ])
-                         ->columnSpan(['lg' => 1]),
-                        
+                        // Basic Information Section
+                        Forms\Components\Section::make('Basic Information')
+                            ->icon('heroicon-o-information-circle')
+                            ->schema([
+                                Forms\Components\TextInput::make('name')
+                                    ->label('Display Name')
+                                    ->required()
+                                    ->maxLength(255)
+                                    ->placeholder('e.g. Bank Transfer, PayPal, Cash')
+                                    ->prefixIcon('heroicon-o-tag')
+                                    ->columnSpanFull()
+                                    ->helperText('This name will be shown to customers'),
+
+                                Forms\Components\TextInput::make('account_number')
+                                    ->label('Account/Reference Number')
+                                    ->maxLength(50)
+                                    ->placeholder('e.g. 1234567890')
+                                    ->prefixIcon('heroicon-o-identification')
+                                    ->columnSpanFull()
+                                    ->helperText('Required for bank transfers or similar methods'),
+                            ])
+                            ->columnSpan(['lg' => 1]),
+
                         // Visual Identity Section
                         Forms\Components\Section::make('Visual Identity')
                             ->icon('heroicon-o-photo')
@@ -83,8 +83,8 @@ class PaymentmethodResource extends Resource
                                     ->helperText('Upload a square logo (1:1 ratio) for this payment method'),
                             ])
                             ->columnSpan(['lg' => 1]),
-    
-    
+
+
                         // Payment Type Settings
                         Forms\Components\Section::make('Payment Type Settings')
                             ->icon('heroicon-o-adjustments-horizontal')
@@ -99,7 +99,7 @@ class PaymentmethodResource extends Resource
                                             ->offColor('gray')
                                             ->helperText('Enable for e-commerce transactions')
                                             ->required(),
-    
+
                                         Forms\Components\Toggle::make('pos_transaction')
                                             ->label('Point of Sale')
                                             ->inline(false)
@@ -107,7 +107,7 @@ class PaymentmethodResource extends Resource
                                             ->offColor('gray')
                                             ->helperText('Enable for in-person/store payments')
                                             ->required(),
-    
+
                                         Forms\Components\Toggle::make('is_cash')
                                             ->label('Cash Payment')
                                             ->inline(false)
@@ -129,13 +129,13 @@ class PaymentmethodResource extends Resource
             ->columns([
                 Tables\Columns\ImageColumn::make('image')
                     ->label('Image'),
-                    Tables\Columns\TextColumn::make('name')
+                Tables\Columns\TextColumn::make('name')
                     ->searchable()
                     ->sortable()
-                    ->description(fn ($record) => $record->account_number ? 'No. Rek: '.$record->account_number : null),
-    
-               // Tables\Columns\TextColumn::make('account_number')
-                   // ->label('Account Number'),
+                    ->description(fn($record) => $record->account_number ? 'No. Rek: ' . $record->account_number : null),
+
+                // Tables\Columns\TextColumn::make('account_number')
+                // ->label('Account Number'),
                 Tables\Columns\ToggleColumn::make('olshop_transaction')
                     ->label('Olshop')
                     ->onColor('success')
@@ -188,13 +188,13 @@ class PaymentmethodResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make()
                     ->iconButton()
-                    
+
                     ->tooltip('View'),
-                    
+
                 Tables\Actions\EditAction::make()
                     ->iconButton()
                     ->tooltip('Edit'),
-                    
+
                 Tables\Actions\DeleteAction::make()
                     ->iconButton()
                     ->tooltip('Delete'),

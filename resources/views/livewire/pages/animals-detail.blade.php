@@ -13,7 +13,7 @@
                 </div> --}}
                 <div class="mb-4 sm:mb-0">
                     <livewire:navigation.bread-crumb :links="[
-                        ['text' => 'Home', 'url' => route('home')],
+                        ['text' => 'Home', 'url' => route('animals')],
                         [
                             'text' => $animals->categoryAnimals->name,
                             'url' =>
@@ -65,7 +65,7 @@
                     </h1>
                     {{-- <p class="font-semibold text-gray-500 dark:text-gray-400">{{ $animals->barcode }}</p> --}}
                     <p class="text-gray-500 dark:text-gray-400"> {{ $animals->categoryAnimals->name }} -
-                        {{ $animals->breeds->name }}</p>
+                        {{ $animals->breeds->name }} - {{ $animals->gender }} - {{ $animals->age }} month</p>
                     <div class="mt-2 sm:items-center sm:gap-4 sm:flex">
                         <p class="text-2xl font-extrabold text-gray-900 sm:text-3xl dark:text-white">
                             {{ format_currency($animals->selling_price) }}
@@ -74,15 +74,9 @@
 
                     <div class="mt-6 sm:gap-4 sm:items-center sm:flex sm:mt-0">
                         <div class="flex items-center mt-4">
-                            <button
-                                class="flex-1 text-white bg-[#25D366] hover:bg-primary-600 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800 flex items-center justify-center">
-
-                                {{-- <svg class="w-5 h-5 -ms-2 me-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                                    width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="m4 4h1.5L8 16m0 0h8m-8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm.75-3H7.5M11 7H6.312M17 4v6m-3-3h6" />
-                                </svg> --}}
+                            <a href="https://wa.me/6288212354913?text=Apakah {{ urlencode($animals->name) }} masih ada?"
+                                target="_blank"
+                                class="flex-1 text-white bg-[#25D366] hover:bg-[#19bd56] focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800 flex items-center justify-center">
                                 <svg class="w-5 h-5 -ms-2 me-2" viewBox="0 0 24 24" fill="none" width="24"
                                     height="24" xmlns="http://www.w3.org/2000/svg">
                                     <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
@@ -96,9 +90,8 @@
                                             fill="currentColor"></path>
                                     </g>
                                 </svg>
-                                Order via whatsapp
-                            </button>
-                            {{-- <p class="ml-4">Stok : {{ $animals->stock }}</p> --}}
+                                Order via WhatsApp
+                            </a>
                         </div>
                     </div>
 
@@ -213,7 +206,7 @@
                     <hr class="my-6 md:my-4 border-gray-500 dark:border-gray-800" />
 
                     <p class="text-gray-500 dark:text-gray-400">
-                        {{ $animals->description }}
+                        {!! nl2br(e($animals->description)) !!}
                     </p>
                 </div>
             </div>

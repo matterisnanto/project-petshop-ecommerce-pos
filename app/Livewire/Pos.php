@@ -5,14 +5,16 @@ namespace App\Livewire;
 use session;
 use Carbon\Carbon;
 
+use Dompdf\Dompdf;
+use Dompdf\Options;
+
 use Filament\Forms;
 use App\Models\Hotel;
-
 use App\Models\Order;
 use App\Models\Animals;
+
 use App\Models\Product;
 use Filament\Forms\Get;
-
 use Filament\Forms\Set;
 use Livewire\Component;
 use App\Models\Breeding;
@@ -21,7 +23,8 @@ use Filament\Forms\Form;
 use Illuminate\Support\Str;
 use App\Models\PaymentMethod;
 use App\Models\PetInformation;
-use App\Models\PosTransaction;
+use App\Models\POSTransaction;
+use Illuminate\Support\Facades\Log;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Textarea;
@@ -54,7 +57,8 @@ class Pos extends Component implements HasForms
     public $petInformation = [];
 
     protected $listeners = [
-        'scanResult' => 'handleScanResult'
+        'scanResult' => 'handleScanResult',
+        'download-receipt' => 'downloadReceipt'
     ];
 
     public function render()
@@ -111,6 +115,80 @@ class Pos extends Component implements HasForms
     {
         return $form
             ->schema([
+                Forms\Components\Section::make('Pet Information')
+                    ->visible(fn() => $this->hasServiceWithPetInfo())
+                    ->schema([
+                        Repeater::make('petInformation')
+                            ->schema([
+                                Forms\Components\Select::make('service_item')
+                                    ->label('Service/Product')
+                                    ->options(function () {
+                                        $options = [];
+                                        foreach ($this->order_items as $key => $item) {
+                                            if (in_array($item['type'], ['grooming', 'hotel', 'breeding'])) {
+                                                $options[$key] = $item['name'];
+                                            }
+                                        }
+                                        return $options;
+                                    })
+                                    ->required()
+                                    ->reactive(),
+                                TextInput::make('name')
+                                    ->required()
+                                    ->label('Pet Name'),
+                                TextInput::make('age')
+                                    ->numeric()
+                                    ->required()
+                                    ->label('Pet Age'),
+                                FileUpload::make('photo')
+                                    ->image()
+                                    ->directory('pet-photos')
+                                    ->label('Pet Photo'),
+                                Textarea::make('description')
+                                    ->required()
+                                    ->label('Pet Description'),
+                                DatePicker::make('check_in')
+                                    ->visible(fn(Get $get): bool =>
+                                    isset($this->order_items[$get('service_item')]) &&
+                                        in_array($this->order_items[$get('service_item')]['type'], ['hotel', 'breeding']))
+                                    ->reactive()
+                                    ->afterStateUpdated(function ($state, Set $set, $get) {
+                                        $checkOut = $get('check_out');
+                                        if ($state && $checkOut) {
+                                            $days = Carbon::parse($state)->diffInDays(Carbon::parse($checkOut));
+                                            $set('days', $days);
+                                        }
+                                    })
+                                    ->minDate(now()->format('Y-m-d'))
+                                    ->default(now()->format('Y-m-d')),
+                                DatePicker::make('check_out')
+                                    ->visible(fn(Get $get): bool =>
+                                    isset($this->order_items[$get('service_item')]) &&
+                                        in_array($this->order_items[$get('service_item')]['type'], ['hotel', 'breeding']))
+                                    ->reactive()
+                                    ->afterOrEqual('check_in')
+                                    ->afterStateUpdated(function ($state, Set $set, $get) {
+                                        $checkIn = $get('check_in');
+                                        if ($state && $checkIn) {
+                                            $days = Carbon::parse($checkIn)->diffInDays(Carbon::parse($state));
+                                            $set('days', $days);
+                                        }
+                                    }),
+                                TextInput::make('days')
+                                    ->visible(fn(Get $get): bool =>
+                                    isset($this->order_items[$get('service_item')]) &&
+                                        in_array($this->order_items[$get('service_item')]['type'], ['hotel', 'breeding']))
+                                    ->numeric()
+                                    ->readOnly(),
+                            ])
+                            ->columns(2)
+                            ->itemLabel(fn(array $state): ?string =>
+                            isset($state['service_item']) && isset($this->order_items[$state['service_item']])
+                                ? $this->order_items[$state['service_item']]['name'] . ' - ' . ($state['name'] ?? 'New Pet')
+                                : 'New Pet Information')
+                            ->columnSpanFull()
+                            ->cloneable()
+                    ]),
                 Forms\Components\Section::make('Form Checkout')
                     ->schema([
                         Forms\Components\Hidden::make('trx_id')
@@ -186,39 +264,6 @@ class Pos extends Component implements HasForms
                             ->numeric()
                             ->label('Change')
                             ->readOnly(),
-                    ]),
-                // Add pet information section for services that need it
-                Forms\Components\Section::make('Pet Information')
-                    ->visible(fn() => $this->hasServiceWithPetInfo())
-                    ->schema([
-                        Repeater::make('petInformation')
-                            ->schema([
-                                TextInput::make('name')
-                                    ->required()
-                                    ->label('Pet Name'),
-                                TextInput::make('age')
-                                    ->numeric()
-                                    ->required()
-                                    ->label('Pet Age'),
-                                FileUpload::make('photo')
-                                    ->image()
-                                    ->directory('pet-photos')
-                                    ->required()
-                                    ->label('Pet Photo'),
-                                Textarea::make('description')
-                                    ->required()
-                                    ->label('Pet Description'),
-                                DatePicker::make('check_in')
-                                    ->visible(fn() => $this->hasHotelOrBreedingService()),
-                                DatePicker::make('check_out')
-                                    ->visible(fn() => $this->hasHotelOrBreedingService())
-                                    ->afterOrEqual('check_in'),
-                                TextInput::make('days')
-                                    ->readOnly()
-                                    ->visible(fn() => $this->hasHotelOrBreedingService()),
-                            ])
-                            ->columns(2)
-                            ->columnSpanFull()
                     ])
             ]);
     }
@@ -251,6 +296,7 @@ class Pos extends Component implements HasForms
         $this->payment_methods = PaymentMethod::all();
         $this->trx_id = $this->trx_id ?? 'TRX-' . now()->format('Ymd') . '-' . Str::upper(Str::random(6));
         $this->form->fill([
+            'trx_id' => $this->trx_id,
             'total_price' => $this->calculateTotal(),
             'payment_method_id' => $this->payment_method_id,
         ]);
@@ -310,14 +356,30 @@ class Pos extends Component implements HasForms
     {
         $hotel = Hotel::find($hotelId);
         if ($hotel) {
+            $itemKey = count($this->order_items);
+
             $this->order_items[] = [
                 'type' => 'hotel',
                 'hotel_id' => $hotel->id,
                 'name' => $hotel->name,
                 'selling_price' => $hotel->price_per_day,
                 'thumbnail' => $hotel->thumbnail,
-                'quantity' => 1,
+                'quantity' => 1, // Akan diupdate setelah input pet information
                 'needs_pet_info' => true,
+                'pet_information' => [] // Untuk menyimpan pet info sementara
+            ];
+
+            // Inisialisasi pet information untuk item ini
+            $this->petInformation[$itemKey] = [
+                [
+                    'name' => '',
+                    'age' => '',
+                    'photo' => [],
+                    'description' => '',
+                    'check_in' => now()->format('Y-m-d'),
+                    'check_out' => now()->addDay()->format('Y-m-d'),
+                    'days' => 1
+                ]
             ];
 
             session()->put('orderItems', $this->order_items);
@@ -448,24 +510,41 @@ class Pos extends Component implements HasForms
     {
         $item = $this->order_items[$itemKey];
 
-        if ($item['type'] === 'product') {
-            $product = Product::find($item['product_id']);
-            if (!$product || $item['quantity'] + 1 > $product->stock) {
+        switch ($item['type']) {
+            case 'product':
+                $product = Product::find($item['product_id']);
+                if (!$product || $item['quantity'] + 1 > $product->stock) {
+                    Notification::make()
+                        ->title('Stok produk tidak mencukupi')
+                        ->danger()
+                        ->send();
+                    return;
+                }
+                break;
+
+            case 'animal':
+                $animal = Animals::find($item['animal_id']);
+                if (!$animal || $item['quantity'] + 1 > $animal->stock) {
+                    Notification::make()
+                        ->title('Stok hewan tidak mencukupi')
+                        ->danger()
+                        ->send();
+                    return;
+                }
+                break;
+
+            case 'grooming':
+            case 'hotel':
+            case 'breeding':
+                // These services don't have stock limitations, so we can just increase quantity
+                break;
+
+            default:
                 Notification::make()
-                    ->title('Stok produk tidak mencukupi')
+                    ->title('Jenis item tidak valid')
                     ->danger()
                     ->send();
                 return;
-            }
-        } else {
-            $animal = Animals::find($item['animal_id']);
-            if (!$animal || $item['quantity'] + 1 > $animal->stock) {
-                Notification::make()
-                    ->title('Stok hewan tidak mencukupi')
-                    ->danger()
-                    ->send();
-                return;
-            }
         }
 
         $this->order_items[$itemKey]['quantity']++;
@@ -496,6 +575,54 @@ class Pos extends Component implements HasForms
         return $total;
     }
 
+    public function downloadReceipt($transactionId)
+    {
+
+        $transaction = POSTransaction::with([
+            'order.product',
+            'order.animal',
+            'order.grooming',
+            'order.hotel',
+            'order.breeding',
+            'order.petInformation',
+            'paymentMethod'
+        ])->find($transactionId);
+
+        if (!$transaction) {
+            Notification::make()
+                ->title('Transaksi tidak ditemukan')
+                ->danger()
+                ->send();
+            return;
+        }
+
+        $html = view('receipt', compact('transaction'))->render();
+
+        $options = new Options();
+        $options->set('isRemoteEnabled', true);
+        $options->set('isHtml5ParserEnabled', true);
+        $options->set('defaultFont', 'Arial');
+        $options->set('isPhpEnabled', true);
+        $options->set('chroot', public_path());
+
+        $dompdf = new Dompdf($options);
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        $filename = 'receipt-' . $transaction->trx_id . '.pdf';
+
+        return response()->streamDownload(
+            function () use ($dompdf) {
+                echo $dompdf->output();
+            },
+            $filename,
+            [
+                'Content-Type' => 'application/pdf',
+            ]
+        );
+    }
+
     public function checkout()
     {
         $this->validate([
@@ -508,7 +635,7 @@ class Pos extends Component implements HasForms
 
         $formState = $this->form->getState();
 
-        $postransaction = PosTransaction::create([
+        $postransaction = POSTransaction::create([
             'trx_id' => $this->trx_id,
             'name' => $this->name_customer,
             'phone' => $this->phone,
@@ -521,7 +648,21 @@ class Pos extends Component implements HasForms
             'is_cash' => $this->is_cash,
         ]);
 
-        foreach ($this->order_items as $item) {
+        // Group pet information by service item
+        $petInfoByItem = [];
+        if (isset($formState['petInformation'])) {
+            foreach ($formState['petInformation'] as $petInfo) {
+                if (isset($petInfo['service_item'])) {
+                    $itemKey = $petInfo['service_item'];
+                    if (!isset($petInfoByItem[$itemKey])) {
+                        $petInfoByItem[$itemKey] = [];
+                    }
+                    $petInfoByItem[$itemKey][] = $petInfo;
+                }
+            }
+        }
+
+        foreach ($this->order_items as $itemKey => $item) {
             $orderData = [
                 'pos_transaction_id' => $postransaction->id,
                 'quantity' => $item['quantity'],
@@ -541,6 +682,14 @@ class Pos extends Component implements HasForms
                     break;
                 case 'hotel':
                     $orderData['hotel_id'] = $item['hotel_id'];
+                    // Update quantity based on max days from pet info
+                    $days = 1;
+                    if (isset($petInfoByItem[$itemKey])) {
+                        foreach ($petInfoByItem[$itemKey] as $pet) {
+                            $days = max($days, $pet['days'] ?? 1);
+                        }
+                    }
+                    $orderData['quantity'] = $days;
                     break;
                 case 'breeding':
                     $orderData['breeding_id'] = $item['breeding_id'];
@@ -549,9 +698,9 @@ class Pos extends Component implements HasForms
 
             $order = Order::create($orderData);
 
-            // Add pet information if this is a service that requires it
-            if (in_array($item['type'], ['grooming', 'hotel', 'breeding']) && !empty($formState['petInformation'])) {
-                foreach ($formState['petInformation'] as $petInfo) {
+            // Add pet information if exists for this item
+            if (isset($petInfoByItem[$itemKey]) && in_array($item['type'], ['grooming', 'hotel', 'breeding'])) {
+                foreach ($petInfoByItem[$itemKey] as $petInfo) {
                     $petInfoData = [
                         'order_id' => $order->id,
                         'name' => $petInfo['name'],
@@ -570,8 +719,22 @@ class Pos extends Component implements HasForms
                     PetInformation::create($petInfoData);
                 }
             }
+
+            // Update stock for products and animals
+            if ($item['type'] === 'product') {
+                $product = Product::find($item['product_id']);
+                if ($product) {
+                    $product->decrement('stock', $item['quantity']);
+                }
+            } elseif ($item['type'] === 'animal') {
+                $animal = Animals::find($item['animal_id']);
+                if ($animal) {
+                    $animal->decrement('stock', $item['quantity']);
+                }
+            }
         }
 
+        // Reset form
         $this->order_items = [];
         $this->petInformation = [];
         session()->forget('orderItems');
@@ -581,11 +744,14 @@ class Pos extends Component implements HasForms
         $this->payment_method_account_number = '';
         $this->gender = '';
         $this->payment_method_id = 0;
+        $this->trx_id = 'TRX-' . now()->format('Ymd') . '-' . Str::upper(Str::random(6));
 
         Notification::make()
             ->title('Checkout successful!')
             ->success()
             ->send();
+
+        return $this->downloadReceipt($postransaction->id);
     }
 
     public function handleScanResult($decodedText)

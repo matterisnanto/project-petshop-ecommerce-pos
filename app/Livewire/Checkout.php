@@ -7,11 +7,14 @@ use App\Models\Product;
 use Livewire\Component;
 use App\Models\PaymentMethod;
 use Livewire\WithFileUploads;
+use Livewire\Attributes\Title;
 use App\Models\OlshopTransaction;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Session;
 
+
+#[Title('Checkout - Cindy Petshop')]
 class Checkout extends Component
 {
     use WithFileUploads;

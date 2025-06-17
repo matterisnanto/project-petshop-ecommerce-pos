@@ -22,6 +22,11 @@ class CategoryAnimals extends Model
         return $this->hasMany(Animals::class);
     }
 
+    public function products(): HasMany
+    {
+        return $this->hasMany(Product::class);
+    }
+
     public static function generateUniqueSlug(string $name): string
     {
         $slug = Str::slug($name);

@@ -2,12 +2,21 @@
 
 namespace App\Livewire;
 
+use App\Models\Hotel;
 use Livewire\Component;
+use Livewire\Attributes\Title;
 
+#[Title('Pet Hotel - Cindy Petshop')]
 class PetHotel extends Component
 {
     public function render()
     {
-        return view('livewire.pages.pet-hotel');
+        $hotels = Hotel::with(['hotelPackage', 'categoryAnimals'])
+            ->where('is_active', true)
+            ->get();
+
+        return view('livewire.pages.pet-hotel', [
+            'hotels' => $hotels
+        ]);
     }
 }

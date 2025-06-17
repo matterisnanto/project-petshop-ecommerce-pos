@@ -4,10 +4,15 @@ namespace App\Models;
 
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Grooming extends Model
 {
+    use HasFactory;
+    use SoftDeletes;
+
     protected $table = 'groomings';
     //
     protected $fillable = ['name', 'slug', 'category_animals_id', 'category_grooming_id', 'photo', 'description', 'stock', 'purchase_price', 'selling_price', 'is_active'];
@@ -45,4 +50,3 @@ class Grooming extends Model
         return $this->hasMany(Order::class);
     }
 }
-

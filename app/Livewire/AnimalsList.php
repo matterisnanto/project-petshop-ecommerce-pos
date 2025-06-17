@@ -6,8 +6,11 @@ use App\Models\Breeds;
 use App\Models\Animals;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Livewire\Attributes\Title;
 use App\Models\CategoryAnimals;
 
+
+#[Title('Animals - Cindy Petshop')]
 class AnimalsList extends Component
 {
     use WithPagination;

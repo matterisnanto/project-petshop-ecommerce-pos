@@ -6,8 +6,10 @@ use App\Models\Product;
 use Livewire\Component;
 use App\Models\PromoCode;
 use Illuminate\Support\Carbon;
+use Livewire\Attributes\Title;
 use Illuminate\Support\Facades\Session;
 
+#[Title('Shopping Cart - Cindy Petshop')]
 class ShoppingCart extends Component
 {
     public $cartItems = [];

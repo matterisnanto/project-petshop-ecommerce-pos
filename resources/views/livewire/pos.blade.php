@@ -39,9 +39,9 @@
                     @foreach ($products as $item)
                         <div wire:click="addToOrder({{ $item->id }})"
                             class="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg shadow cursor-pointer">
-                            <img src="{{ asset($item['thumbnail'] ? 'storage/' . $item['thumbnail'] : 'images/default.png') }}"
+                            <img src="{{ asset($item['thumbnail'] ? 'storage/' . $item['thumbnail'] : 'img/default.png') }}"
                                 alt="Product Image" class="w-full h-32 object-cover rounded-md"
-                                onerror="this.onerror=null; this.src='{{ asset('images/default.png') }}';">
+                                onerror="this.onerror=null; this.src='{{ asset('img/default.png') }}';">
                             <h3 class="text-sm font-semibold">{{ $item->name }}</h3>
                             <p class="text-gray-600 dark:text-gray-400 text-xs">Rp.
                                 {{ number_format($item->selling_price, 0, ',', '.') }}</p>
@@ -52,9 +52,9 @@
                     @foreach ($animals as $item)
                         <div wire:click="addToOrder({{ $item->id }})"
                             class="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg shadow cursor-pointer">
-                            <img src="{{ asset($item['thumbnail'] ? 'storage/' . $item['thumbnail'] : 'images/default.png') }}"
+                            <img src="{{ asset($item['thumbnail'] ? 'storage/' . $item['thumbnail'] : 'img/default.png') }}"
                                 alt="Animal Image" class="w-full h-32 object-cover rounded-md"
-                                onerror="this.onerror=null; this.src='{{ asset('images/default.png') }}';">
+                                onerror="this.onerror=null; this.src='{{ asset('img/default.png') }}';">
                             <h3 class="text-sm font-semibold">{{ $item->name }}</h3>
                             <p class="text-gray-600 dark:text-gray-400 text-xs">Rp.
                                 {{ number_format($item->selling_price, 0, ',', '.') }}</p>
@@ -67,9 +67,9 @@
                     @foreach ($groomings as $item)
                         <div wire:click="addToOrder({{ $item->id }})"
                             class="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg shadow cursor-pointer">
-                            <img src="{{ asset($item['photo'] ? 'storage/' . $item['photo'] : 'images/default.png') }}"
+                            <img src="{{ asset($item['photo'] ? 'storage/' . $item['photo'] : 'img/default.png') }}"
                                 alt="Grooming Image" class="w-full h-32 object-cover rounded-md"
-                                onerror="this.onerror=null; this.src='{{ asset('images/default.png') }}';">
+                                onerror="this.onerror=null; this.src='{{ asset('img/default.png') }}';">
                             <h3 class="text-sm font-semibold">{{ $item->name }}</h3>
                             <p class="text-gray-600 dark:text-gray-400 text-xs">Rp.
                                 {{ number_format($item->selling_price, 0, ',', '.') }}</p>
@@ -79,9 +79,9 @@
                     @foreach ($hotels as $item)
                         <div wire:click="addToOrder({{ $item->id }})"
                             class="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg shadow cursor-pointer">
-                            <img src="{{ asset($item['thumbnail'] ? 'storage/' . $item['thumbnail'] : 'images/default.png') }}"
+                            <img src="{{ asset($item['thumbnail'] ? 'storage/' . $item['thumbnail'] : 'img/default.png') }}"
                                 alt="Hotel Image" class="w-full h-32 object-cover rounded-md"
-                                onerror="this.onerror=null; this.src='{{ asset('images/default.png') }}';">
+                                onerror="this.onerror=null; this.src='{{ asset('img/default.png') }}';">
                             <h3 class="text-sm font-semibold">{{ $item->name }}</h3>
                             <p class="text-gray-600 dark:text-gray-400 text-xs">Rp.
                                 {{ number_format($item->price_per_day, 0, ',', '.') }}/day</p>
@@ -91,9 +91,9 @@
                     @foreach ($breedings as $item)
                         <div wire:click="addToOrder({{ $item->id }})"
                             class="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg shadow cursor-pointer">
-                            <img src="{{ asset($item['photo'] ? 'storage/' . $item['photo'] : 'images/default.png') }}"
+                            <img src="{{ asset($item['photo'] ? 'storage/' . $item['photo'] : 'img/default.png') }}"
                                 alt="Breeding Image" class="w-full h-32 object-cover rounded-md"
-                                onerror="this.onerror=null; this.src='{{ asset('images/default.png') }}';">
+                                onerror="this.onerror=null; this.src='{{ asset('img/default.png') }}';">
                             <h3 class="text-sm font-semibold">{{ $item->name }}</h3>
                             <p class="text-gray-600 dark:text-gray-400 text-xs">Rp.
                                 {{ number_format($item->selling_price, 0, ',', '.') }}</p>
@@ -128,9 +128,9 @@
             <div class="mb-4">
                 <div class="flex justify-between items-center bg-gray-100 dark:bg-gray-700 p-4 rounded-lg shadow">
                     <div class="flex items-center">
-                        <img src="{{ $item['thumbnail'] ? asset('storage/' . $item['thumbnail']) : asset('images/default.png') }}"
+                        <img src="{{ $item['thumbnail'] ? asset('storage/' . $item['thumbnail']) : asset('img/default.png') }}"
                             alt="{{ $item['name'] }}" class="w-16 h-16 object-cover rounded-md"
-                            onerror="this.onerror=null; this.src='{{ asset('images/default.png') }}';">
+                            onerror="this.onerror=null; this.src='{{ asset('img/default.png') }}';">
                         <div class="px-2">
                             <h3 class="text-sm font-semibold">{{ $item['name'] }}</h3>
                             <p class="text-gray-600 dark:text-gray-400 text-xs">Rp
@@ -168,4 +168,19 @@
         </form>
     </div>
 </div>
+
+@script
+    <script>
+        // Handle download setelah checkout
+        $wire.on('receipt-downloaded', (event) => {
+            // Trigger download
+            const link = document.createElement('a');
+            link.href = event.url;
+            link.download = event.filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+    </script>
+@endscript
 <script src="https://unpkg.com/html5-qrcode"></script>

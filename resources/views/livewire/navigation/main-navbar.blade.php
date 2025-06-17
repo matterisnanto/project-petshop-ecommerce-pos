@@ -4,12 +4,12 @@
 
             <div class="flex items-center space-x-8">
                 <div class="shrink-0">
-                    <a href="#" title="" class="">
-                        {{-- <img class="block w-auto h-8 dark:hidden"
-                            src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/logo-full.svg" alt="">
-                        <img class="hidden w-auto h-8 dark:block"
-                            src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/logo-full-dark.svg" alt=""> --}}
-                        <h1>CindyPetshop</h1>
+                    <a wire:navigate href="/" title="" class="">
+                        <img class="block w-auto h-10 dark:hidden" src="{{ asset('img\logo\Logonameblack.png') }}"
+                            alt="">
+                        <img class="hidden w-auto h-10 dark:block" src="{{ asset('img\logo\Logonamewhite.png') }}"
+                            alt="">
+                        {{-- <h1>CindyPetshop</h1> --}}
                     </a>
                 </div>
 
@@ -102,7 +102,7 @@
                                         class="{{ $activeRoute === 'breeding' ? 'text-primary-500' : 'text-gray-500 dark:text-white' }} flex items-center py-2 px-4 w-full hover:text-primary-600 dark:hover:text-primary-500">
                                         <svg class="mr-2 w-4 h-4" fill="currentColor" xmlns="http://www.w3.org/2000/svg"
                                             xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512"
-                                            xml:space="preserve">
+                                            stroke="#808080" xml:space="preserve">
                                             <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
                                             <g id="SVGRepo_tracerCarrier" stroke-linecap="round"
                                                 stroke-linejoin="round"></g>
@@ -326,7 +326,7 @@
                 </li>
                 <li>
                     <a wire:navigate href="/animals"
-                        class="{{ request()->is('animals*') ? 'text-primary-500' : 'text-gray-900 dark:text-white' }} hover:text-primary-700 dark:hover:text-primary-500">Products</a>
+                        class="{{ request()->is('animals*') ? 'text-primary-500' : 'text-gray-900 dark:text-white' }} hover:text-primary-700 dark:hover:text-primary-500">Animals</a>
                 </li>
                 <li>
                     <a wire:navigate href="/products"
