@@ -22,7 +22,7 @@ return new class extends Migration
             $table->date('check_in')->nullable();
             $table->date('check_out')->nullable();
             $table->integer('days')->nullable();
-            $table->boolean('on_petshop')->default(false);
+            $table->boolean('on_petshop')->default(true);
             $table->timestamps();
             $table->softDeletes();
         });

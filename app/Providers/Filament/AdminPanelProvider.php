@@ -6,8 +6,9 @@ use Filament\Pages;
 use Filament\Panel;
 use Filament\Widgets;
 use Filament\PanelProvider;
-use Filament\Support\Colors\Color;
+use Filament\Enums\ThemeMode;
 // use Filament\Pages\Auth\EditProfile;
+use Filament\Support\Colors\Color;
 use App\Filament\Pages\Auth\EditProfile;
 use Filament\Http\Middleware\Authenticate;
 use Illuminate\Session\Middleware\StartSession;
@@ -30,14 +31,16 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             // logo & favicon configuration
             ->brandName('Cindypetshop')
-            ->brandLogo(asset('img/logo.png'))
+            ->brandLogo(asset('img/logo/logonameblack.png'))
             ->brandLogoHeight('3rem')
-            ->favicon(asset('img/favicon.ico'))
+            ->favicon(asset('favicon/favicon.svg'))
             // user configuration
             ->login()
-            ->registration()
-            ->passwordReset()
+            // ->registration()
+            // ->passwordReset()
             ->emailVerification()
+            // ->darkMode(false)
+            ->defaultThemeMode(ThemeMode::Light)
             ->profile()
             ->profile(EditProfile::class)
             // panel configuration

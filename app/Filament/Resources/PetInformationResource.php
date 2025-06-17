@@ -150,23 +150,24 @@ class PetInformationResource extends Resource
                 Tables\Columns\TextColumn::make('name')
                     ->label('Pet Name')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('age')
-                    ->numeric()
-                    ->suffix(' Month')
-                    ->sortable(),
                 Tables\Columns\TextColumn::make('check_in')
                     ->date()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('check_out')
                     ->date()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('days')
-                    ->numeric()
-                    ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+
+                Tables\Columns\IconColumn::make('on_petshop')
+                    ->label('At Petshop')
+                    ->boolean()
+                    ->trueIcon('heroicon-o-check-badge')
+                    ->falseIcon('heroicon-o-x-mark')
+                    ->trueColor('success')
+                    ->falseColor('danger'),
                 Tables\Columns\TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
@@ -177,10 +178,60 @@ class PetInformationResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('gender')
+                    ->options([
+                        'male' => 'Male',
+                        'female' => 'Female',
+                        'unknown' => 'Unknown',
+                    ]),
+
+                Tables\Filters\Filter::make('currently_at_petshop')
+                    ->label('Currently at Petshop')
+                    ->query(fn(Builder $query): Builder => $query->where('on_petshop', true))
+                    ->toggle(),
+
+                Tables\Filters\Filter::make('check_in_date')
+                    ->form([
+                        Forms\Components\DatePicker::make('check_in_from')
+                            ->label('Check-in From'),
+                        Forms\Components\DatePicker::make('check_in_until')
+                            ->label('Check-in Until'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['check_in_from'],
+                                fn(Builder $query, $date): Builder => $query->whereDate('check_in', '>=', $date),
+                            )
+                            ->when(
+                                $data['check_in_until'],
+                                fn(Builder $query, $date): Builder => $query->whereDate('check_in', '<=', $date),
+                            );
+                    }),
+
+                Tables\Filters\Filter::make('check_out_date')
+                    ->form([
+                        Forms\Components\DatePicker::make('check_out_from')
+                            ->label('Check-out From'),
+                        Forms\Components\DatePicker::make('check_out_until')
+                            ->label('Check-out Until'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['check_out_from'],
+                                fn(Builder $query, $date): Builder => $query->whereDate('check_out', '>=', $date),
+                            )
+                            ->when(
+                                $data['check_out_until'],
+                                fn(Builder $query, $date): Builder => $query->whereDate('check_out', '<=', $date),
+                            );
+                    }),
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

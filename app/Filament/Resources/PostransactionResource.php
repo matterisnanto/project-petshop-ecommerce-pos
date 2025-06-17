@@ -73,6 +73,16 @@ class PostransactionResource extends Resource
                                 Forms\Components\Hidden::make('trx_id')
                                     ->default('TRX-' . now()->format('Ymd') . '-' . Str::upper(Str::random(6))),
                                 Forms\Components\TextInput::make('name')->maxLength(255),
+                                Forms\Components\TextInput::make('phone')
+                                    ->label('Phone Number')
+                                    ->tel()
+                                    ->mask('999-9999-9999')
+                                    ->prefix('+62')
+                                    ->maxLength(255)
+                                    ->dehydrateStateUsing(function ($state) {
+                                        // Menambahkan prefix +62 ke data sebelum disimpan ke database
+                                        return '+62' . str_replace('-', '', $state);
+                                    }),
                                 Forms\Components\TextInput::make('email')->email()->maxLength(255)->default(null),
                                 Forms\Components\Select::make('gender')
                                     ->options([
