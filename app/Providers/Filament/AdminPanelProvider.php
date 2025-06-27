@@ -36,7 +36,7 @@ class AdminPanelProvider extends PanelProvider
             ->favicon(asset('favicon/favicon.svg'))
             // user configuration
             ->login()
-            // ->registration()
+            ->registration()
             // ->passwordReset()
             ->emailVerification()
             // ->darkMode(false)

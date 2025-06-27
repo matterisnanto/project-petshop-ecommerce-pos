@@ -12,7 +12,7 @@ class RevenueComparisonChart extends ChartWidget
 {
     protected static ?int $sort = 7;
     protected int | string | array $columnSpan = '4';
-    protected static ?string $heading = 'Perbandingan Pendapatan Channel';
+    protected static ?string $heading = 'Channel Revenue Comparison';
     protected static ?int $contentHeight = 300; // Changed from maxHeight
 
     protected function getData(): array
