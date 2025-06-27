@@ -7,9 +7,11 @@ use App\Models\OlshopTransaction;
 use Filament\Widgets\ChartWidget;
 use Flowframe\Trend\Trend;
 use Flowframe\Trend\TrendValue;
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 
 class RevenueComparisonChart extends ChartWidget
 {
+    use HasWidgetShield;
     protected static ?int $sort = 7;
     protected int | string | array $columnSpan = '4';
     protected static ?string $heading = 'Channel Revenue Comparison';

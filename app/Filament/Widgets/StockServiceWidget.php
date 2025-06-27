@@ -7,9 +7,11 @@ use App\Models\Breeding;
 use App\Models\Grooming;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 
 class StockServiceWidget extends BaseWidget
 {
+    use HasWidgetShield;
     protected static ?int $sort = 2;
 
     protected function getStats(): array

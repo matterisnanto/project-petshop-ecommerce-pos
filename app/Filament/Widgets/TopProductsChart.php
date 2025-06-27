@@ -7,9 +7,11 @@ use App\Models\Product;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Facades\DB;
 use Filament\Widgets\BarChartWidget;
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 
 class TopProductsChart extends ChartWidget
 {
+    use HasWidgetShield;
     protected static ?int $sort = 8;
     protected int | string | array $columnSpan = '4';
     protected static ?string $heading = '5 Best Selling Products This Month';

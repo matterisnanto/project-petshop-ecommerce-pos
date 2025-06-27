@@ -8,9 +8,11 @@ use App\Models\POSTransaction;
 use Flowframe\Trend\TrendValue;
 use App\Models\OlshopTransaction;
 use Filament\Widgets\ChartWidget;
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 
 class OmsetChart extends ChartWidget
 {
+    use HasWidgetShield;
     protected static ?string $heading = 'Revenue Chart';
     protected static ?int $sort = 11;
     protected int | string | array $columnSpan = '8';
