@@ -30,4 +30,14 @@ class PurchaseReturn extends Model
     {
         return $this->returnItems()->count();
     }
+
+    // In your PurchaseReturn model
+    protected static function booted()
+    {
+        static::saving(function (PurchaseReturn $purchaseReturn) {
+            if (in_array($purchaseReturn->status, ['approved', 'processed']) && !$purchaseReturn->return_approved_date) {
+                $purchaseReturn->return_approved_date = now();
+            }
+        });
+    }
 }

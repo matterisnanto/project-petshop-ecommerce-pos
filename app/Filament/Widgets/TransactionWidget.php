@@ -6,9 +6,11 @@ use App\Models\OlshopTransaction;
 use App\Models\POSTransaction;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 
 class TransactionWidget extends BaseWidget
 {
+    use HasWidgetShield;
     protected static ?int $sort = 6;
     protected ?string $heading = 'Transactions Analysis';
     protected int|string|array $columnSpan = 'full';
