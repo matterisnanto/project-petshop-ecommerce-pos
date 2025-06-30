@@ -36,7 +36,7 @@ class AdminPanelProvider extends PanelProvider
             ->favicon(asset('favicon/favicon.svg'))
             // user configuration
             ->login()
-            ->registration()
+            // ->registration()
             // ->passwordReset()
             ->emailVerification()
             // ->darkMode(false)
@@ -65,9 +65,6 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
-            ])
-            ->plugins([
-                \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make()
             ])
             ->sidebarCollapsibleOnDesktop();
     }
