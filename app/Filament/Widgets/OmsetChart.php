@@ -8,15 +8,13 @@ use App\Models\POSTransaction;
 use Flowframe\Trend\TrendValue;
 use App\Models\OlshopTransaction;
 use Filament\Widgets\ChartWidget;
-use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 
 class OmsetChart extends ChartWidget
 {
-    use HasWidgetShield;
-    protected static ?string $heading = 'Revenue Chart';
+    protected static ?string $heading = 'Omset';
     protected static ?int $sort = 11;
-    protected int | string | array $columnSpan = '8';
-    public ?string $filter = 'week';
+    protected int | string | array $columnSpan = '4';
+    public ?string $filter = 'today';
     protected static string $color = 'success';
 
     protected function getData(): array
@@ -77,17 +75,17 @@ class OmsetChart extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label' => 'Total Revenue ' . $this->getFilters()[$activeFilter],
+                    'label' => 'Total Omset ' . $this->getFilters()[$activeFilter],
                     'data' => $combinedData->map(fn(TrendValue $value) => $value->aggregate),
                 ],
                 [
-                    'label' => 'POS Revenue ' . $this->getFilters()[$activeFilter],
+                    'label' => 'POS Omset ' . $this->getFilters()[$activeFilter],
                     'data' => $posData->map(fn(TrendValue $value) => $value->aggregate),
                     'borderColor' => '#22c55e', // Green for POS
                     'backgroundColor' => '#22c55e',
                 ],
                 [
-                    'label' => 'Olshop Revenue ' . $this->getFilters()[$activeFilter],
+                    'label' => 'Olshop Omset ' . $this->getFilters()[$activeFilter],
                     'data' => $olshopData->map(fn(TrendValue $value) => $value->aggregate),
                     'borderColor' => '#3b82f6', // Blue for Olshop
                     'backgroundColor' => '#3b82f6',
