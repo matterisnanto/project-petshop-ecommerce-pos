@@ -7,7 +7,7 @@ use Filament\Panel;
 use Filament\Widgets;
 use Filament\PanelProvider;
 use Filament\Enums\ThemeMode;
-// use Filament\Pages\Auth\EditProfile;
+use Filament\Navigation\MenuItem;
 use Filament\Support\Colors\Color;
 use App\Filament\Pages\Auth\EditProfile;
 use Filament\Http\Middleware\Authenticate;
@@ -20,6 +20,7 @@ use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
+use App\Filament\Pages\Settings;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -36,9 +37,9 @@ class AdminPanelProvider extends PanelProvider
             ->favicon(asset('favicon/favicon.svg'))
             // user configuration
             ->login()
-            ->registration()
+            // ->registration()
             // ->passwordReset()
-            ->emailVerification()
+            // ->emailVerification()
             // ->darkMode(false)
             ->defaultThemeMode(ThemeMode::Light)
             ->profile()
@@ -62,6 +63,14 @@ class AdminPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
+            ])
+            ->userMenuItems([
+                'profile' => MenuItem::make()->label('Edit profile'),
+                MenuItem::make()
+                    ->label('Home pages')
+                    ->url('/')
+                    ->icon('heroicon-o-home'),
+                // ...
             ])
             ->authMiddleware([
                 Authenticate::class,
