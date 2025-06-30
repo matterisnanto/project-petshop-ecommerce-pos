@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class PosTransaction extends Model
 {
     protected $table = 'pos_transactions';
-    //
+
     protected $fillable = [
         'name',
         'phone',
