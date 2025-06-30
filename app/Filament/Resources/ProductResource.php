@@ -211,7 +211,64 @@ class ProductResource extends Resource
                             ->searchable()
                             ->preload()
                             ->createOptionForm([
-                                // Keep existing create option form exactly as is
+                                Forms\Components\Section::make('Category Information')
+                                    ->description('Create or update category details')
+                                    ->icon('heroicon-o-information-circle')
+                                    ->schema([
+                                        Forms\Components\Grid::make()
+                                            ->schema([
+                                                Forms\Components\TextInput::make('name')
+                                                    ->label('Category Name')
+                                                    ->required()
+                                                    ->maxLength(255)
+                                                    ->placeholder('e.g., Cat Food, Dog Supplies')
+                                                    ->live(onBlur: true)
+                                                    ->afterStateUpdated(function (Set $set, $state) {
+                                                        if (!empty($state)) {
+                                                            $set('slug', Category::generateUniqueSlug($state));
+                                                        }
+                                                    })
+                                                    ->columnSpan(['md' => 2]),
+
+                                                Forms\Components\TextInput::make('slug')
+                                                    ->label('URL Slug')
+                                                    ->required()
+                                                    ->maxLength(255)
+                                                    ->hintIcon('heroicon-o-link', tooltip: 'Used in URLs')
+                                                    ->columnSpan(['md' => 2]),
+                                            ])
+                                            ->columns(2),
+
+                                        Forms\Components\Fieldset::make('Visual Representation')
+                                            ->schema([
+                                                Forms\Components\FileUpload::make('icon')
+                                                    ->label('Category Icon/Image')
+                                                    ->image()
+                                                    ->directory('category-icons')
+                                                    ->imageEditor()
+                                                    ->imageResizeMode('cover')
+                                                    ->imageCropAspectRatio('1:1')
+                                                    ->imagePreviewHeight('200')
+                                                    ->imageResizeTargetWidth('300')
+                                                    ->imageResizeTargetHeight('300')
+                                                    ->deleteUploadedFileUsing(function ($state, $livewire, $record) {
+
+                                                        if ($record?->icon) {
+                                                            Storage::disk('public')->delete($record->icon);
+                                                        }
+                                                        return true;
+                                                    })
+                                                    ->panelLayout('integrated')
+                                                    ->maxSize(1024)
+                                                    ->helperText('Recommended size: 512x512px transparent PNG')
+                                                    ->downloadable()
+                                                    ->openable()
+                                                    ->columnSpanFull(),
+                                            ])
+                                    ])
+                                    ->columns(2)
+                                    ->collapsible(),
+
                             ])
                             ->columnSpan(['md' => 1])
                             ->helperText('Main product category')
@@ -226,7 +283,63 @@ class ProductResource extends Resource
                             ->searchable()
                             ->preload()
                             ->createOptionForm([
-                                // Keep existing create option form exactly as is
+                                Forms\Components\Section::make('Brand Information')
+                                    ->description('Enter your brand details')
+                                    ->icon('heroicon-o-information-circle')
+                                    ->schema([
+                                        Forms\Components\Grid::make()
+                                            ->schema([
+                                                Forms\Components\TextInput::make('name')
+                                                    ->label('Brand Name')
+                                                    ->afterStateUpdated(function (Set $set, $state) {
+                                                        if (!empty($state)) {
+                                                            $set('slug', Brand::generateUniqueSlug($state));
+                                                        }
+                                                    })
+                                                    ->required()
+                                                    ->live(onBlur: true)
+                                                    ->maxLength(255)
+                                                    ->placeholder('e.g., Whiskas, Purina')
+                                                    ->helperText('The official name of your brand')
+                                                    ->columnSpan(['md' => 2]),
+
+                                                Forms\Components\TextInput::make('slug')
+                                                    ->label('URL Slug')
+                                                    ->required()
+                                                    ->readOnly()
+                                                    ->maxLength(255)
+                                                    ->helperText('Auto-generated from name')
+                                                    ->columnSpan(['md' => 2]),
+                                            ])
+                                            ->columns(2),
+
+                                        Forms\Components\FileUpload::make('logo')
+                                            ->label('Brand Logo')
+                                            ->image()
+                                            ->directory('brand-logos')
+                                            ->imageEditor()
+                                            ->imageResizeMode('contain')
+                                            ->imageCropAspectRatio('1:1')
+                                            ->imageResizeTargetWidth('300')
+                                            ->imageResizeTargetHeight('300')
+                                            ->deleteUploadedFileUsing(function ($state, $livewire, $record) {
+
+                                                if ($record?->logo) {
+                                                    Storage::disk('public')->delete($record->logo);
+                                                }
+                                                return true;
+                                            })
+                                            ->imagePreviewHeight('150')
+                                            ->panelLayout('integrated')
+                                            ->maxSize(1024)
+                                            ->required()
+                                            ->downloadable()
+                                            ->openable()
+                                            ->helperText('Upload a square logo (max 1MB)')
+                                            ->columnSpanFull(),
+                                    ])
+                                    ->columns(2)
+                                    ->collapsible(),
                             ])
                             ->columnSpan(['md' => 1])
                             ->helperText('Product manufacturer/brand'),
@@ -238,7 +351,83 @@ class ProductResource extends Resource
                             ->preload()
                             ->native(false)
                             ->createOptionForm([
-                                // Keep existing create option form exactly as is
+                                Forms\Components\Section::make('Category Information')
+                                    ->description('Provide basic details about the animal category')
+                                    ->icon('heroicon-o-tag')
+                                    ->collapsible()
+                                    ->collapsed(false) // Open by default for better UX
+                                    ->schema([
+                                        // Name and Slug in a compact grid
+                                        Forms\Components\Grid::make()
+                                            ->schema([
+                                                Forms\Components\TextInput::make('name')
+                                                    ->label('Category Name')
+                                                    ->afterStateUpdated(function (Set $set, $state) {
+                                                        if (!empty($state)) {
+                                                            $set('slug', CategoryAnimals::generateUniqueSlug($state));
+                                                        }
+                                                    })
+                                                    ->required()
+                                                    ->live(onBlur: true)
+                                                    ->maxLength(255)
+                                                    ->placeholder('e.g., Dogs, Cats, Birds')
+                                                    ->helperText('The display name that will appear throughout the site')
+                                                    ->columnSpan(['md' => 2])
+                                                    ->prefixIcon('heroicon-o-tag')
+                                                    ->autofocus(), // Auto focus for better UX
+
+                                                Forms\Components\TextInput::make('slug')
+                                                    ->label('URL Slug')
+                                                    ->required()
+                                                    ->readOnly()
+                                                    ->maxLength(255)
+                                                    ->helperText('Auto-generated SEO-friendly URL identifier')
+                                                    ->columnSpan(['md' => 2])
+                                                    ->prefixIcon('heroicon-o-link'),
+                                            ])
+                                            ->columns(2),
+
+                                        // Description with character counter
+                                        Forms\Components\Textarea::make('description')
+                                            ->label('Description')
+                                            ->maxLength(255)
+                                            ->rows(3)
+                                            ->placeholder('Brief description about this animal category (e.g., "Includes all breeds of domestic dogs")')
+                                            ->helperText(function (?string $state): string {
+                                                $length = strlen($state ?? '');
+                                                return "{$length}/255 characters";
+                                            })
+                                            ->reactive()
+                                            ->columnSpanFull(),
+
+                                        Forms\Components\Fieldset::make('Visual Representation')
+                                            ->schema([
+                                                Forms\Components\FileUpload::make('icon')
+                                                    ->label('Category Icon/Image')
+                                                    ->image()
+                                                    ->directory('category-icons')
+                                                    ->imageEditor()
+                                                    ->imageResizeMode('cover')
+                                                    ->imageCropAspectRatio('1:1')
+                                                    ->imagePreviewHeight('200')
+                                                    ->imageResizeTargetWidth('300')
+                                                    ->imageResizeTargetHeight('300')
+                                                    ->deleteUploadedFileUsing(function ($state, $livewire, $record) {
+
+                                                        if ($record?->icon) {
+                                                            Storage::disk('public')->delete($record->icon);
+                                                        }
+                                                        return true;
+                                                    })
+                                                    ->panelLayout('integrated')
+                                                    ->maxSize(1024)
+                                                    ->helperText('Recommended size: 512x512px transparent PNG')
+                                                    ->downloadable()
+                                                    ->openable()
+                                                    ->columnSpanFull(),
+                                            ])
+                                    ])
+                                    ->columns(2),
                             ])
                             ->columnSpan(['md' => 2])
                             ->helperText('Which animals is this product for?'),
