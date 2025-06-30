@@ -25,7 +25,7 @@ use App\Filament\Resources\OlshoptransactionResource\RelationManagers;
 
 class OlshoptransactionResource extends Resource
 {
-    protected static ?string $model = Olshoptransaction::class;
+    protected static ?string $model = OlshopTransaction::class;
 
     protected static ?string $navigationLabel = 'Olshop Transaction';
 
@@ -43,7 +43,7 @@ class OlshoptransactionResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        return (string) Olshoptransaction::where('is_paid', false)->count();
+        return (string) OlshopTransaction::where('is_paid', false)->count();
     }
 
     public static function getNavigationBadgeColor(): ?string
