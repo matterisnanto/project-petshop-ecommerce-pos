@@ -8,11 +8,9 @@ use App\Models\Hotel;
 use App\Models\Order;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
-use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 
 class SalesPerformanceWidget extends BaseWidget
 {
-    use HasWidgetShield;
     protected static ?int $sort = 4;
     protected ?string $heading = 'Sales Performance';
 

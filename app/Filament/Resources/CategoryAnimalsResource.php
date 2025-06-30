@@ -130,8 +130,8 @@ class CategoryAnimalsResource extends Resource
                     ->label('Category Name')
                     ->searchable()
                     ->sortable()
-                    ->weight('medium'),
-                // ->description(fn(CategoryAnimals $record): string => $record->description ? Str::limit($record->description, 50) : ''),
+                    ->weight('medium')
+                    ->description(fn(CategoryAnimals $record): string => $record->description ? Str::limit($record->description, 50) : ''),
 
                 Tables\Columns\TextColumn::make('animals_count')
                     ->label('Animals')

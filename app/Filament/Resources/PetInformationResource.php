@@ -2,17 +2,16 @@
 
 namespace App\Filament\Resources;
 
-use Filament\Forms;
-use Filament\Tables;
-use App\Models\Order;
-use Filament\Forms\Form;
-use Filament\Tables\Table;
-use App\Models\PetInformation;
-use Filament\Resources\Resource;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\PetInformationResource\Pages;
 use App\Filament\Resources\PetInformationResource\RelationManagers;
+use App\Models\PetInformation;
+use Filament\Forms;
+use Filament\Forms\Form;
+use Filament\Resources\Resource;
+use Filament\Tables;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class PetInformationResource extends Resource
 {
@@ -50,19 +49,13 @@ class PetInformationResource extends Resource
                     ->schema([
                         Forms\Components\Select::make('order_id')
                             ->label('Order')
-                            ->relationship(
-                                name: 'order',
-                                titleAttribute: 'id',
-                                modifyQueryUsing: fn(Builder $query) => $query->whereHas('posTransaction')
-                            )
+                            ->relationship('order', 'id')
                             ->searchable()
                             ->preload()
                             ->required()
-                            ->columnSpanFull()
-                            ->getOptionLabelFromRecordUsing(function (Order $order) {
-                                return "{$order->posTransaction->trx_id} - Customer name: {$order->posTransaction->name}";
-                            }),
+                            ->columnSpanFull(),
                     ]),
+
                 Forms\Components\Section::make('Pet Details')
                     ->columns(2)
                     ->schema([
