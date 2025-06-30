@@ -66,14 +66,15 @@ class PurchaseReturnResource extends Resource
                                         'pending' => 'Pending',
                                         'approved' => 'Approved',
                                         'rejected' => 'Rejected',
-                                        'completed' => 'Completed',
+                                        'processed' => 'Processed',
+                                        'refunded' => 'Refunded',
                                     ])
                                     ->required()
                                     ->default('pending')
                                     ->live()
                                     ->columnSpan(1)
                                     ->afterStateUpdated(function ($state, Forms\Set $set) {
-                                        if (in_array($state, ['approved', 'completed'])) {
+                                        if (in_array($state, ['approved', 'processed'])) {
                                             $set('return_approved_date', now());
                                         } else {
                                             $set('return_approved_date', null);
@@ -113,9 +114,9 @@ class PurchaseReturnResource extends Resource
                                     ->columnSpan(2),
 
                                 Forms\Components\DatePicker::make('return_approved_date')
-                                    ->visible(fn($get) => in_array($get('status'), ['approved', 'completed']))
+                                    ->visible(fn($get) => in_array($get('status'), ['approved', 'processed']))
                                     ->disabled(fn($get) => $get('status') !== 'pending')
-                                    ->required(fn($get) => in_array($get('status'), ['approved', 'completed']))
+                                    ->required(fn($get) => in_array($get('status'), ['approved', 'processed']))
                                     ->native(false)
                                     ->displayFormat('d M Y')
                                     ->columnSpan(1),
@@ -347,15 +348,15 @@ class PurchaseReturnResource extends Resource
                         'pending' => 'warning',
                         'approved' => 'success',
                         'rejected' => 'danger',
-                        'completed' => 'info',
-                        default => 'gray',
+                        'processed' => 'info',
+                        'refunded' => 'primary',
                     })
                     ->icon(fn(string $state): string => match ($state) {
                         'pending' => 'heroicon-o-clock',
                         'approved' => 'heroicon-o-check-circle',
                         'rejected' => 'heroicon-o-x-circle',
-                        'completed' => 'heroicon-o-truck',
-                        default => 'heroicon-o-question-mark-circle',
+                        'processed' => 'heroicon-o-truck',
+                        'refunded' => 'heroicon-o-currency-dollar',
                     })
                     ->sortable(),
 
@@ -387,7 +388,7 @@ class PurchaseReturnResource extends Resource
                         'pending' => 'Pending',
                         'approved' => 'Approved',
                         'rejected' => 'Rejected',
-                        'completed' => 'Completed',
+                        'processed' => 'processed',
                     ])
                     ->label('Status')
                     ->indicator('Status'),
@@ -438,6 +439,17 @@ class PurchaseReturnResource extends Resource
                         ->action(function (Collection $records) {
                             $records->each->update([
                                 'status' => 'approved',
+                                'return_approved_date' => now(),
+                            ]);
+                        })
+                        ->requiresConfirmation()
+                        ->deselectRecordsAfterCompletion(),
+                    Tables\Actions\BulkAction::make('markAsRefunded')
+                        ->label('Mark as Refunded')
+                        ->icon('heroicon-o-currency-dollar')
+                        ->action(function (Collection $records) {
+                            $records->each->update([
+                                'status' => 'refunded',
                                 'return_approved_date' => now(),
                             ]);
                         })

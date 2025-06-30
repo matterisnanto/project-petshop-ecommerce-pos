@@ -7,9 +7,11 @@ use App\Models\OlshopTransaction;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Carbon;
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 
 class SalesOverview extends BaseWidget
 {
+    use HasWidgetShield;
     protected static ?int $sort = 10;
     protected function getStats(): array
     {

@@ -767,37 +767,114 @@ class PurchasesResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('purchase_number')
-                    ->searchable(),
+                    ->label('Purchase #')
+                    ->searchable()
+                    ->sortable()
+                    ->description(fn(Purchases $record) => $record->supplier->name)
+                    ->color('primary')
+                    ->weight('bold'),
+
                 Tables\Columns\TextColumn::make('purchase_date')
-                    ->date()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('supplier_id')
-                    ->numeric()
-                    ->sortable(),
+                    ->label('Date')
+                    ->date('d M Y')
+                    ->sortable()
+                    ->alignCenter()
+                    ->color('gray'),
+
                 Tables\Columns\TextColumn::make('total_amount')
+                    ->label('Amount')
                     ->numeric()
+                    ->money('IDR')
+                    ->sortable()
+                    ->alignEnd()
+                    ->color(fn(Purchases $record) => $record->status === 'cancelled' ? 'danger' : 'success')
+                    ->weight('medium'),
+
+                Tables\Columns\BadgeColumn::make('status')
+                    ->label('Status')
+                    ->colors([
+                        'secondary' => 'draft',
+                        'warning' => 'ordered',
+                        'success' => 'received',
+                        'danger' => 'cancelled',
+                    ])
+                    ->icons([
+                        'heroicon-o-pencil' => 'draft',
+                        'heroicon-o-clock' => 'ordered',
+                        'heroicon-o-check-circle' => 'received',
+                        'heroicon-o-x-circle' => 'cancelled',
+                    ])
+                    ->alignCenter()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('status'),
+
                 Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
+                    ->label('Created')
+                    ->dateTime('d M Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+
                 Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
+                    ->label('Updated')
+                    ->dateTime('d M Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('status')
+                    ->options([
+                        'draft' => 'Draft',
+                        'ordered' => 'Ordered',
+                        'received' => 'Received',
+                        'cancelled' => 'Cancelled',
+                    ])
+                    ->label('Status Filter'),
+
+                Tables\Filters\SelectFilter::make('supplier_id')
+                    ->relationship('supplier', 'name')
+                    ->searchable()
+                    ->label('Supplier Filter'),
+
+                Tables\Filters\Filter::make('purchase_date')
+                    ->form([
+                        Forms\Components\DatePicker::make('from')
+                            ->label('From Date'),
+                        Forms\Components\DatePicker::make('until')
+                            ->label('To Date'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['from'],
+                                fn(Builder $query, $date): Builder => $query->whereDate('purchase_date', '>=', $date),
+                            )
+                            ->when(
+                                $data['until'],
+                                fn(Builder $query, $date): Builder => $query->whereDate('purchase_date', '<=', $date),
+                            );
+                    })
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('purchase_date', 'desc')
+            ->emptyStateHeading('No purchases yet')
+            ->emptyStateDescription('Once you create your first purchase, it will appear here.')
+            ->emptyStateIcon('heroicon-o-shopping-bag')
+            ->emptyStateActions([
+                Tables\Actions\CreateAction::make()
+                    ->label('Create Purchase')
+                    ->icon('heroicon-o-plus'),
+            ])
+            ->deferLoading()
+            ->striped()
+            ->poll('10s');
     }
 
     public static function getRelations(): array

@@ -8,9 +8,11 @@ use App\Models\Hotel;
 use App\Models\Order;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 
 class ServicePerformance extends BaseWidget
 {
+    use HasWidgetShield;
     protected static ?int $sort = 5;
 
     protected function getStats(): array

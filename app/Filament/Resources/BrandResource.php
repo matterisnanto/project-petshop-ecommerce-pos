@@ -86,7 +86,6 @@ class BrandResource extends Resource
                                 return true;
                             })
                             ->imagePreviewHeight('150')
-                            ->panelAspectRatio('1:1')
                             ->panelLayout('integrated')
                             ->maxSize(1024)
                             ->required()
