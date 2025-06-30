@@ -7,14 +7,12 @@ use App\Models\Product;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Facades\DB;
 use Filament\Widgets\BarChartWidget;
-use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 
 class TopProductsChart extends ChartWidget
 {
-    use HasWidgetShield;
     protected static ?int $sort = 8;
     protected int | string | array $columnSpan = '4';
-    protected static ?string $heading = '5 Best Selling Products This Month';
+    protected static ?string $heading = '5 Produk Terlaris Bulan Ini';
     protected static ?string $maxHeight = '300px';
 
     protected function getData(): array
@@ -34,12 +32,12 @@ class TopProductsChart extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label' => 'Number of Sold',
+                    'label' => 'Jumlah Terjual',
                     'data' => $products->pluck('total_quantity')->toArray(),
                     'backgroundColor' => '#3b82f6',
                 ],
                 [
-                    'label' => 'Total Revenue (Rp)',
+                    'label' => 'Total Pendapatan (Rp)',
                     'data' => $products->pluck('total_revenue')->toArray(),
                     'backgroundColor' => '#10b981',
                     'yAxisID' => 'y1',
@@ -61,7 +59,7 @@ class TopProductsChart extends ChartWidget
                 'y' => [
                     'title' => [
                         'display' => true,
-                        'text' => 'Number of Sold'
+                        'text' => 'Jumlah Terjual'
                     ],
                     'beginAtZero' => true,
                 ],
@@ -69,7 +67,7 @@ class TopProductsChart extends ChartWidget
                     'position' => 'right',
                     'title' => [
                         'display' => true,
-                        'text' => 'Revenue (Rp)'
+                        'text' => 'Pendapatan (Rp)'
                     ],
                     'beginAtZero' => true,
                     'grid' => [

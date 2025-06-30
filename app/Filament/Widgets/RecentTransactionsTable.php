@@ -10,11 +10,9 @@ use Illuminate\Support\Facades\DB;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Builder;
-use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 
 class RecentTransactionsTable extends TableWidget
 {
-    use HasWidgetShield;
     protected static ?int $sort = 9;
     protected int | string | array $columnSpan = 'full';
 

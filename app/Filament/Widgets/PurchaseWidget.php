@@ -5,11 +5,9 @@ namespace App\Filament\Widgets;
 use App\Models\Purchases;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
-use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 
 class PurchaseWidget extends BaseWidget
 {
-    use HasWidgetShield;
     protected static ?int $sort = 3;
 
     protected function getColumns(): int

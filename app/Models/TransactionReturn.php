@@ -25,17 +25,4 @@ class TransactionReturn extends Model
     {
         return $this->hasMany(ReturnItem::class, 'transaction_return_id');
     }
-
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::saving(function ($model) {
-            if (in_array($model->status, ['approved', 'processed', 'refunded'])) {
-                $model->return_approved_date = $model->return_approved_date ?? now();
-            } else {
-                $model->return_approved_date = null;
-            }
-        });
-    }
 }
