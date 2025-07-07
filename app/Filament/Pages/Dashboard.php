@@ -9,9 +9,13 @@ use Filament\Pages\Dashboard as BaseDashboard;
 use App\Filament\Widgets\RevenueComparisonChart;
 use App\Filament\Widgets\RecentTransactionsTable;
 use App\Filament\Widgets\ServicePerformanceWidget;
+use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 
-class Dashboard extends \Filament\Pages\Dashboard
+
+class Dashboard extends BaseDashboard
 {
+    use HasPageShield;
+
     protected static ?string $navigationIcon = 'heroicon-o-chart-bar';
 
     protected static ?string $navigationLabel = 'Dashboard Analysis';
