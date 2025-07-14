@@ -34,20 +34,45 @@ class UserResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('email')
-                    ->email()
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\Select::make('roles')
-                    ->relationship('roles', 'name'),
-                Forms\Components\TextInput::make('password')
-                    ->password()
-                    ->required()
-                    ->revealable()
-                    ->maxLength(255),
+                Forms\Components\Section::make('User Information')
+                    ->description('Fill in the basic user details')
+                    ->schema([
+                        Forms\Components\TextInput::make('name')
+                            ->required()
+                            ->maxLength(255)
+                            ->columnSpan(['md' => 2]),
+
+                        Forms\Components\TextInput::make('email')
+                            ->email()
+                            ->required()
+                            ->maxLength(255)
+                            ->unique(ignoreRecord: true)
+                            ->columnSpan(['md' => 2]),
+
+                        Forms\Components\Select::make('roles')
+                            ->relationship('roles', 'name')
+                            ->preload()
+                            ->searchable()
+                            ->multiple()
+                            ->columnSpan(['md' => 2]),
+                    ])->columns(2),
+
+                Forms\Components\Section::make('Security')
+                    ->description('Set the user password')
+                    ->schema([
+                        Forms\Components\TextInput::make('password')
+                            ->password()
+                            ->required(fn(string $context): bool => $context === 'create')
+                            ->confirmed()
+                            ->revealable()
+                            ->maxLength(255),
+
+                        Forms\Components\TextInput::make('password_confirmation')
+                            ->password()
+                            ->requiredWith('password')
+                            ->revealable()
+                            ->maxLength(255),
+                    ])->columns(2),
             ]);
     }
 
@@ -55,25 +80,46 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\ImageColumn::make('avatar')
+                    ->label('')
+                    ->defaultImageUrl(fn($record) => 'https://ui-avatars.com/api/?name=' . urlencode($record->name) . '&color=FFFFFF&background=4f46e5')
+                    ->circular(),
+
                 Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('email')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable()
+                    ->description(fn(User $record) => $record->email),
+
                 Tables\Columns\TextColumn::make('roles.name')
-                    ->sortable(),
+                    ->badge()
+                    ->color('primary')
+                    ->sortable()
+                    ->formatStateUsing(fn($state) => ucfirst($state)),
+
                 Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
+                    ->label('Member Since')
+                    ->dateTime('M d, Y')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+
                 Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
+                    ->label('Last Updated')
+                    ->dateTime('M d, Y')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('roles')
+                    ->relationship('roles', 'name')
+                    ->multiple()
+                    ->preload(),
+
+                Tables\Filters\Filter::make('verified')
+                    ->query(fn(Builder $query): Builder => $query->whereNotNull('email_verified_at'))
+                    ->label('Email Verified'),
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
@@ -81,6 +127,15 @@ class UserResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
+            ])
+            ->emptyStateActions([
+                Tables\Actions\CreateAction::make(),
+            ])
+            ->defaultSort('created_at', 'desc')
+            ->groups([
+                Tables\Grouping\Group::make('roles.name')
+                    ->label('Role')
+                    ->collapsible(),
             ]);
     }
 
