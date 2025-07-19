@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cindy Petshop</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+        /* Reset dan Pengaturan Dasar */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            font-family: 'Poppins', sans-serif;
+            color: #4a4a4a;
+            /* Warna latar belakang paling terang dari palet */
+            background-color: #fdf2f8; 
+        }
+
+        /* Kontainer Utama */
+        .container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        /* Ikon Jejak Kaki */
+        .icon {
+            font-size: 5rem;
+            /* Warna pink utama (primary-500) */
+            color: #ec4899; 
+            margin-bottom: 24px;
+            animation: pulse 2s infinite ease-in-out;
+        }
+
+        /* Animasi untuk Ikon */
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 0.9;
+            }
+            50% {
+                transform: scale(1.1);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 0.9;
+            }
+        }
+
+        /* Judul Utama */
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            /* Warna pink lebih gelap untuk kontras (primary-700) */
+            color: #be185d; 
+            margin-bottom: 16px;
+        }
+
+        /* Paragraf Deskripsi */
+        p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            max-width: 600px;
+            margin-bottom: 24px;
+        }
+
+        /* Info Tambahan dan Media Sosial */
+        .info {
+            background-color: #ffffff;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .info p {
+            margin-bottom: 16px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .social-links a {
+            /* Warna pink utama (primary-500) */
+            color: #ec4899;
+            font-size: 2rem;
+            margin: 0 15px;
+            text-decoration: none;
+            transition: transform 0.3s ease, color 0.3s ease;
+        }
+
+        .social-links a:hover {
+            /* Warna pink lebih gelap saat hover (primary-700) */
+            color: #be185d;
+            transform: scale(1.2);
+        }
+
+        /* Footer */
+        footer {
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #a0a0a0;
+        }
+
+        /* Penyesuaian untuk Layar Kecil (Mobile) */
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2rem;
+            }
+            p {
+                font-size: 1rem;
+            }
+            .icon {
+                font-size: 4rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="icon">
+            <i class="fa-solid fa-paw"></i>
+        </div>
+        
+        <h1>Kami Sedang Bersiap-siap!</h1>
+        
+        <p>
+            Hai! Kami sedang melakukan beberapa pembaruan di <strong>cindypetshop.my.id</strong> agar pengalaman Anda semakin menyenangkan.
+            Situs akan segera kembali aktif. Terima kasih atas kesabaran Anda!
+        </p>
+        
+        <div class="info">
+            <p>Tetap terhubung dengan kami melalui:</p>
+            <div class="social-links">
+                <a href="https://www.instagram.com/cindypetshop.official?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                <a href="https://wa.me/6285776104835" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+                <a href="https://www.facebook.com/michelle.latief/" aria-label="Facebook"><i class="fa-brands fa-facebook"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2025 Cindy Petshop
+    </footer>
+
+</body>
+</html>

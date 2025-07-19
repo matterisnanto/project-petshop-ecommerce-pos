@@ -1,0 +1,553 @@
+---
+config:
+  theme: neutral
+  layout: elk
+  look: classic
+---
+classDiagram
+    direction LR
+    class Animal {
+        +id: bigint
+        +name: varchar
+        +slug: varchar
+        +barcode: varchar
+        +category_animals_id: bigint
+        +breeds_id: bigint
+        +age: varchar
+        +weight: decimal
+        +gender: enum
+        +health_status: varchar
+        +vaccination_status: tinyint
+        +thumbnail: varchar
+        +description: longtext
+        +stock: int
+        +purchase_price: decimal
+        +selling_price: decimal
+        +is_active: tinyint
+        +created_at: timestamp
+        +updated_at: timestamp
+        +deleted_at: timestamp
+        +addAnimal()
+        +updateAnimal()
+        +deleteAnimal()
+        +restoreAnimal()
+        +getAnimals()
+        +getAnimalById()
+        +updateStock()
+    }
+    class AnimalPhoto {
+        +id: bigint
+        +photo: varchar
+        +animals_id: bigint
+        +created_at: timestamp
+        +updated_at: timestamp
+        +deleted_at: timestamp
+        +addPhoto()
+        +updatePhoto()
+        +deletePhoto()
+        +restorePhoto()
+        +getPhotosByAnimal()
+    }
+    class Brand {
+        +id: bigint
+        +name: varchar
+        +slug: varchar
+        +logo: varchar
+        +created_at: timestamp
+        +updated_at: timestamp
+        +deleted_at: timestamp
+        +addBrand()
+        +updateBrand()
+        +deleteBrand()
+        +restoreBrand()
+        +getBrands()
+        +getBrandById()
+    }
+    class Breeding {
+        +id: bigint
+        +name: varchar
+        +slug: varchar
+        +category_animals_id: bigint
+        +breeds_id: bigint
+        +photo: varchar
+        +description: text
+        +stock: int
+        +purchase_price: decimal
+        +selling_price: decimal
+        +is_active: tinyint
+        +created_at: timestamp
+        +updated_at: timestamp
+        +deleted_at: timestamp
+        +addBreeding()
+        +updateBreeding()
+        +deleteBreeding()
+        +restoreBreeding()
+        +getBreedings()
+        +getBreedingById()
+        +updateStock()
+    }
+    class BreedingPackage {
+        +id: bigint
+        +name: varchar
+        +price: decimal
+        +description: text
+        +breeding_id: bigint
+        +created_at: timestamp
+        +updated_at: timestamp
+        +deleted_at: timestamp
+        +addPackage()
+        +updatePackage()
+        +deletePackage()
+        +restorePackage()
+        +getPackagesByBreeding()
+    }
+    class Breed {
+        +id: bigint
+        +category_animals_id: bigint
+        +name: varchar
+        +slug: varchar
+        +created_at: timestamp
+        +updated_at: timestamp
+        +deleted_at: timestamp
+        +addBreed()
+        +updateBreed()
+        +deleteBreed()
+        +restoreBreed()
+        +getBreeds()
+        +getBreedById()
+    }
+    class Category {
+        +id: bigint
+        +name: varchar
+        +slug: varchar
+        +description: text
+        +icon: varchar
+        +created_at: timestamp
+        +updated_at: timestamp
+        +deleted_at: timestamp
+        +addCategory()
+        +updateCategory()
+        +deleteCategory()
+        +restoreCategory()
+        +getCategories()
+        +getCategoryById()
+    }
+    class CategoryAnimal {
+        +id: bigint
+        +name: varchar
+        +slug: varchar
+        +description: text
+        +icon: varchar
+        +created_at: timestamp
+        +updated_at: timestamp
+        +deleted_at: timestamp
+        +addCategory()
+        +updateCategory()
+        +deleteCategory()
+        +restoreCategory()
+        +getCategories()
+        +getCategoryById()
+    }
+    class CategoryGrooming {
+        +id: bigint
+        +name: varchar
+        +slug: varchar
+        +description: text
+        +photo: varchar
+        +created_at: timestamp
+        +updated_at: timestamp
+        +deleted_at: timestamp
+        +addCategory()
+        +updateCategory()
+        +deleteCategory()
+        +restoreCategory()
+        +getCategories()
+        +getCategoryById()
+    }
+    class Grooming {
+        +id: bigint
+        +name: varchar
+        +slug: varchar
+        +category_animals_id: bigint
+        +category_grooming_id: bigint
+        +photo: varchar
+        +description: text
+        +stock: int
+        +purchase_price: decimal
+        +selling_price: decimal
+        +is_active: tinyint
+        +created_at: timestamp
+        +updated_at: timestamp
+        +deleted_at: timestamp
+        +addGrooming()
+        +updateGrooming()
+        +deleteGrooming()
+        +restoreGrooming()
+        +getGroomings()
+        +getGroomingById()
+        +updateStock()
+    }
+    class GroomingPackage {
+        +id: bigint
+        +name: varchar
+        +price: decimal
+        +description: text
+        +grooming_id: bigint
+        +created_at: timestamp
+        +updated_at: timestamp
+        +deleted_at: timestamp
+        +addPackage()
+        +updatePackage()
+        +deletePackage()
+        +restorePackage()
+        +getPackagesByGrooming()
+    }
+    class Hotel {
+        +id: bigint
+        +name: varchar
+        +slug: varchar
+        +category_animals_id: bigint
+        +description: text
+        +price_per_day: decimal
+        +capacity: int
+        +thumbnail: varchar
+        +is_active: tinyint
+        +created_at: timestamp
+        +updated_at: timestamp
+        +deleted_at: timestamp
+        +addHotel()
+        +updateHotel()
+        +deleteHotel()
+        +restoreHotel()
+        +getHotels()
+        +getHotelById()
+        +checkAvailability()
+    }
+    class HotelPackage {
+        +id: bigint
+        +name: varchar
+        +price: decimal
+        +description: text
+        +hotel_id: bigint
+        +created_at: timestamp
+        +updated_at: timestamp
+        +deleted_at: timestamp
+        +addPackage()
+        +updatePackage()
+        +deletePackage()
+        +restorePackage()
+        +getPackagesByHotel()
+    }
+    class OlshopTransaction {
+        +id: bigint
+        +name: varchar
+        +phone: varchar
+        +email: varchar
+        +sub_total_amount: decimal
+        +promo_code_id: bigint
+        +discount_amount: decimal
+        +grand_total_amount: decimal
+        +province: varchar
+        +city_regency: varchar
+        +post_code: varchar
+        +complete_address: text
+        +is_paid: tinyint
+        +trx_id: varchar
+        +package_resi_number: varchar
+        +courier: varchar
+        +shipping_service: varchar
+        +weight_total: decimal
+        +shipping_cost: decimal
+        +estimated_delivery: varchar
+        +payment_method_id: bigint
+        +proof: varchar
+        +created_at: timestamp
+        +updated_at: timestamp
+        +deleted_at: timestamp
+        +createTransaction()
+        +updateTransaction()
+        +cancelTransaction()
+        +markAsPaid()
+        +getTransactions()
+        +getTransactionById()
+    }
+    class Order {
+        +id: bigint
+        +pos_transaction_id: bigint
+        +olshop_transaction_id: bigint
+        +purchases_id: bigint
+        +type: varchar
+        +product_id: bigint
+        +animals_id: bigint
+        +grooming_id: bigint
+        +breeding_id: bigint
+        +hotel_id: bigint
+        +quantity: int
+        +unit_price: decimal
+        +created_at: timestamp
+        +updated_at: timestamp
+        +deleted_at: timestamp
+        +addOrder()
+        +updateOrder()
+        +deleteOrder()
+        +restoreOrder()
+        +getOrders()
+        +getOrderById()
+    }
+    class PaymentMethod {
+        +id: bigint
+        +name: varchar
+        +account_number: varchar
+        +image: varchar
+        +olshop_transaction: tinyint
+        +pos_transaction: tinyint
+        +is_cash: tinyint
+        +created_at: timestamp
+        +updated_at: timestamp
+        +deleted_at: timestamp
+        +addPaymentMethod()
+        +updatePaymentMethod()
+        +deletePaymentMethod()
+        +restorePaymentMethod()
+        +getPaymentMethods()
+        +getPaymentMethodById()
+    }
+    class PetInformation {
+        +id: bigint
+        +order_id: bigint
+        +name: varchar
+        +category_animals_id: bigint
+        +age: int
+        +photo: varchar
+        +description: text
+        +check_in: date
+        +check_out: date
+        +days: int
+        +on_petshop: tinyint
+        +created_at: timestamp
+        +updated_at: timestamp
+        +deleted_at: timestamp
+        +addPetInfo()
+        +updatePetInfo()
+        +deletePetInfo()
+        +restorePetInfo()
+        +getPetInfoByOrder()
+    }
+    class PosTransaction {
+        +id: bigint
+        +name: varchar
+        +phone: varchar
+        +email: varchar
+        +gender: enum
+        +total_price: decimal
+        +note: text
+        +payment_method_id: bigint
+        +paid_amount: decimal
+        +change_amount: decimal
+        +trx_id: varchar
+        +created_at: timestamp
+        +updated_at: timestamp
+        +deleted_at: timestamp
+        +createTransaction()
+        +updateTransaction()
+        +cancelTransaction()
+        +getTransactions()
+        +getTransactionById()
+    }
+    class Product {
+        +id: bigint
+        +name: varchar
+        +slug: varchar
+        +barcode: varchar
+        +weight: decimal
+        +thumbnail: varchar
+        +description: longtext
+        +purchase_price: decimal
+        +selling_price: decimal
+        +is_active: tinyint
+        +is_popular: tinyint
+        +stock: int
+        +category_id: bigint
+        +brand_id: bigint
+        +category_animals_id: bigint
+        +created_at: timestamp
+        +updated_at: timestamp
+        +deleted_at: timestamp
+        +addProduct()
+        +updateProduct()
+        +deleteProduct()
+        +restoreProduct()
+        +getProducts()
+        +getProductById()
+        +updateStock()
+    }
+    class ProductPhoto {
+        +id: bigint
+        +photo: varchar
+        +product_id: bigint
+        +created_at: timestamp
+        +updated_at: timestamp
+        +deleted_at: timestamp
+        +addPhoto()
+        +updatePhoto()
+        +deletePhoto()
+        +restorePhoto()
+        +getPhotosByProduct()
+    }
+    class PromoCode {
+        +id: bigint
+        +code: varchar
+        +discount_amount: decimal
+        +start_date: datetime
+        +end_date: datetime
+        +is_active: tinyint
+        +created_at: timestamp
+        +updated_at: timestamp
+        +deleted_at: timestamp
+        +addPromoCode()
+        +updatePromoCode()
+        +deletePromoCode()
+        +restorePromoCode()
+        +getPromoCodes()
+        +getPromoCodeById()
+        +validatePromoCode()
+    }
+    class Purchase {
+        +id: bigint
+        +purchase_number: varchar
+        +purchase_date: date
+        +supplier_id: bigint
+        +total_amount: decimal
+        +notes: text
+        +status: enum
+        +proof: varchar
+        +created_at: timestamp
+        +updated_at: timestamp
+        +addPurchase()
+        +updatePurchase()
+        +cancelPurchase()
+        +completePurchase()
+        +getPurchases()
+        +getPurchaseById()
+    }
+    class PurchaseReturn {
+        +id: bigint
+        +return_date: date
+        +return_number: varchar
+        +supplier_id: bigint
+        +purchases_id: bigint
+        +refund_amount: decimal
+        +status: enum
+        +return_approved_date: date
+        +notes: text
+        +created_at: timestamp
+        +updated_at: timestamp
+        +addReturn()
+        +updateReturn()
+        +approveReturn()
+        +rejectReturn()
+        +processReturn()
+        +getReturns()
+        +getReturnById()
+    }
+    class ReturnItem {
+        +id: bigint
+        +purchase_return_id: bigint
+        +transaction_return_id: bigint
+        +type: varchar
+        +product_id: bigint
+        +animals_id: bigint
+        +grooming_id: bigint
+        +breeding_id: bigint
+        +hotel_id: bigint
+        +quantity: int
+        +unit_price: decimal
+        +reason: text
+        +created_at: timestamp
+        +updated_at: timestamp
+        +addItem()
+        +updateItem()
+        +removeItem()
+        +getItemsByReturn()
+    }
+    class Supplier {
+        +id: bigint
+        +name: varchar
+        +email: varchar
+        +phone: varchar
+        +address: text
+        +created_at: timestamp
+        +updated_at: timestamp
+        +deleted_at: timestamp
+        +addSupplier()
+        +updateSupplier()
+        +deleteSupplier()
+        +restoreSupplier()
+        +getSuppliers()
+        +getSupplierById()
+    }
+    class TransactionReturn {
+        +id: bigint
+        +return_date: date
+        +return_number: varchar
+        +type: varchar
+        +pos_transaction_id: bigint
+        +olshop_transaction_id: bigint
+        +refund_amount: decimal
+        +status: enum
+        +return_approved_date: date
+        +notes: text
+        +created_at: timestamp
+        +updated_at: timestamp
+        +addReturn()
+        +updateReturn()
+        +approveReturn()
+        +rejectReturn()
+        +processReturn()
+        +getReturns()
+        +getReturnById()
+    }
+%% // --- Relasi One-to-Many ---
+Animal "1" -- "0..*" AnimalPhoto : "has"
+Product "1" -- "0..*" ProductPhoto : "has"
+Breeding "1" -- "0..*" BreedingPackage : "has"
+Grooming "1" -- "0..*" GroomingPackage : "has"
+Hotel "1" -- "0..*" HotelPackage : "has"
+Order "1" -- "0..*" PetInformation : "has"
+PurchaseReturn "1" -- "0..*" ReturnItem : "has"
+TransactionReturn "1" -- "0..*" ReturnItem : "has"
+
+%% // --- Relasi Many-to-One ---
+Animal "1..*" -- "1" CategoryAnimal : "belongs to"
+Animal "1..*" -- "1" Breed : "belongs to"
+Product "1..*" -- "1" Category : "belongs to"
+Product "1..*" -- "1" Brand : "belongs to"
+Product "1..*" -- "1" CategoryAnimal : "belongs to"
+Breed "1..*" -- "1" CategoryAnimal : "belongs to"
+Grooming "1..*" -- "1" CategoryGrooming : "belongs to"
+Grooming "1..*" -- "1" CategoryAnimal : "belongs to"
+Hotel "1..*" -- "1" CategoryAnimal : "belongs to"
+Breeding "1..*" -- "1" CategoryAnimal : "belongs to"
+Breeding "1..*" -- "1" Breed : "belongs to"
+PetInformation "1..*" -- "1" CategoryAnimal : "belongs to"
+Order "1..*" -- "1" PosTransaction : "belongs to"
+Order "1..*" -- "1" OlshopTransaction : "belongs to"
+Order "1..*" -- "1" Purchase : "belongs to"
+Order "1..*" -- "1" Product : "contains"
+Order "1..*" -- "1" Animal : "contains"
+Order "1..*" -- "1" Grooming : "contains"
+Order "1..*" -- "1" Breeding : "contains"
+Order "1..*" -- "1" Hotel : "contains"
+Purchase "1..*" -- "1" Supplier : "from"
+PurchaseReturn "1..*" -- "1" Supplier : "to"
+PurchaseReturn "1..*" -- "1" Purchase : "references"
+TransactionReturn "1..*" -- "1" PosTransaction : "references"
+TransactionReturn "1..*" -- "1" OlshopTransaction : "references"
+ReturnItem "1..*" -- "1" Product : "references"
+ReturnItem "1..*" -- "1" Animal : "references"
+ReturnItem "1..*" -- "1" Grooming : "references"
+ReturnItem "1..*" -- "1" Breeding : "references"
+ReturnItem "1..*" -- "1" Hotel : "references"
+OlshopTransaction "1..*" -- "1" PaymentMethod : "uses"
+PosTransaction "1..*" -- "1" PaymentMethod : "uses"
+OlshopTransaction "1..*" -- "1" PromoCode : "uses"
