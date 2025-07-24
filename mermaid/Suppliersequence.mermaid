@@ -1,0 +1,92 @@
+sequenceDiagram
+    actor Staff
+    participant FormSupplier as Form Supplier
+    participant ControllerSupplier
+    participant DataSupplier
+
+    Staff->>FormSupplier: Buka form Supplier
+    activate FormSupplier
+    FormSupplier->>ControllerSupplier: get(supplier)
+    activate ControllerSupplier
+    ControllerSupplier->>DataSupplier: get(supplier)
+    DataSupplier-->>ControllerSupplier: Data supplier
+    ControllerSupplier-->>FormSupplier: Tampilkan tabel
+    deactivate ControllerSupplier
+    deactivate FormSupplier
+
+    alt Staff Membuat Supplier Baru
+        Staff->>FormSupplier: Klik "Tambah Supplier"
+        FormSupplier->>ControllerSupplier: create()
+        activate ControllerSupplier
+        ControllerSupplier-->>FormSupplier: Tampilkan form kosong
+        deactivate ControllerSupplier
+
+        Staff->>FormSupplier: Isi detail supplier:
+        FormSupplier->>ControllerSupplier: Validasi input
+        activate ControllerSupplier
+        alt Validasi berhasil
+            ControllerSupplier->>DataSupplier: create(data)
+            DataSupplier-->>ControllerSupplier: Supplier baru
+            ControllerSupplier-->>FormSupplier: Notifikasi sukses
+            FormSupplier->>Staff: Tampilkan pesan sukses
+        else Validasi gagal
+            ControllerSupplier-->>FormSupplier: Tampilkan error
+            FormSupplier->>Staff: Tampilkan pesan error
+        end
+        deactivate ControllerSupplier
+    end
+
+    alt Staff Melakukan Aksi pada Supplier
+        Staff->>FormSupplier: Pilih aksi pada supplier
+        FormSupplier->>ControllerSupplier: handleAction()
+        activate ControllerSupplier
+
+        alt Aksi View
+            ControllerSupplier->>DataSupplier: find(id)
+            DataSupplier-->>ControllerSupplier: Detail supplier
+            ControllerSupplier-->>FormSupplier: Tampilkan detail
+        else Aksi Edit
+            ControllerSupplier->>DataSupplier: find(id)
+            DataSupplier-->>ControllerSupplier: Data supplier
+            ControllerSupplier-->>FormSupplier: Tampilkan form edit
+            Staff->>FormSupplier: Update data
+            FormSupplier->>ControllerSupplier: update()
+            ControllerSupplier->>DataSupplier: update(data)
+            DataSupplier-->>ControllerSupplier: Data terupdate
+            ControllerSupplier-->>FormSupplier: Notifikasi sukses
+        else Aksi Delete
+            ControllerSupplier->>DataSupplier: find(id)
+            ControllerSupplier->>DataSupplier: delete()
+            DataSupplier-->>ControllerSupplier: Konfirmasi
+            ControllerSupplier-->>FormSupplier: Notifikasi sukses
+        %% else Aksi Restore
+        %%     ControllerSupplier->>DataSupplier: withTrashed()->find(id)
+        %%     ControllerSupplier->>DataSupplier: restore()
+        %%     DataSupplier-->>ControllerSupplier: Konfirmasi
+        %%     ControllerSupplier-->>FormSupplier: Notifikasi sukses
+        %% else Aksi Force Delete
+        %%     ControllerSupplier->>DataSupplier: withTrashed()->find(id)
+        %%     ControllerSupplier->>DataSupplier: forceDelete()
+        %%     DataSupplier-->>ControllerSupplier: Konfirmasi
+        %%     ControllerSupplier-->>FormSupplier: Notifikasi sukses
+        end
+        deactivate ControllerSupplier
+        FormSupplier->>Staff: Tampilkan hasil aksi
+    end
+
+    %% alt Staff Melakukan Bulk Actions
+    %%     Staff->>FormSupplier: Pilih beberapa supplier
+    %%     Staff->>FormSupplier: Pilih aksi massal
+    %%     FormSupplier->>ControllerSupplier: handleBulkAction()
+    %%     activate ControllerSupplier
+
+    %%     alt Bulk Delete
+    %%         ControllerSupplier->>DataSupplier: whereIn(id, ids)->delete()
+    %%     else Bulk Restore
+    %%         ControllerSupplier->>DataSupplier: withTrashed()->whereIn(id, ids)->restore()
+    %%     else Bulk Force Delete
+    %%         ControllerSupplier->>DataSupplier: withTrashed()->whereIn(id, ids)->forceDelete()
+    %%     end
+    %%     deactivate ControllerSupplier
+    %%     FormSupplier->>Staff: Tampilkan notifikasi massal
+    %% end

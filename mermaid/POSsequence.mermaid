@@ -1,0 +1,117 @@
+sequenceDiagram
+    actor Staff
+    participant POSForm as POS Form
+    participant POSController as POS Controller
+    participant POSTransaction as POSTransaction
+    participant Order as data Detail Order
+    participant Product as data Product
+    participant Animals as data Animals
+    participant Breeding as data Breeding
+    participant Grooming as data Grooming
+    participant Hotel as data Hotel
+    participant PetInfo as data Pet Information
+    participant PaymentMethod as data Payment Methods
+
+    Staff->>POSForm: Membuka Form POS
+    activate POSForm
+    POSForm->>POSController: mount()
+    activate POSController
+    POSController->>Product: where('stock', '>', 0)
+    POSController->>Animals: where('stock', '>', 0)
+    POSController->>Breeding: where('is_active', true)
+    POSController->>Grooming: where('is_active', true)
+    POSController->>Hotel: where('is_active', true)
+    POSController->>PaymentMethod: where('pos_transaction', true)
+    POSController-->>POSForm: Inisialisasi form
+    deactivate POSController
+    deactivate POSForm
+
+    loop Menambahkan Item
+        Staff->>POSForm: Memilih Tab (products/animals/grooming/hotel/breeding)
+        POSForm->>POSController: Switch Tab
+        
+        alt Products Tab
+            Staff->>POSForm: Pilih Product
+            POSForm->>POSController: add Product To Order(productId)
+            activate POSController
+            POSController->>Product: find(productId)
+            alt Stock > 0
+                Product-->>POSController: Product details
+                POSController->>POSForm: Tambah ke order_items
+            else Stock Habis
+                POSController->>POSForm: Tampilkan notifikasi error
+            end
+            deactivate POSController
+            
+        else Animals Tab
+            Staff->>POSForm: Pilih Animal
+            POSForm->>POSController: add Animal To Order(animalId)
+            activate POSController
+            POSController->>Animals: find(animalId)
+            alt Stock > 0
+                Animals-->>POSController: Animal details
+                POSController->>POSForm: Tambah ke order_items
+            else Stock Habis
+                POSController->>POSForm: Tampilkan notifikasi error
+            end
+            deactivate POSController
+            
+        else Services (Grooming/Hotel/Breeding)
+            Staff->>POSForm: Pilih Layanan
+            POSForm->>POSController: add Service To Order(serviceId)
+            activate POSController
+            alt Grooming
+                POSController->>Grooming: find(serviceId)
+                Grooming-->>POSController: Service details
+            else Hotel
+                POSController->>Hotel: find(serviceId)
+                Hotel-->>POSController: Service details
+            else Breeding
+                POSController->>Breeding: find(serviceId)
+                Breeding-->>POSController: Service details
+            end
+            POSController->>POSForm: Tambah ke order_items + tampilkan pet form
+            Staff->>POSForm: Isi Pet Information
+            POSForm->>PetInfo: Simpan sementara
+            deactivate POSController
+        end
+    end
+
+    Staff->>POSForm: Isi data customer (nama, telp, email)
+    Staff->>POSForm: Pilih Payment Method
+    POSForm->>POSController: get(payment_method_id)
+    POSController->>PaymentMethod: find(payment_method_id)
+    PaymentMethod-->>POSController: payment details
+    
+    alt Pembayaran Non-Tunai
+        POSController->>POSForm: Tampilkan account_number
+    else Pembayaran Tunai
+        Staff->>POSForm: Input paid_amount
+        POSForm->>POSController: hitung change_amount
+    end
+
+    Staff->>POSForm: Submit Checkout
+    POSForm->>POSController: checkout()
+    activate POSController
+    POSController->>POSTransaction: create(transactionData)
+    POSTransaction-->>POSController: trx_id
+    
+    loop Proses Order Items
+        POSController->>Order: create(orderData)
+        
+        alt Product
+            POSController->>Product: decrement('stock', quantity)
+        else Animal
+            POSController->>Animals: decrement('stock', quantity)
+        else Service (Grooming/Hotel/Breeding)
+            POSController->>PetInfo: create(petData)
+        end
+    end
+    
+    POSController->>POSForm: Reset form
+    POSController->>POSForm: Prepare receipt data
+    POSController->>POSTransaction: with(['detail_order', 'paymentMethod'])
+    POSTransaction-->>POSController: complete transaction data
+    POSController->>POSForm: Generate PDF receipt
+    deactivate POSController
+    POSForm->>Staff: Download receipt PDF

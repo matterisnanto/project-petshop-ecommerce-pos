@@ -1,0 +1,76 @@
+sequenceDiagram
+    actor Staff
+    participant FormGrooming as Form Grooming
+    participant ControllerGrooming as Controller Grooming
+    participant DataGrooming as Data Grooming
+    participant DataCategory as Data Category Animals
+    participant DataPackage as Data Grooming Package
+
+    Staff->>FormGrooming: Buka Daftar Grooming
+    activate FormGrooming
+    FormGrooming->>ControllerGrooming: get(Grooming)
+    activate ControllerGrooming
+    ControllerGrooming->>DataGrooming: get(Grooming)
+    DataGrooming-->>ControllerGrooming: Data Grooming
+    ControllerGrooming-->>FormGrooming: Tampilkan tabel (group by category)
+    deactivate ControllerGrooming
+    deactivate FormGrooming
+
+    alt Staff Membuat Grooming Service Baru
+        Staff->>FormGrooming: Klik "Create service"
+        FormGrooming->>ControllerGrooming: create()
+        activate ControllerGrooming
+        ControllerGrooming->>DataCategory: get(Category Animals)
+        DataCategory-->>ControllerGrooming: List Category Animals
+        ControllerGrooming-->>FormGrooming: Tampilkan form kosong
+        deactivate ControllerGrooming
+
+        Staff->>FormGrooming: Isi detail Grooming (name, category, packages, photo)
+        FormGrooming->>ControllerGrooming: Validasi input
+        activate ControllerGrooming
+        alt Validasi berhasil
+            ControllerGrooming->>ControllerGrooming: Generate slug unik
+            ControllerGrooming->>DataGrooming: create(data service)
+            DataGrooming-->>ControllerGrooming: Service baru
+            ControllerGrooming->>DataPackage: create(packages)
+            DataPackage-->>ControllerGrooming: Packages created
+            ControllerGrooming-->>FormGrooming: Notifikasi sukses
+            FormGrooming->>Staff: Tampilkan pesan sukses
+        else Validasi gagal
+            ControllerGrooming-->>FormGrooming: Tampilkan error
+            FormGrooming->>Staff: Tampilkan pesan error
+        end
+        deactivate ControllerGrooming
+    end
+
+    alt Staff Melakukan Aksi pada Grooming Service
+        Staff->>FormGrooming: Pilih aksi pada Service
+        FormGrooming->>ControllerGrooming: handleAction()
+        activate ControllerGrooming
+
+        alt Aksi View
+            ControllerGrooming->>DataGrooming: find(id)
+            DataGrooming-->>ControllerGrooming: Detail Service
+            ControllerGrooming-->>FormGrooming: Tampilkan detail
+        else Aksi Edit
+            ControllerGrooming->>DataGrooming: find(id)
+            DataGrooming-->>ControllerGrooming: Data Service
+            ControllerGrooming->>DataCategory: get(Category Animals)
+            DataCategory-->>ControllerGrooming: List Category Animals
+            ControllerGrooming-->>FormGrooming: Tampilkan form edit
+            Staff->>FormGrooming: Update data
+            FormGrooming->>ControllerGrooming: update()
+            activate ControllerGrooming
+            ControllerGrooming->>DataGrooming: update(data)
+            DataGrooming-->>ControllerGrooming: Data terupdate
+            ControllerGrooming-->>FormGrooming: Notifikasi sukses
+            deactivate ControllerGrooming
+        else Aksi Delete
+            ControllerGrooming->>DataGrooming: find(id)
+            ControllerGrooming->>DataGrooming: softDelete()
+            DataGrooming-->>ControllerGrooming: Konfirmasi
+            ControllerGrooming-->>FormGrooming: Notifikasi sukses
+        end
+        deactivate ControllerGrooming
+        FormGrooming->>Staff: Tampilkan hasil aksi
+    end

@@ -15,11 +15,11 @@ return new class() extends Migration {
             $table->string('name', 100);
             $table->string('slug', 100)->unique();
             $table->string('barcode', 50)->nullable()->unique();
-            $table->decimal('weight', 8, 2);
+            $table->decimal('weight', 8);
             $table->string('thumbnail', 255);
             $table->longText('description')->nullable();
-            $table->decimal('purchase_price', 12, 2);
-            $table->decimal('selling_price', 12, 2);
+            $table->decimal('purchase_price', 8);
+            $table->decimal('selling_price', 8);
             $table->boolean('is_active')->default(true);
             $table->boolean('is_popular')->default(false);
             $table->integer('stock')->default(0);

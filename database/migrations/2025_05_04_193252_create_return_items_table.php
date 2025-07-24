@@ -15,14 +15,13 @@ return new class extends Migration
             $table->id();
             $table->foreignId('purchase_return_id')->nullable()->constrained('purchase_return')->onDelete('cascade');
             $table->foreignId('transaction_return_id')->nullable()->constrained('transaction_returns')->onDelete('cascade');
-            $table->string('type', 50)->nullable();
+            $table->string('type', 10)->nullable();
             $table->foreignId('product_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('animals_id')->nullable()->constrained()->nullOnDelete();
-            $table->foreignId('grooming_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('breeding_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('hotel_id')->nullable()->constrained()->nullOnDelete();
             $table->integer('quantity');
-            $table->decimal('unit_price', 12, 2);
+            $table->decimal('unit_price', 8);
             $table->text('reason')->nullable();
             $table->timestamps();
         });

@@ -1,0 +1,40 @@
+sequenceDiagram
+    actor Admin as Admin
+    participant Form as Form Purchasing
+    participant Controller as PurchasesController
+    participant Purchases as data Purchases
+    participant Orders as data Detail Order
+    participant Products as data Product
+    participant Animals as data Animals
+    participant Suppliers as data Supplier
+
+    Admin->>Form: membuka form()
+    Form->>Form: menampilkan form
+    Admin->>Form: Mengisi form pembelian
+    Form->>Controller: Mengirim data form
+    
+    alt Membuat Supplier Baru
+        Controller->>Suppliers: Buat record supplier baru
+        Suppliers-->>Controller: Mengembalikan ID supplier
+    end
+    
+    Controller->>Purchases: Buat record pembelian baru
+    Purchases-->>Controller: Mengembalikan ID pembelian
+    
+    loop Untuk setiap item pesanan
+        alt Item Produk
+            Controller->>Products: Cek/ambil data produk
+            Products-->>Controller: Mengembalikan data produk
+        else Item Hewan
+            Controller->>Animals: Cek/ambil data hewan
+            Animals-->>Controller: Mengembalikan data hewan
+        end
+        
+        Controller->>Orders: Buat record detail_order
+        Orders-->>Controller: Konfirmasi
+    end
+    
+    Controller->>Purchases: Update total amount
+    Purchases-->>Controller: Konfirmasi
+    Controller-->>Form: Respon sukses
+    Form-->>Admin: Tampilkan pesan sukses

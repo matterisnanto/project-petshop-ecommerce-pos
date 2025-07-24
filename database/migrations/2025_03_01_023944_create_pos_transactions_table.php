@@ -17,12 +17,12 @@ return new class() extends Migration {
             $table->string('phone', 20)->nullable();
             $table->string('email', 100)->nullable();
             $table->enum('gender', ['male', 'female'])->nullable();
-            $table->decimal('total_price', 12, 2);
+            $table->decimal('total_price', 8);
             $table->text('note')->nullable();
             $table->foreignId('payment_method_id')->nullable()->constrained()->nullOnDelete();
-            $table->decimal('paid_amount', 12, 2)->nullable();
-            $table->decimal('change_amount', 12, 2)->nullable();
-            $table->string('trx_id', 50)->unique();
+            $table->decimal('paid_amount', 8)->nullable();
+            $table->decimal('change_amount', 8)->nullable();
+            $table->string('trx_id', 15)->unique();
             $table->timestamps();
             $table->softDeletes();
         });

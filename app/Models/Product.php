@@ -100,7 +100,7 @@ class Product extends Model
         return 'slug';
     }
 
-    public function order(): HasMany
+    public function detail_order(): HasMany
     {
         return $this->hasMany(Order::class);
     }

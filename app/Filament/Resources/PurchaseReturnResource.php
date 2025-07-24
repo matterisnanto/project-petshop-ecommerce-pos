@@ -159,13 +159,13 @@ class PurchaseReturnResource extends Resource
                                                 $purchaseId = $get('../../purchases_id');
                                                 if ($get('type') !== 'product' || !$purchaseId) return [];
 
-                                                // Ambil produk dari purchase order yang dipilih
+                                                // Ambil produk dari purchase detail_order yang dipilih
                                                 return \App\Models\Order::where('purchases_id', $purchaseId)
                                                     ->whereNotNull('product_id')
                                                     ->with('product')
                                                     ->get()
-                                                    ->mapWithKeys(function ($order) {
-                                                        return [$order->product_id => $order->product->name];
+                                                    ->mapWithKeys(function ($detail_order) {
+                                                        return [$detail_order->product_id => $detail_order->product->name];
                                                     })
                                                     ->unique();
                                             })
@@ -187,13 +187,13 @@ class PurchaseReturnResource extends Resource
                                                 $purchaseId = $get('../../purchases_id');
                                                 if ($get('type') !== 'animal' || !$purchaseId) return [];
 
-                                                // Ambil animals dari purchase order yang dipilih
+                                                // Ambil animals dari purchase detail_order yang dipilih
                                                 return \App\Models\Order::where('purchases_id', $purchaseId)
                                                     ->whereNotNull('animals_id')
                                                     ->with('animal')
                                                     ->get()
-                                                    ->mapWithKeys(function ($order) {
-                                                        return [$order->animals_id => $order->animal->name];
+                                                    ->mapWithKeys(function ($detail_order) {
+                                                        return [$detail_order->animals_id => $detail_order->animal->name];
                                                     })
                                                     ->unique();
                                             })
@@ -231,17 +231,17 @@ class PurchaseReturnResource extends Resource
                                                 if (!$purchaseId) return null;
 
                                                 if ($productId) {
-                                                    $order = \App\Models\Order::where('purchases_id', $purchaseId)
+                                                    $detail_order = \App\Models\Order::where('purchases_id', $purchaseId)
                                                         ->where('product_id', $productId)
                                                         ->first();
-                                                    return $order ? $order->quantity : null;
+                                                    return $detail_order ? $detail_order->quantity : null;
                                                 }
 
                                                 if ($animalId) {
-                                                    $order = \App\Models\Order::where('purchases_id', $purchaseId)
+                                                    $detail_order = \App\Models\Order::where('purchases_id', $purchaseId)
                                                         ->where('animals_id', $animalId)
                                                         ->first();
-                                                    return $order ? $order->quantity : null;
+                                                    return $detail_order ? $detail_order->quantity : null;
                                                 }
 
                                                 return null;
@@ -255,17 +255,17 @@ class PurchaseReturnResource extends Resource
                                                 if (!$purchaseId) return null;
 
                                                 if ($productId) {
-                                                    $order = \App\Models\Order::where('purchases_id', $purchaseId)
+                                                    $detail_order = \App\Models\Order::where('purchases_id', $purchaseId)
                                                         ->where('product_id', $productId)
                                                         ->first();
-                                                    return $order ? "of {$order->quantity}" : null;
+                                                    return $detail_order ? "of {$detail_order->quantity}" : null;
                                                 }
 
                                                 if ($animalId) {
-                                                    $order = \App\Models\Order::where('purchases_id', $purchaseId)
+                                                    $detail_order = \App\Models\Order::where('purchases_id', $purchaseId)
                                                         ->where('animals_id', $animalId)
                                                         ->first();
-                                                    return $order ? "of {$order->quantity}" : null;
+                                                    return $detail_order ? "of {$detail_order->quantity}" : null;
                                                 }
 
                                                 return null;
@@ -307,14 +307,14 @@ class PurchaseReturnResource extends Resource
             ]);
     }
 
-    // protected static function generateOrderLabel(Order $order): string
+    // protected static function generateOrderLabel(Order $detail_order): string
     // {
-    //     if ($order->product_id) {
-    //         return "Product: {$order->product->name} (Qty: {$order->quantity})";
-    //     } elseif ($order->animals_id) {
-    //         return "Animal: {$order->animal->name} (Qty: {$order->quantity})";
+    //     if ($detail_order->product_id) {
+    //         return "Product: {$detail_order->product->name} (Qty: {$detail_order->quantity})";
+    //     } elseif ($detail_order->animals_id) {
+    //         return "Animal: {$detail_order->animal->name} (Qty: {$detail_order->quantity})";
     //     }
-    //     return 'Item #' . $order->id . " (Qty: {$order->quantity})";
+    //     return 'Item #' . $detail_order->id . " (Qty: {$detail_order->quantity})";
     // }
 
     public static function table(Table $table): Table

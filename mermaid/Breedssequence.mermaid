@@ -1,0 +1,87 @@
+sequenceDiagram
+    actor Staff
+    participant FormBreed as Form Breed
+    participant ControllerBreed as Controller Breed
+    participant DataBreed as Data Breed
+    participant dataCategory AnimalsAnimals as Data Category Animals
+
+    Staff->>FormBreed: Buka Daftar Breed
+    activate FormBreed
+    FormBreed->>ControllerBreed: get(Breeds)
+    activate ControllerBreed
+    ControllerBreed->>DataBreed: get(Breeds with Category Animals)
+    DataBreed-->>ControllerBreed: Data Breeds
+    ControllerBreed-->>FormBreed: Tampilkan tabel (group by Category Animals)
+    deactivate ControllerBreed
+    deactivate FormBreed
+
+    alt Staff Membuat Breed Baru
+        Staff->>FormBreed: Klik "Add New Breed"
+        FormBreed->>ControllerBreed: create()
+        activate ControllerBreed
+        ControllerBreed->>dataCategory AnimalsAnimals: get(Category Animals)
+        dataCategory AnimalsAnimals-->>ControllerBreed: List Category Animals
+        ControllerBreed-->>FormBreed: Tampilkan form dengan select Category Animals
+        deactivate ControllerBreed
+
+        Staff->>FormBreed: Isi detail Breed (Category Animals, name)
+        FormBreed->>ControllerBreed: Validasi input
+        activate ControllerBreed
+        alt Validasi berhasil
+            ControllerBreed->>ControllerBreed: Generate slug unik
+            ControllerBreed->>DataBreed: create(Category Animals_animals_id, name, slug)
+            DataBreed-->>ControllerBreed: Breed baru
+            ControllerBreed-->>FormBreed: Notifikasi sukses
+            FormBreed->>Staff: Tampilkan pesan sukses
+        else Validasi gagal
+            ControllerBreed-->>FormBreed: Tampilkan error
+            FormBreed->>Staff: Tampilkan pesan error
+        end
+        deactivate ControllerBreed
+    end
+
+    alt Staff Membuat Category Animals Baru dari Form Breed
+        Staff->>FormBreed: Klik "Create new Category Animals"
+        FormBreed->>ControllerBreed: showCategory AnimalsForm()
+        activate ControllerBreed
+        ControllerBreed-->>FormBreed: Tampilkan form Category Animals
+        deactivate ControllerBreed
+
+        Staff->>FormBreed: Isi detail Category Animals
+        FormBreed->>ControllerBreed: storeCategory Animals()
+        activate ControllerBreed
+        ControllerBreed->>ControllerBreed: Generate slug Category Animals
+        ControllerBreed->>dataCategory AnimalsAnimals: create(name, slug, description, icon)
+        dataCategory AnimalsAnimals-->>ControllerBreed: Category Animals baru
+        ControllerBreed-->>FormBreed: Update select Category Animals
+        FormBreed->>Staff: Lanjutkan pengisian breed
+        deactivate ControllerBreed
+    end
+
+    alt Staff Melakukan Aksi pada Breed
+        Staff->>FormBreed: Pilih aksi pada Breed
+        FormBreed->>ControllerBreed: handleAction()
+        activate ControllerBreed
+
+        alt Aksi Edit
+            ControllerBreed->>DataBreed: find(id)
+            DataBreed-->>ControllerBreed: Data Breed
+            ControllerBreed->>dataCategory AnimalsAnimals: get(Category Animals)
+            dataCategory AnimalsAnimals-->>ControllerBreed: List Category Animals
+            ControllerBreed-->>FormBreed: Tampilkan form edit
+            Staff->>FormBreed: Update data
+            FormBreed->>ControllerBreed: update()
+            activate ControllerBreed
+            ControllerBreed->>DataBreed: update(data)
+            DataBreed-->>ControllerBreed: Data terupdate
+            ControllerBreed-->>FormBreed: Notifikasi sukses
+            deactivate ControllerBreed
+        else Aksi Delete
+            ControllerBreed->>DataBreed: find(id)
+            ControllerBreed->>DataBreed: Delete()
+            DataBreed-->>ControllerBreed: Konfirmasi
+            ControllerBreed-->>FormBreed: Notifikasi sukses
+        end
+        deactivate ControllerBreed
+        FormBreed->>Staff: Tampilkan hasil aksi
+    end

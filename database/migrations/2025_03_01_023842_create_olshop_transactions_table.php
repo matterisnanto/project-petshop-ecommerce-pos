@@ -13,15 +13,15 @@ return new class extends Migration
     {
         Schema::create('olshop_transactions', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 100);
-            $table->string('phone', 20);
+            $table->string('name', 50);
+            $table->string('phone', 13);
             $table->string('email', 100);
-            $table->decimal('sub_total_amount', 12, 2);
+            $table->decimal('sub_total_amount', 8);
             $table->foreignId('promo_code_id')->nullable()->constrained()->nullOnDelete();
-            $table->decimal('discount_amount', 12, 2)->default(0);
-            $table->decimal('grand_total_amount', 12, 2);
-            $table->string('province', 100);
-            $table->string('city_regency', 100);
+            $table->decimal('discount_amount', 8)->default(0);
+            $table->decimal('grand_total_amount', 8);
+            $table->string('province', 50);
+            $table->string('city_regency', 50);
             $table->string('post_code', 10);
             $table->text('complete_address');
             $table->boolean('is_paid')->default(false);
@@ -29,9 +29,9 @@ return new class extends Migration
             $table->string('package_resi_number', 50)->default('Being Processed');
             $table->string('courier', 50);
             $table->string('shipping_service', 255);
-            $table->decimal('weight_total', 8, 2);
-            $table->decimal('shipping_cost', 12, 2);
-            $table->string('estimated_delivery', 100);
+            $table->decimal('weight_total', 8);
+            $table->decimal('shipping_cost', 8);
+            $table->string('estimated_delivery', 50);
             $table->foreignId('payment_method_id')->nullable()->constrained()->nullOnDelete();
             $table->string('proof', 255);
             $table->timestamps();

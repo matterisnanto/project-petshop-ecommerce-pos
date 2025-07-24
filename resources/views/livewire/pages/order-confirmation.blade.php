@@ -55,7 +55,7 @@
                             <h2 class="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">Order
                                 Confirmed!
                             </h2>
-                            <p class="text-sm sm:text-lg text-gray-500 dark:text-gray-400">Your order
+                            <p class="text-sm sm:text-lg text-gray-500 dark:text-gray-400">Your detail_order
                                 #{{ $transaction->trx_id }} has been
                                 placed successfully.</p>
                         </div>
@@ -229,7 +229,7 @@
                                     class="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Processing</span>
                             </div>
                             <p class="mt-2 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
-                                Your order will be processed within 24 hours during working days.
+                                Your detail_order will be processed within 24 hours during working days.
                             </p>
                         </div>
                     </div>

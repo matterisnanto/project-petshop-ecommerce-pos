@@ -14,10 +14,10 @@ return new class extends Migration
     {
         Schema::create('purchases', function (Blueprint $table) {
             $table->id();
-            $table->string('purchase_number')->unique();
+            $table->string('purchase_number', 20)->unique();
             $table->date('purchase_date');
             $table->foreignId('supplier_id')->nullable()->constrained()->nullOnDelete();
-            $table->decimal('total_amount', 12, 2);
+            $table->decimal('total_amount', 8);
             $table->text('notes')->nullable();
             $table->enum('status', ['draft', 'ordered', 'received', 'cancelled'])->default('draft');
             $table->string('proof')->nullable();

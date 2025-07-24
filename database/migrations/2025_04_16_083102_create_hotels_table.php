@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('slug', 100)->unique();
             $table->foreignId('category_animals_id')->nullable()->constrained()->nullOnDelete();
             $table->text('description')->nullable();
-            $table->decimal('price_per_day', 12, 2);
+            $table->decimal('price_per_day', 8);
             $table->integer('capacity');
             $table->string('thumbnail', 255)->nullable();
             $table->boolean('is_active')->default(true);

@@ -45,7 +45,7 @@ class RecentTransactionsTable extends TableWidget
             ->latest()
             ->limit(5);
 
-        // Union the queries and order by created_at
+        // Union the queries and detail_order by created_at
         return $posTransactions->unionAll($olshopTransactions)
             ->orderBy('created_at', 'desc')
             ->limit(5);

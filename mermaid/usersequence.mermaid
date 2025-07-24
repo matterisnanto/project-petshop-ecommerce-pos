@@ -1,0 +1,77 @@
+sequenceDiagram
+    actor Admin
+    participant FormUser as Form User
+    participant ControllerUser as Controller User
+    participant DataUser as Data User
+    participant DataRole as Data Role
+
+    Admin->>FormUser: Buka Daftar User
+    activate FormUser
+    FormUser->>ControllerUser: get(User)
+    activate ControllerUser
+    ControllerUser->>DataUser: get(User)
+    DataUser-->>ControllerUser: Data User
+    ControllerUser-->>FormUser: Tampilkan tabel User
+    deactivate ControllerUser
+    deactivate FormUser
+
+    alt Admin Membuat User Baru
+        Admin->>FormUser: Klik "Tambah User"
+        FormUser->>ControllerUser: create(User)
+        activate ControllerUser
+        ControllerUser->>DataRole: get(Roles)
+        DataRole-->>ControllerUser: Daftar Role
+        ControllerUser-->>FormUser: Tampilkan form kosong
+        deactivate ControllerUser
+
+        Admin->>FormUser: Isi detail user (nama, email, password, role)
+        FormUser->>ControllerUser: Validasi input
+        activate ControllerUser
+        alt Validasi berhasil
+            ControllerUser->>DataUser: Create(User)
+            DataUser-->>ControllerUser: User baru
+            ControllerUser->>DataUser: assign role
+            ControllerUser-->>FormUser: Notifikasi sukses
+            FormUser->>Admin: Tampilkan pesan sukses
+        else Validasi gagal
+            ControllerUser-->>FormUser: Tampilkan error
+            FormUser->>Admin: Tampilkan pesan error
+        end
+        deactivate ControllerUser
+    end
+
+    alt Admin Melakukan Aksi pada User
+        Admin->>FormUser: Pilih aksi pada User
+        FormUser->>ControllerUser: handleAction()
+        activate ControllerUser
+
+        alt Aksi Lihat Detail
+            ControllerUser->>DataUser: cari(id)
+            DataUser-->>ControllerUser: Detail user
+            ControllerUser-->>FormUser: Tampilkan detail
+        else Aksi Edit
+            ControllerUser->>DataUser: cari(id)
+            DataUser-->>ControllerUser: Data user
+            ControllerUser->>DataRole: get(Roles)
+            DataRole-->>ControllerUser: Daftar Role
+            ControllerUser-->>FormUser: Tampilkan form edit
+            Admin->>FormUser: Update data
+            FormUser->>ControllerUser: update()
+            activate ControllerUser
+            alt Password diubah
+                ControllerUser->>ControllerUser: Hash password baru
+            end
+            ControllerUser->>DataUser: perbarui(data)
+            DataUser-->>ControllerUser: Data terupdate
+            ControllerUser->>DataUser: sync roles
+            ControllerUser-->>FormUser: Notifikasi sukses
+            deactivate ControllerUser
+        else Aksi Hapus
+            ControllerUser->>DataUser: cari(id)
+            ControllerUser->>DataUser: delete()
+            DataUser-->>ControllerUser: Konfirmasi
+            ControllerUser-->>FormUser: Notifikasi sukses
+        end
+        deactivate ControllerUser
+        FormUser->>Admin: Tampilkan hasil aksi
+    end

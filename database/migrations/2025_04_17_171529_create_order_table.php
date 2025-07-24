@@ -11,19 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('order', function (Blueprint $table) {
+        Schema::create('detail_order', function (Blueprint $table) {
             $table->id();
             $table->foreignId('pos_transaction_id')->nullable()->constrained()->cascadeOnDelete();
             $table->foreignId('olshop_transaction_id')->nullable()->constrained()->cascadeOnDelete();
             $table->foreignId('purchases_id')->nullable()->constrained()->cascadeOnDelete();
-            $table->string('type', 50)->nullable();
+            $table->string('type', 10)->nullable();
             $table->foreignId('product_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('animals_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('grooming_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('breeding_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('hotel_id')->nullable()->constrained()->nullOnDelete();
             $table->integer('quantity');
-            $table->decimal('unit_price', 12, 2);
+            $table->decimal('unit_price', 8);
             $table->timestamps();
             $table->softDeletes();
         });
@@ -34,6 +34,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('order');
+        Schema::dropIfExists('detail_order');
     }
 };

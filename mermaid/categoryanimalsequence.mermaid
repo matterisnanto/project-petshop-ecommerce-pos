@@ -1,0 +1,68 @@
+sequenceDiagram
+    actor Staff
+    participant FormCategory Animals as Form Category Animals
+    participant ControllerCategory Animals as controller Category Animals
+    participant dataCategory AnimalsAnimals as data Category Animals
+
+    Staff->>FormCategory Animals: Buka Daftar Category Animals
+    activate FormCategory Animals
+    FormCategory Animals->>ControllerCategory Animals: get(Category Animals)
+    activate ControllerCategory Animals
+    ControllerCategory Animals->>dataCategory AnimalsAnimals: get(Category Animals)
+    dataCategory AnimalsAnimals-->>ControllerCategory Animals: data Category Animals
+    ControllerCategory Animals-->>FormCategory Animals: Tampilkan tabel
+    deactivate ControllerCategory Animals
+    deactivate FormCategory Animals
+
+    alt Staff Membuat Category Animals Baru
+        Staff->>FormCategory Animals: Klik "Tambah Category Animals Baru"
+        FormCategory Animals->>ControllerCategory Animals: create()
+        activate ControllerCategory Animals
+        ControllerCategory Animals-->>FormCategory Animals: Tampilkan form kosong
+        deactivate ControllerCategory Animals
+
+        Staff->>FormCategory Animals: Isi detail Category Animals:
+        FormCategory Animals->>ControllerCategory Animals: Validasi input
+        activate ControllerCategory Animals
+        alt Validasi berhasil
+            ControllerCategory Animals->>dataCategory AnimalsAnimals: create(data Category Animals)
+            ControllerCategory Animals->>ControllerCategory Animals: Generate slug
+            dataCategory AnimalsAnimals-->>ControllerCategory Animals: Category Animals baru
+            ControllerCategory Animals-->>FormCategory Animals: Notifikasi sukses
+            FormCategory Animals->>Staff: Tampilkan pesan sukses
+        else Validasi gagal
+            ControllerCategory Animals-->>FormCategory Animals: Tampilkan error
+            FormCategory Animals->>Staff: Tampilkan pesan error
+        end
+        deactivate ControllerCategory Animals
+    end
+
+    alt Staff Melakukan Aksi pada Category Animals
+        Staff->>FormCategory Animals: Pilih aksi pada Category Animals
+        FormCategory Animals->>ControllerCategory Animals: handleAction()
+        activate ControllerCategory Animals
+
+        alt Aksi View
+            ControllerCategory Animals->>dataCategory AnimalsAnimals: find(id)
+            dataCategory AnimalsAnimals-->>ControllerCategory Animals: Detail Category Animals
+            ControllerCategory Animals-->>FormCategory Animals: Tampilkan detail
+        else Aksi Edit
+            ControllerCategory Animals->>dataCategory AnimalsAnimals: find(id)
+            dataCategory AnimalsAnimals-->>ControllerCategory Animals: data Category Animals
+            ControllerCategory Animals-->>FormCategory Animals: Tampilkan form edit
+            Staff->>FormCategory Animals: Update data
+            FormCategory Animals->>ControllerCategory Animals: update()
+            activate ControllerCategory Animals
+            ControllerCategory Animals->>dataCategory AnimalsAnimals: update(data)
+            dataCategory AnimalsAnimals-->>ControllerCategory Animals: Data terupdate
+            ControllerCategory Animals-->>FormCategory Animals: Notifikasi sukses
+            deactivate ControllerCategory Animals
+        else Aksi Delete
+            ControllerCategory Animals->>dataCategory AnimalsAnimals: find(id)
+            ControllerCategory Animals->>dataCategory AnimalsAnimals: delete()
+            dataCategory AnimalsAnimals-->>ControllerCategory Animals: Konfirmasi
+            ControllerCategory Animals-->>FormCategory Animals: Notifikasi sukses
+        end
+        deactivate ControllerCategory Animals
+        FormCategory Animals->>Staff: Tampilkan hasil aksi
+    end

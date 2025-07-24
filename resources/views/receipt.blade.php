@@ -144,29 +144,29 @@
             </tr>
         </thead>
         <tbody>
-            @foreach ($transaction->order as $order)
+            @foreach ($transaction->detail_order as $detail_order)
                 <tr>
                     <td>
-                        @if ($order->product)
-                            {{ $order->product->name }}
-                        @elseif($order->animal)
-                            {{ $order->animal->name }}
-                        @elseif($order->grooming)
-                            {{ $order->grooming->name }}
-                        @elseif($order->hotel)
-                            {{ $order->hotel->name }}
-                        @elseif($order->breeding)
-                            {{ $order->breeding->name }}
+                        @if ($detail_order->product)
+                            {{ $detail_order->product->name }}
+                        @elseif($detail_order->animal)
+                            {{ $detail_order->animal->name }}
+                        @elseif($detail_order->grooming)
+                            {{ $detail_order->grooming->name }}
+                        @elseif($detail_order->hotel)
+                            {{ $detail_order->hotel->name }}
+                        @elseif($detail_order->breeding)
+                            {{ $detail_order->breeding->name }}
                         @else
                             Unknown Item
                         @endif
 
-                        @if ($order->petInformation->isNotEmpty())
+                        @if ($detail_order->petInformation->isNotEmpty())
                             <div style="font-size: smaller; margin-top: 5px;">
                                 <strong>Pet:</strong>
-                                @foreach ($order->petInformation as $pet)
+                                @foreach ($detail_order->petInformation as $pet)
                                     {{ $pet->name }} ({{ $pet->age }} years)
-                                    @if ($order->hotel)
+                                    @if ($detail_order->hotel)
                                         <br><strong>Stay:</strong>
                                         {{ \Carbon\Carbon::parse($pet->check_in)->format('d/m/Y') }} to
                                         {{ \Carbon\Carbon::parse($pet->check_out)->format('d/m/Y') }}
@@ -176,9 +176,9 @@
                             </div>
                         @endif
                     </td>
-                    <td class="text-center">{{ $order->quantity }}</td>
-                    <td class="text-right">{{ number_format($order->unit_price, 0, ',', '.') }}</td>
-                    <td class="text-right">{{ number_format($order->quantity * $order->unit_price, 0, ',', '.') }}</td>
+                    <td class="text-center">{{ $detail_order->quantity }}</td>
+                    <td class="text-right">{{ number_format($detail_order->unit_price, 0, ',', '.') }}</td>
+                    <td class="text-right">{{ number_format($detail_order->quantity * $detail_order->unit_price, 0, ',', '.') }}</td>
                 </tr>
             @endforeach
         </tbody>

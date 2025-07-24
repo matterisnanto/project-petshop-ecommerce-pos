@@ -14,10 +14,10 @@ return new class extends Migration
         Schema::create('purchase_return', function (Blueprint $table) {
             $table->id();
             $table->date('return_date');
-            $table->string('return_number');
+            $table->string('return_number', 10);
             $table->foreignId('supplier_id')->nullable()->constrained()->onDelete('cascade');
             $table->foreignId('purchases_id')->nullable()->constrained()->onDelete('cascade');
-            $table->decimal('refund_amount', 12, 2)->nullable();
+            $table->decimal('refund_amount', 8)->nullable();
             $table->enum('status', ['pending', 'approved', 'rejected', 'processed', 'refunded'])->default('pending');
             $table->date('return_approved_date')->nullable();
             $table->text('notes')->nullable();

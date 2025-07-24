@@ -1,0 +1,336 @@
+---
+config:
+  theme: base
+  layout: elk
+  look: classic
+---
+erDiagram
+    animals {
+        id bigint PK
+        name varchar
+        slug varchar
+        barcode varchar
+        category_animals_id bigint FK
+        breeds_id bigint FK
+        age varchar
+        weight decimal
+        gender enum(male_female_unknown)
+        health_status varchar
+        vaccination_status tinyint
+        thumbnail varchar
+        description longtext
+        stock int
+        purchase_price decimal
+        selling_price decimal
+        is_active tinyint
+    }
+    animals_photos {
+        id bigint PK
+        photo varchar
+        animals_id bigint FK
+    }
+    brands {
+        id bigint PK
+        name varchar
+        slug varchar
+        logo varchar
+    }
+    breedings {
+        id bigint PK
+        name varchar
+        slug varchar
+        category_animals_id bigint FK
+        breeds_id bigint FK
+        photo varchar
+        description text
+        stock int
+        purchase_price decimal
+        selling_price decimal
+        is_active tinyint
+    }
+    breeding_packages {
+        id bigint PK
+        name varchar
+        price decimal
+        description text
+        breeding_id bigint FK
+    }
+    breeds {
+        id bigint PK
+        category_animals_id bigint FK
+        name varchar
+        slug varchar
+    }
+    categories {
+        id bigint PK
+        name varchar
+        slug varchar
+        description text
+        icon varchar
+    }
+    category_animals {
+        id bigint PK
+        name varchar
+        slug varchar
+        description text
+        icon varchar
+    }
+    expenses {
+        id bigint PK
+        name varchar
+        note text
+        date_expense date
+        amount decimal
+    }
+    groomings {
+        id bigint PK
+        name varchar
+        slug varchar
+        category_animals_id bigint FK
+        photo varchar
+        description text
+        stock int
+        purchase_price decimal
+        selling_price decimal
+        is_active tinyint
+    }
+    grooming_packages {
+        id bigint PK
+        name varchar
+        price decimal
+        description text
+        grooming_id bigint FK
+    }
+    hotels {
+        id bigint PK
+        name varchar
+        slug varchar
+        category_animals_id bigint FK
+        description text
+        price_per_day decimal
+        capacity int
+        thumbnail varchar
+        is_active tinyint
+    }
+    hotel_packages {
+        id bigint PK
+        name varchar
+        price decimal
+        description text
+        hotel_id bigint FK
+    }
+    migrations {
+        id int PK
+        migration varchar
+        batch int
+    }
+    olshop_transactions {
+        id bigint PK
+        name varchar
+        phone varchar
+        email varchar
+        sub_total_amount decimal
+        promo_code_id bigint FK
+        discount_amount decimal
+        grand_total_amount decimal
+        province varchar
+        city_regency varchar
+        post_code varchar
+        complete_address text
+        is_paid tinyint
+        trx_id varchar
+        package_resi_number varchar
+        courier varchar
+        shipping_service varchar
+        weight_total decimal
+        shipping_cost decimal
+        estimated_delivery varchar
+        payment_method_id bigint FK
+        proof varchar
+    }
+    detail_order {
+        id bigint PK
+        pos_transaction_id bigint FK
+        olshop_transaction_id bigint FK
+        purchases_id bigint FK
+        type varchar
+        product_id bigint FK
+        animals_id bigint FK
+        grooming_id bigint FK
+        breeding_id bigint FK
+        hotel_id bigint FK
+        quantity int
+        unit_price decimal
+    }
+    password_reset_tokens {
+        email varchar PK
+        token varchar
+        created_at timestamp
+    }
+    payment_methods {
+        id bigint PK
+        name varchar
+        account_number varchar
+        image varchar
+        olshop_transaction tinyint
+        pos_transaction tinyint
+        is_cash tinyint
+    }
+    pet_information {
+        id bigint PK
+        detail_order_id bigint FK
+        name varchar
+        category_animals_id bigint FK
+        age int
+        photo varchar
+        description text
+        check_in date
+        check_out date
+        days int
+        on_petshop tinyint
+    }
+    pos_transactions {
+        id bigint PK
+        name varchar
+        phone varchar
+        email varchar
+        gender enum(_male_female_)
+        total_price decimal
+        note text
+        payment_method_id bigint FK
+        paid_amount decimal
+        change_amount decimal
+        trx_id varchar
+    }
+    products {
+        id bigint PK
+        name varchar
+        slug varchar
+        barcode varchar
+        weight decimal
+        thumbnail varchar
+        description longtext
+        purchase_price decimal
+        selling_price decimal
+        is_active tinyint
+        is_popular tinyint
+        stock int
+        category_id bigint FK
+        brand_id bigint FK
+        category_animals_id bigint FK
+    }
+    product_photos {
+        id bigint PK
+        photo varchar
+        product_id bigint FK
+    }
+    promo_codes {
+        id bigint PK
+        code varchar
+        discount_amount decimal
+        start_date datetime
+        end_date datetime
+        is_active tinyint
+    }
+    purchases {
+        id bigint PK
+        purchase_number varchar
+        purchase_date date
+        supplier_id bigint FK
+        total_amount decimal
+        notes text
+        status enum(_draft_ordered_received_cancelled)
+        proof varchar
+    }
+    purchase_return {
+        id bigint PK
+        return_date date
+        return_number varchar
+        supplier_id bigint FK
+        purchases_id bigint FK
+        refund_amount decimal
+        status enum(pending_approved_rejected_processed_refunded)
+        return_approved_date date
+        notes text
+    }
+    return_items {
+        id bigint PK
+        purchase_return_id bigint FK
+        transaction_return_id bigint FK
+        type varchar
+        product_id bigint FK
+        animals_id bigint FK
+        breeding_id bigint FK
+        hotel_id bigint FK
+        quantity int
+        unit_price decimal
+        reason text
+    }
+    suppliers {
+        id bigint PK
+        name varchar
+        email varchar
+        phone varchar
+        address text
+    }
+    transaction_returns {
+        id bigint PK
+        return_date date
+        return_number varchar
+        type varchar
+        pos_transaction_id bigint FK
+        olshop_transaction_id bigint FK
+        refund_amount decimal
+        status enum(pending_approved_rejected_processed_refunded)
+        return_approved_date date
+        notes text
+    }
+    users {
+        id bigint PK
+        name varchar
+        email varchar
+        email_verified_at timestamp
+        password varchar
+        remember_token varchar
+    }
+    animals ||--o{ animals_photos : "has"
+    animals }|--|| category_animals : "belongs to"
+    animals }|--|| breeds : "belongs to"
+    breedings }|--|| category_animals : "belongs to"
+    breedings }|--|| breeds : "belongs to"
+    breedings ||--o{ breeding_packages : "has"
+    breeds }|--|| category_animals : "belongs to"
+    groomings }|--|| category_animals : "belongs to"       
+    groomings }|--|| category_groomings : "belongs to"
+    groomings ||--o{ grooming_packages : "has"
+    hotels }|--|| category_animals : "belongs to"
+    hotels ||--o{ hotel_packages : "has"
+    olshop_transactions }|--|| payment_methods : "uses"
+    olshop_transactions }|--|| promo_codes : "uses"
+    detail_order }|--|| pos_transactions : "belongs to"
+    detail_order }|--|| olshop_transactions : "belongs to"
+    detail_order }|--|| purchases : "belongs to"
+    detail_order }|--|| products : "references"
+    detail_order }|--|| animals : "references"
+    detail_order }|--|| groomings : "references"
+    detail_order }|--|| breedings : "references" 
+    detail_order }|--|| hotels : "references"
+    detail_order ||--o{ pet_information : "has"
+    pet_information }|--|| category_animals : "belongs to"
+    pos_transactions }|--|| payment_methods : "uses"
+    products }|--|| categories : "belongs to"
+    products }|--|| brands : "belongs to"
+    products }|--|| category_animals : "belongs to"
+    products ||--o{ product_photos : "has"
+    purchases }|--|| suppliers : "from"          
+    purchase_return }|--|| suppliers : "to"
+    purchase_return }|--|| purchases : "references"
+    purchase_return ||--o{ return_items : "has"
+    return_items }|--|| products : "references"
+    return_items }|--|| animals : "references"
+    return_items }|--|| groomings : "references"
+    return_items }|--|| breedings : "references"
+    return_items }|--|| hotels : "references"
+    transaction_returns }|--|| pos_transactions : "references"
+    transaction_returns }|--|| olshop_transactions : "references"
+    transaction_returns ||--o{ return_items : "has"

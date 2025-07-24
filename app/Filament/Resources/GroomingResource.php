@@ -205,53 +205,8 @@ class GroomingResource extends Resource
                                     ])
                                     ->columns(2),
                             ])
-                            ->columnSpan(['md' => 1])
+                            ->columnSpan(['md' => 2])
                             ->helperText('Which animals is this service for?'),
-
-                        Forms\Components\Select::make('category_grooming_id')
-                            ->relationship('categoryGrooming', 'name')
-                            ->label('Grooming Category')
-                            ->placeholder('Select grooming category')
-                            ->native(false)
-                            ->searchable()
-                            ->preload()
-                            ->createOptionForm([
-                                Forms\Components\Section::make('New Grooming Category')
-                                    ->columns(2)
-                                    ->schema([
-                                        Forms\Components\TextInput::make('name')
-                                            ->required()
-                                            ->maxLength(255)
-                                            ->live(onBlur: true)
-                                            ->afterStateUpdated(function (Set $set, $state) {
-                                                if (!empty($state)) {
-                                                    $set('slug', CategoryGrooming::generateUniqueSlug($state));
-                                                }
-                                            })
-                                            ->columnSpan(['md' => 2])
-                                            ->placeholder('Category name'),
-
-                                        Forms\Components\TextInput::make('slug')
-                                            ->required()
-                                            ->readOnly()
-                                            ->columnSpan(['md' => 2]),
-
-                                        Forms\Components\Textarea::make('description')
-                                            ->columnSpanFull()
-                                            ->rows(3)
-                                            ->maxLength(1000),
-
-                                        Forms\Components\FileUpload::make('photo')
-                                            ->label('Category Image')
-                                            ->directory('grooming-category-photos')
-                                            ->disk('public')
-                                            ->image()
-                                            ->imageEditor()
-                                            ->columnSpanFull(),
-                                    ])
-                            ])
-                            ->columnSpan(['md' => 1])
-                            ->helperText('Category of grooming service'),
                     ]),
 
                 Forms\Components\Section::make('Pricing & Availability')
@@ -417,13 +372,6 @@ class GroomingResource extends Resource
                 Tables\Filters\SelectFilter::make('category_animals_id')
                     ->label('Animal Category')
                     ->relationship('categoryAnimals', 'name')
-                    ->searchable()
-                    ->preload()
-                    ->multiple(),
-
-                Tables\Filters\SelectFilter::make('category_grooming_id')
-                    ->label('Grooming Type')
-                    ->relationship('categoryGrooming', 'name')
                     ->searchable()
                     ->preload()
                     ->multiple(),

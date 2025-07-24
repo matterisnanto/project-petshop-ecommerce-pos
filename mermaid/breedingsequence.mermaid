@@ -1,0 +1,82 @@
+sequenceDiagram
+    actor Staff
+    participant FormBreeding as Form Breeding
+    participant ControllerBreeding as Controller Breeding
+    participant DataBreeding as Data Breeding
+    participant DataCategoryAnimals as Data Category Animals
+    participant DataBreeds as Data Breeds
+    participant DataBreedingPackage as Data Breeding Package
+
+    Staff->>FormBreeding: Buka Daftar Breeding
+    activate FormBreeding
+    FormBreeding->>ControllerBreeding: get(Breeding)
+    activate ControllerBreeding
+    ControllerBreeding->>DataBreeding: get(Layanan Breeding)
+    DataBreeding-->>ControllerBreeding: Data Breeding
+    ControllerBreeding-->>FormBreeding: Tampilkan tabel
+    deactivate ControllerBreeding
+    deactivate FormBreeding
+
+    alt Staff Membuat Layanan Breeding Baru
+        Staff->>FormBreeding: Klik "Buat Layanan"
+        FormBreeding->>ControllerBreeding: create()
+        activate ControllerBreeding
+        ControllerBreeding->>DataCategoryAnimals: get(Category Animals)
+        DataCategoryAnimals-->>ControllerBreeding: Daftar Category Animals
+        ControllerBreeding->>DataBreeds: get(Breeds)
+        DataBreeds-->>ControllerBreeding: Daftar Breeds
+        ControllerBreeding-->>FormBreeding: Tampilkan form kosong
+        deactivate ControllerBreeding
+
+        Staff->>FormBreeding: Isi detail Breeding (nama, Category Animals, Breeds, paket, foto)
+        FormBreeding->>ControllerBreeding: Validasi input
+        activate ControllerBreeding
+        alt Validasi berhasil
+            ControllerBreeding->>ControllerBreeding: Buat slug unik
+            ControllerBreeding->>DataBreeding: create(data Breeding)
+            DataBreeding-->>ControllerBreeding: Layanan baru
+            ControllerBreeding->>DataBreedingPackage: create(data Breeding Package)
+            DataBreedingPackage-->>ControllerBreeding: Paket berhasil dibuat
+            ControllerBreeding-->>FormBreeding: Notifikasi sukses
+            FormBreeding->>Staff: Tampilkan pesan sukses
+        else Validasi gagal
+            ControllerBreeding-->>FormBreeding: Tampilkan error
+            FormBreeding->>Staff: Tampilkan pesan error
+        end
+        deactivate ControllerBreeding
+    end
+
+    alt Staff Melakukan Aksi pada Layanan Breeding
+        Staff->>FormBreeding: Pilih aksi pada Layanan
+        FormBreeding->>ControllerBreeding: handleAksi()
+        activate ControllerBreeding
+
+        alt Aksi Lihat Detail
+            ControllerBreeding->>DataBreeding: cari(id)
+            DataBreeding-->>ControllerBreeding: Detail Breeding
+            ControllerBreeding-->>FormBreeding: Tampilkan detail
+        else Aksi Edit
+            ControllerBreeding->>DataBreeding: cari(id)
+            DataBreeding-->>ControllerBreeding: Data Breeding
+            ControllerBreeding->>DataCategoryAnimals: get(Category Animals)
+            DataCategoryAnimals-->>ControllerBreeding: Daftar Category Animals
+            ControllerBreeding->>DataBreeds: get(Breeds)
+            DataBreeds-->>ControllerBreeding: Daftar Breeds
+            ControllerBreeding-->>FormBreeding: Tampilkan form edit
+            Staff->>FormBreeding: Perbarui data
+            FormBreeding->>ControllerBreeding: update()
+            activate ControllerBreeding
+            ControllerBreeding->>ControllerBreeding: Periksa perubahan foto
+            ControllerBreeding->>DataBreeding: perbarui(data Breeding)
+            DataBreeding-->>ControllerBreeding: Data terupdate
+            ControllerBreeding-->>FormBreeding: Notifikasi sukses
+            deactivate ControllerBreeding
+        else Aksi Hapus
+            ControllerBreeding->>DataBreeding: cari(id)
+            ControllerBreeding->>DataBreeding: softDelete()
+            DataBreeding-->>ControllerBreeding: Konfirmasi
+            ControllerBreeding-->>FormBreeding: Notifikasi sukses
+        end
+        deactivate ControllerBreeding
+        FormBreeding->>Staff: Tampilkan hasil aksi
+    end

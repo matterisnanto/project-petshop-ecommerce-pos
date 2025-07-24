@@ -94,7 +94,7 @@ class PostransactionResource extends Resource
                             ->columnSpanFull(),
                         Section::make('Ordered Items')
                             ->schema([
-                                Repeater::make('order')
+                                Repeater::make('detail_order')
                                     ->relationship()
                                     ->live()
                                     ->statePath('orderItems')
@@ -431,31 +431,31 @@ class PostransactionResource extends Resource
         $total = 0;
         $orders = $get('orderItems') ?? [];
 
-        foreach ($orders as $order) {
-            if (!empty($order['product_id'])) {
-                $product = Product::find($order['product_id']);
+        foreach ($orders as $detail_order) {
+            if (!empty($detail_order['product_id'])) {
+                $product = Product::find($detail_order['product_id']);
                 $price = $product->selling_price ?? 0;
-                $quantity = (int) ($order['quantity'] ?? 1);
+                $quantity = (int) ($detail_order['quantity'] ?? 1);
                 $total += $price * $quantity;
-            } elseif (!empty($order['animals_id'])) {
-                $animal = Animals::find($order['animals_id']);
+            } elseif (!empty($detail_order['animals_id'])) {
+                $animal = Animals::find($detail_order['animals_id']);
                 $price = $animal->selling_price ?? 0;
-                $quantity = (int) ($order['quantity'] ?? 1);
+                $quantity = (int) ($detail_order['quantity'] ?? 1);
                 $total += $price * $quantity;
-            } elseif (!empty($order['grooming_id'])) {
-                $grooming = Grooming::find($order['grooming_id']);
+            } elseif (!empty($detail_order['grooming_id'])) {
+                $grooming = Grooming::find($detail_order['grooming_id']);
                 $price = $grooming->selling_price ?? 0;
-                $quantity = (int) ($order['quantity'] ?? 1);
+                $quantity = (int) ($detail_order['quantity'] ?? 1);
                 $total += $price * $quantity;
-            } elseif (!empty($order['hotel_id'])) {
-                $hotel = Hotel::find($order['hotel_id']);
+            } elseif (!empty($detail_order['hotel_id'])) {
+                $hotel = Hotel::find($detail_order['hotel_id']);
                 $price = $hotel->price_per_day ?? 0;
-                $quantity = (int) ($order['quantity'] ?? 1);
+                $quantity = (int) ($detail_order['quantity'] ?? 1);
                 $total += $price * $quantity;
-            } elseif (!empty($order['breeding_id'])) {
-                $breeding = Breeding::find($order['breeding_id']);
+            } elseif (!empty($detail_order['breeding_id'])) {
+                $breeding = Breeding::find($detail_order['breeding_id']);
                 $price = $breeding->selling_price ?? 0;
-                $quantity = (int) ($order['quantity'] ?? 1);
+                $quantity = (int) ($detail_order['quantity'] ?? 1);
                 $total += $price * $quantity;
             }
         }

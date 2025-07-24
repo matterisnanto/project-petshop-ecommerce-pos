@@ -14,11 +14,11 @@ return new class extends Migration
         Schema::create('transaction_returns', function (Blueprint $table) {
             $table->id();
             $table->date('return_date');
-            $table->string('return_number');
-            $table->string('type', 50)->nullable();
+            $table->string('return_number', 10);
+            $table->string('type', 10)->nullable();
             $table->foreignId('pos_transaction_id')->nullable()->constrained()->cascadeOnDelete();
             $table->foreignId('olshop_transaction_id')->nullable()->constrained()->cascadeOnDelete();
-            $table->decimal('refund_amount', 12, 2)->nullable();
+            $table->decimal('refund_amount', 8)->nullable();
             $table->enum('status', ['pending', 'approved', 'rejected', 'processed', 'refunded'])->default('pending');
             $table->date('return_approved_date')->nullable();
             $table->text('notes')->nullable();

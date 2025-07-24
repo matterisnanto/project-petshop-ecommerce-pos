@@ -80,17 +80,17 @@ class PurchasesObserver
 
         $orders = $purchases->orders;
 
-        foreach ($orders as $order) {
+        foreach ($orders as $detail_order) {
             try {
-                if ($order->type === 'product' && $order->product_id) {
-                    Product::where('id', $order->product_id)
-                        ->$operation('stock', $order->quantity);
-                } elseif ($order->type === 'animal' && $order->animals_id) {
-                    Animals::where('id', $order->animals_id)
-                        ->$operation('stock', $order->quantity);
+                if ($detail_order->type === 'product' && $detail_order->product_id) {
+                    Product::where('id', $detail_order->product_id)
+                        ->$operation('stock', $detail_order->quantity);
+                } elseif ($detail_order->type === 'animal' && $detail_order->animals_id) {
+                    Animals::where('id', $detail_order->animals_id)
+                        ->$operation('stock', $detail_order->quantity);
                 }
             } catch (\Exception $e) {
-                Log::error("Failed to {$operation} inventory for order {$order->id}: " . $e->getMessage());
+                Log::error("Failed to {$operation} inventory for detail_order {$detail_order->id}: " . $e->getMessage());
             }
         }
     }

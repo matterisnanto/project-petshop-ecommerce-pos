@@ -599,7 +599,7 @@ class Checkout extends Component
                 'proof' => $this->paymentProofPath,
             ]);
 
-            // Create order items
+            // Create detail_order items
             foreach ($cartItems as $items) {
                 Order::create([
                     'olshop_transaction_id' => $transaction->id,
@@ -612,10 +612,10 @@ class Checkout extends Component
 
             // Clear session
             Session::forget(['cart', 'cart_totals', 'checkout_data']);
-            return redirect()->route('order-confirmation', ['transaction_id' => $transaction->trx_id]);
+            return redirect()->route('detail_order-confirmation', ['transaction_id' => $transaction->trx_id]);
         } catch (\Exception $e) {
-            Log::error('Error processing order: ' . $e->getMessage());
-            $this->addError('order_error', 'Terjadi kesalahan saat memproses order. Silakan coba lagi.');
+            Log::error('Error processing detail_order: ' . $e->getMessage());
+            $this->addError('order_error', 'Terjadi kesalahan saat memproses detail_order. Silakan coba lagi.');
         }
     }
 

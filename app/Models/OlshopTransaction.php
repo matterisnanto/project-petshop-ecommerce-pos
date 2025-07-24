@@ -16,7 +16,7 @@ class OlshopTransaction extends Model
 
     public function orders(): HasMany
     {
-        return $this->hasMany(order::class, 'olshop_transaction_id');
+        return $this->hasMany(detail_order::class, 'olshop_transaction_id');
     }
     public function products(): BelongsTo
     {

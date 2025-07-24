@@ -705,7 +705,7 @@ class AnimalsResource extends Resource
             ->defaultSort('created_at', 'desc')
             ->emptyStateHeading('No animals found')
             ->emptyStateDescription('Click "Create animal" to add your first animal')
-            ->emptyStateIcon('heroicon-o-paw')
+            ->emptyStateIcon('lucide-paw-print')
             ->emptyStateActions([
                 Tables\Actions\CreateAction::make()
                     ->label('Create animal')

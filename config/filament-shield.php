@@ -63,13 +63,12 @@ return [
     ],
 
     'exclude' => [
-        'enabled' => true,
+        'enabled' => false,
 
         'pages' => [],
 
         'widgets' => [
             'AccountWidget',
-            'FilamentInfoWidget',
         ],
 
         'resources' => [],

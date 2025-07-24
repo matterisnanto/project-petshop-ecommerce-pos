@@ -1,0 +1,67 @@
+sequenceDiagram
+    actor Admin
+    participant FormRole as Form Role
+    participant ControllerRole as Controller Role
+    participant DataRole as Data Role
+
+    Admin->>FormRole: Buka Daftar Role
+    activate FormRole
+    FormRole->>ControllerRole: get(Role)
+    activate ControllerRole
+    ControllerRole->>DataRole: get(Role)
+    DataRole-->>ControllerRole: Data Role
+    ControllerRole-->>FormRole: Tampilkan tabel
+    deactivate ControllerRole
+    deactivate FormRole
+
+    alt Admin Membuat Role Baru
+        Admin->>FormRole: Klik "Tambah Role"
+        FormRole->>ControllerRole: create()
+        activate ControllerRole
+        ControllerRole-->>FormRole: Tampilkan form kosong
+        deactivate ControllerRole
+
+        Admin->>FormRole: Isi detail (nama, guard, permissions)
+        FormRole->>ControllerRole: Validasi input
+        activate ControllerRole
+        alt Validasi berhasil
+            ControllerRole->>DataRole: Create(data role)
+            DataRole-->>ControllerRole: Role baru
+            ControllerRole-->>FormRole: Notifikasi sukses
+            FormRole->>Admin: Tampilkan pesan sukses
+        else Validasi gagal
+            ControllerRole-->>FormRole: Tampilkan error
+            FormRole->>Admin: Tampilkan pesan error
+        end
+        deactivate ControllerRole
+    end
+
+    alt Admin Melakukan Aksi pada Role
+        Admin->>FormRole: Pilih aksi pada Role
+        FormRole->>ControllerRole: handleAction()
+        activate ControllerRole
+
+        alt Aksi Lihat Detail
+            ControllerRole->>DataRole: cari(id)
+            DataRole-->>ControllerRole: Detail role
+            ControllerRole-->>FormRole: Tampilkan detail
+        else Aksi Edit
+            ControllerRole->>DataRole: cari(id)
+            DataRole-->>ControllerRole: Data role
+            ControllerRole-->>FormRole: Tampilkan form edit
+            Admin->>FormRole: Update data
+            FormRole->>ControllerRole: update()
+            activate ControllerRole
+            ControllerRole->>DataRole: perbarui(data)
+            DataRole-->>ControllerRole: Data terupdate
+            ControllerRole-->>FormRole: Notifikasi sukses
+            deactivate ControllerRole
+        else Aksi Hapus
+            ControllerRole->>DataRole: cari(id)
+            ControllerRole->>DataRole: delete()
+            DataRole-->>ControllerRole: Konfirmasi
+            ControllerRole-->>FormRole: Notifikasi sukses
+        end
+        deactivate ControllerRole
+        FormRole->>Admin: Tampilkan hasil aksi
+    end

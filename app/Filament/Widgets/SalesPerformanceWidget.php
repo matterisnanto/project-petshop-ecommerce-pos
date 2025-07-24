@@ -27,15 +27,15 @@ class SalesPerformanceWidget extends BaseWidget
         // Product stats
         $productOrders = Order::whereNotNull('product_id')->get();
         $productCount = $productOrders->count();
-        $productRevenue = $productOrders->sum(function ($order) {
-            return $order->quantity * $order->unit_price;
+        $productRevenue = $productOrders->sum(function ($detail_order) {
+            return $detail_order->quantity * $detail_order->unit_price;
         });
 
         // Animal stats
         $animalOrders = Order::whereNotNull('animals_id')->get();
         $animalCount = $animalOrders->count();
-        $animalRevenue = $animalOrders->sum(function ($order) {
-            return $order->quantity * $order->unit_price;
+        $animalRevenue = $animalOrders->sum(function ($detail_order) {
+            return $detail_order->quantity * $detail_order->unit_price;
         });
 
         return [

@@ -1,0 +1,72 @@
+sequenceDiagram
+    actor Staff
+    participant FormPayment as Form Payment Method
+    participant ControllerPayment as Controller Payment Method
+    participant DataPayment as Data Payment Method
+
+    Staff->>FormPayment: Buka Daftar Payment Method
+    activate FormPayment
+    FormPayment->>ControllerPayment: get(PaymentMethod)
+    activate ControllerPayment
+    ControllerPayment->>DataPayment: get(MetodePembayaran)
+    DataPayment-->>ControllerPayment: Data Payment Method
+    ControllerPayment-->>FormPayment: Tampilkan tabel
+    deactivate ControllerPayment
+    deactivate FormPayment
+
+    alt Staff Membuat Payment Method Baru
+        Staff->>FormPayment: Klik "Tambah Payment Method"
+        FormPayment->>ControllerPayment: create()
+        activate ControllerPayment
+        ControllerPayment-->>FormPayment: Tampilkan form kosong
+        deactivate ControllerPayment
+
+        Staff->>FormPayment: Isi detail payment method
+        FormPayment->>ControllerPayment: Validasi input
+        activate ControllerPayment
+        alt Validasi berhasil
+            ControllerPayment->>DataPayment: create(PaymentMethod)
+            DataPayment-->>ControllerPayment: Metode baru
+            ControllerPayment-->>FormPayment: Notifikasi sukses
+            FormPayment->>Staff: Tampilkan pesan sukses
+        else Validasi gagal
+            ControllerPayment-->>FormPayment: Tampilkan error
+            FormPayment->>Staff: Tampilkan pesan error
+        end
+        deactivate ControllerPayment
+    end
+
+    alt Staff Melakukan Aksi pada Payment Method
+        Staff->>FormPayment: Pilih aksi pada Metode
+        FormPayment->>ControllerPayment: handleAction()
+        activate ControllerPayment
+
+        alt Aksi Lihat Detail
+            ControllerPayment->>DataPayment: cari(id)
+            DataPayment-->>ControllerPayment: Detail metode
+            ControllerPayment-->>FormPayment: Tampilkan detail
+        else Aksi Edit
+            ControllerPayment->>DataPayment: cari(id)
+            DataPayment-->>ControllerPayment: Data metode
+            ControllerPayment-->>FormPayment: Tampilkan form edit
+            Staff->>FormPayment: Perbarui data
+            FormPayment->>ControllerPayment: update()
+            activate ControllerPayment
+            ControllerPayment->>DataPayment: update(PaymentMethod)
+            DataPayment-->>ControllerPayment: Data terupdate
+            ControllerPayment-->>FormPayment: Notifikasi sukses
+            deactivate ControllerPayment
+        else Aksi Hapus
+            ControllerPayment->>DataPayment: cari(id)
+            ControllerPayment->>DataPayment: delete()
+            DataPayment-->>ControllerPayment: Konfirmasi
+            ControllerPayment-->>FormPayment: Notifikasi sukses
+        else Aksi Toggle Status
+            ControllerPayment->>DataPayment: cari(id)
+            ControllerPayment->>DataPayment: toggleStatus(jenis)
+            DataPayment-->>ControllerPayment: Status baru
+            ControllerPayment-->>FormPayment: Notifikasi status berubah
+        end
+        deactivate ControllerPayment
+        FormPayment->>Staff: Tampilkan hasil aksi
+    end

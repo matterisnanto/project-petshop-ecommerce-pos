@@ -1,0 +1,89 @@
+sequenceDiagram
+    actor Staff
+    participant OlshopForm as Olshop Form
+    participant OlshopController as Olshop Controller
+    participant RajaOngkir as RajaOngkir Service
+    participant OlshopTransaction as data olshop transaction
+    participant Order as data detail detail_order
+    participant Product as data product
+    participant PromoCode as data promocode
+    participant PaymentMethod as data payment method
+
+    Staff->>OlshopForm: Membuka Form Transaksi
+    activate OlshopForm
+    OlshopForm->>OlshopController: mount()
+    activate OlshopController
+    OlshopController->>Product: where('stock', '>', 1)
+    OlshopController->>PaymentMethod: where('olshop_transaction', true)
+    OlshopController-->>OlshopForm: Menampilkan form
+    deactivate OlshopController
+    deactivate OlshopForm
+
+    loop Menambahkan Produk
+        Staff->>OlshopForm: Memilih Produk
+        OlshopForm->>OlshopController: update product selection
+        activate OlshopController
+        OlshopController->>Product: find(productId)
+        Product-->>OlshopController: product details
+        OlshopController->>OlshopForm: update unit_price and stock
+        OlshopController->>OlshopForm: updateSubTotalAmount()
+        OlshopController->>OlshopForm: calculateTotalWeight()
+        deactivate OlshopController
+    end
+
+    Staff->>OlshopForm: Mengisi Data Customer
+    Staff->>OlshopForm: Memilih Provinsi
+    OlshopForm->>RajaOngkir: getDomesticDestinations(province)
+    RajaOngkir-->>OlshopForm: Daftar Provinsi
+
+    Staff->>OlshopForm: Memilih Kota
+    OlshopForm->>RajaOngkir: getDomesticDestinations(city)
+    RajaOngkir-->>OlshopForm: Daftar Kota
+    OlshopForm->>OlshopForm: Auto-fill postal code
+
+    Staff->>OlshopForm: Memilih Kurir
+    OlshopForm->>OlshopController: calculateShippingCost()
+    activate OlshopController
+    OlshopController->>RajaOngkir: getShippingCost<br>(origin, destination, weight, courier)
+    RajaOngkir-->>OlshopController: Shipping options
+    OlshopController->>OlshopForm: update shipping services
+    OlshopController->>OlshopForm: updateGrandTotal()
+    deactivate OlshopController
+
+    Staff->>OlshopForm: Memilih Layanan Pengiriman
+    OlshopForm->>OlshopController: update shipping cost
+    OlshopController->>OlshopForm: updateGrandTotal()
+
+    Staff->>OlshopForm: Memasukkan Kode Promo
+    OlshopForm->>OlshopController: validateAndApplyPromoCode()
+    activate OlshopController
+    OlshopController->>PromoCode: where('code', promoCode)->active()
+    PromoCode-->>OlshopController: promo details
+    alt Kode Valid
+        OlshopController->>OlshopForm: apply discount
+    else Kode Tidak Valid
+        OlshopController->>OlshopForm: show error
+    end
+    OlshopController->>OlshopForm: updateGrandTotal()
+    deactivate OlshopController
+
+    Staff->>OlshopForm: Memilih Metode Pembayaran
+    OlshopForm->>PaymentMethod: get(PaymentMethod)
+    PaymentMethod-->>OlshopForm: payment details
+
+    Staff->>OlshopForm: Upload Bukti Pembayaran
+    Staff->>OlshopForm: Submit Transaksi
+    OlshopForm->>OlshopController: process transaction
+    activate OlshopController
+    OlshopController->>OlshopTransaction: create(transactionData)
+    OlshopTransaction-->>OlshopController: transaction ID
+    
+    loop Proses Order Items
+        OlshopController->>Order: create(orderData)
+        OlshopController->>Product: mengurangi stock
+    end
+    
+    OlshopController->>OlshopForm: menampilkan success notification
+    deactivate OlshopController
+    OlshopForm->>Staff: Tampilkan Notifikasi Sukses
+    

@@ -1,0 +1,89 @@
+sequenceDiagram
+    actor Staff
+    participant FormAnimal as Form Animal
+    participant ControllerAnimal as Controller Animal
+    participant DataAnimal as Data Animal
+    participant DataCategory as Data Category Animals
+    participant DataBreed as Data Breeds
+    participant DataAnimalsPhotos as Data Animal Photos
+
+    Staff->>FormAnimal: Buka Daftar Animals
+    activate FormAnimal
+    FormAnimal->>ControllerAnimal: get(Animals)
+    activate ControllerAnimal
+    ControllerAnimal->>DataAnimal: get(Animals with category+breed)
+    DataAnimal-->>ControllerAnimal: Data Animals
+    ControllerAnimal-->>FormAnimal: Tampilkan tabel (group by category/breed)
+    deactivate ControllerAnimal
+    deactivate FormAnimal
+
+    alt Staff Membuat Animal Baru
+        Staff->>FormAnimal: Klik "Create animal"
+        FormAnimal->>ControllerAnimal: create()
+        activate ControllerAnimal
+        ControllerAnimal->>DataCategory: get(Categories)
+        DataCategory-->>ControllerAnimal: List Categories
+        ControllerAnimal->>DataBreed: get(Breeds)
+        DataBreed-->>ControllerAnimal: List Breeds
+        ControllerAnimal-->>FormAnimal: Tampilkan form kosong
+        deactivate ControllerAnimal
+
+        Staff->>FormAnimal: Isi detail Animal (name, category, breed, photos, attributes)
+        FormAnimal->>ControllerAnimal: Validasi input
+        activate ControllerAnimal
+        alt Validasi berhasil
+            ControllerAnimal->>ControllerAnimal: Generate slug unik
+            alt Ada upload gambar tambahan
+                loop Untuk setiap gambar
+                    DataAnimal->>DataAnimalsPhotos: Simpan gambar
+                    DataAnimalsPhotos-->>DataAnimal: Path gambar
+                end
+            end
+            DataAnimal-->>ControllerAnimal: data Animals Baru
+            ControllerAnimal-->>FormAnimal: Notifikasi sukses
+            FormAnimal->>Staff: Tampilkan pesan sukses
+        else Validasi gagal
+            ControllerAnimal-->>FormAnimal: Tampilkan error
+            FormAnimal->>Staff: Tampilkan pesan error
+        end
+        deactivate ControllerAnimal
+    end
+
+    alt Staff Melakukan Aksi pada Animal
+        Staff->>FormAnimal: Pilih aksi pada Animal
+        FormAnimal->>ControllerAnimal: handleAction()
+        activate ControllerAnimal
+
+        alt Aksi View
+            ControllerAnimal->>DataAnimal: find(id)
+            DataAnimal-->>ControllerAnimal: Detail Animal
+            ControllerAnimal-->>FormAnimal: Tampilkan detail
+        else Aksi Edit
+            ControllerAnimal->>DataAnimal: find(id)
+            DataAnimal-->>ControllerAnimal: Data Animal
+            ControllerAnimal->>DataCategory: get(Categories)
+            DataCategory-->>ControllerAnimal: List Categories
+            ControllerAnimal->>DataBreed: get(Breeds)
+            DataBreed-->>ControllerAnimal: List Breeds
+            ControllerAnimal-->>FormAnimal: Tampilkan form edit
+            Staff->>FormAnimal: Update data
+            FormAnimal->>ControllerAnimal: update()
+            activate ControllerAnimal
+            ControllerAnimal->>ControllerAnimal: Periksa perubahan foto
+            alt Foto diubah
+                ControllerAnimal->>DataAnimalsPhotos: Hapus foto lama
+                ControllerAnimal->>DataAnimalsPhotos: Simpan foto baru
+            end
+            ControllerAnimal->>DataAnimal: update(data)
+            DataAnimal-->>ControllerAnimal: Data terupdate
+            ControllerAnimal-->>FormAnimal: Notifikasi sukses
+            deactivate ControllerAnimal
+        else Aksi Delete
+            ControllerAnimal->>DataAnimal: find(id)
+            ControllerAnimal->>DataAnimal: softDelete()
+            DataAnimal-->>ControllerAnimal: Konfirmasi
+            ControllerAnimal-->>FormAnimal: Notifikasi sukses
+        end
+        deactivate ControllerAnimal
+        FormAnimal->>Staff: Tampilkan hasil aksi
+    end

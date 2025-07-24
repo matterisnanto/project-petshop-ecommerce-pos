@@ -15,16 +15,11 @@ class Grooming extends Model
 
     protected $table = 'groomings';
     //
-    protected $fillable = ['name', 'slug', 'category_animals_id', 'category_grooming_id', 'photo', 'description', 'stock', 'purchase_price', 'selling_price', 'is_active'];
+    protected $fillable = ['name', 'slug', 'category_animals_id', 'photo', 'description', 'stock', 'purchase_price', 'selling_price', 'is_active'];
 
     public function categoryAnimals()
     {
         return $this->belongsTo(CategoryAnimals::class);
-    }
-
-    public function categoryGrooming()
-    {
-        return $this->belongsTo(CategoryGrooming::class,);
     }
 
     public function groomingPackage()
@@ -45,7 +40,7 @@ class Grooming extends Model
         return $slug;
     }
 
-    public function order(): HasMany
+    public function detail_order(): HasMany
     {
         return $this->hasMany(Order::class);
     }

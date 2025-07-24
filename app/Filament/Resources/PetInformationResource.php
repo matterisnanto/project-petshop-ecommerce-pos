@@ -51,7 +51,7 @@ class PetInformationResource extends Resource
                         Forms\Components\Select::make('order_id')
                             ->label('Order')
                             ->relationship(
-                                name: 'order',
+                                name: 'detail_order',
                                 titleAttribute: 'id',
                                 modifyQueryUsing: fn(Builder $query) => $query->whereHas('posTransaction')
                             )
@@ -59,8 +59,8 @@ class PetInformationResource extends Resource
                             ->preload()
                             ->required()
                             ->columnSpanFull()
-                            ->getOptionLabelFromRecordUsing(function (Order $order) {
-                                return "{$order->posTransaction->trx_id} - Customer name: {$order->posTransaction->name}";
+                            ->getOptionLabelFromRecordUsing(function (Order $detail_order) {
+                                return "{$detail_order->posTransaction->trx_id} - Customer name: {$detail_order->posTransaction->name}";
                             }),
                     ]),
                 Forms\Components\Section::make('Pet Details')
@@ -151,7 +151,7 @@ class PetInformationResource extends Resource
             ->columns([
                 Tables\Columns\ImageColumn::make('photo')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('order.postransaction.name')
+                Tables\Columns\TextColumn::make('detail_order.postransaction.name')
                     ->label('Owner Name')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('name')

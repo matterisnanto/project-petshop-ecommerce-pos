@@ -1,0 +1,117 @@
+sequenceDiagram
+    actor Staff
+    participant FormRetur as Form Purchase Return
+    participant ControllerRetur as Controller Purchase Return
+    participant DataRetur as Data Purchase Return
+    participant DataPurchasing as Data Purchasing
+    participant DataSupplier as Data Supplier
+    participant DataProduct as Data Product
+    participant DataAnimals as Data Animals
+    participant DataReturnItem as Data Return Item
+
+    Staff->>FormRetur: Buka form Purchasing
+    activate FormRetur
+    FormRetur->>ControllerRetur: get(purchasereturn)
+    activate ControllerRetur
+    ControllerRetur->>DataRetur: query() dengan sorting
+    DataRetur-->>ControllerRetur: Data retur
+    ControllerRetur-->>FormRetur: Tampilkan tabel
+    deactivate ControllerRetur
+    deactivate FormRetur
+
+    alt Staff Membuat Retur Baru
+        Staff->>FormRetur: Klik "Buat Retur Baru"
+        FormRetur->>ControllerRetur: create()
+        activate ControllerRetur
+        ControllerRetur-->>FormRetur: Tampilkan form kosong
+        deactivate ControllerRetur
+
+        Staff->>FormRetur: Isi informasi dasar:
+        FormRetur->>DataPurchasing: Cari data pembelian
+        DataPurchasing-->>FormRetur: Daftar pembelian
+        Staff->>FormRetur: Pilih pembelian
+        FormRetur->>DataPurchasing: getDetail(Purchasing)
+        DataPurchasing->>DataSupplier: getSupplier()
+        DataSupplier-->>DataPurchasing: Data supplier
+        DataPurchasing-->>FormRetur: Detail pembelian + supplier
+
+        loop Tambah Item Retur
+            Staff->>FormRetur: Tambah item retur
+            FormRetur->>ControllerRetur: initItem()
+            activate ControllerRetur
+            alt Pilih Tipe Product
+                Staff->>FormRetur: Pilih tipe=Product
+                FormRetur->>DataPurchasing: getProduct(Purchasing)
+                DataPurchasing->>DataProduct: getProductDariOrder()
+                DataProduct-->>DataPurchasing: Daftar produk
+                DataPurchasing-->>FormRetur: Daftar produk yang bisa diretur
+                Staff->>FormRetur: Pilih produk
+                FormRetur->>DataProduct: getDetail(product_id)
+                DataProduct-->>FormRetur: Detail harga produk
+            else Pilih Tipe Animals
+                Staff->>FormRetur: Pilih tipe=Animals
+                FormRetur->>DataPurchasing: getAnimals(Purchasing)
+                DataPurchasing->>DataAnimals: getAnimalsDariOrder()
+                DataAnimals-->>DataPurchasing: Daftar hewan
+                DataPurchasing-->>FormRetur: Daftar hewan yang bisa diretur
+                Staff->>FormRetur: Pilih hewan
+                FormRetur->>DataAnimals: getDetail(animals_id)
+                DataAnimals-->>FormRetur: Detail harga hewan
+            end
+            Staff->>FormRetur: Isi jumlah dan alasan retur
+            deactivate ControllerRetur
+        end
+
+        Staff->>FormRetur: Set jumlah refund
+        Staff->>FormRetur: Submit retur
+        FormRetur->>ControllerRetur: store()
+        activate ControllerRetur
+        ControllerRetur->>DataRetur: create(data retur)
+        DataRetur-->>ControllerRetur: ID Retur
+        
+        loop Proses Item Retur
+            ControllerRetur->>DataReturnItem: create(item retur)
+            alt Tipe Product
+                ControllerRetur->>DataProduct: update stock (tambah)
+            else Tipe Animals
+                ControllerRetur->>DataAnimals: update stock (tambah)
+            end
+        end
+        
+        ControllerRetur-->>FormRetur: Notifikasi sukses
+        deactivate ControllerRetur
+        FormRetur->>Staff: Tampilkan pesan sukses
+    end
+
+    alt Staff Melakukan Aksi pada Retur
+        Staff->>FormRetur: Pilih aksi (View/Edit/Approve/Refund)
+        FormRetur->>ControllerRetur: handleAction()
+        activate ControllerRetur
+
+        alt Aksi View
+            ControllerRetur->>DataRetur: find(id)
+            DataRetur-->>ControllerRetur: Detail retur
+            ControllerRetur->>DataReturnItem: where(purchase_return_id)
+            DataReturnItem-->>ControllerRetur: Item retur
+            ControllerRetur-->>FormRetur: Tampilkan detail
+        else Aksi Edit
+            ControllerRetur->>DataRetur: find(id)
+            DataRetur-->>ControllerRetur: Data retur
+            ControllerRetur->>DataReturnItem: where(purchase_return_id)
+            DataReturnItem-->>ControllerRetur: Item retur
+            ControllerRetur-->>FormRetur: Tampilkan form edit
+            Staff->>FormRetur: Update data
+            FormRetur->>ControllerRetur: update()
+            ControllerRetur->>DataRetur: update(data)
+            DataRetur-->>ControllerRetur: Data terupdate
+            ControllerRetur-->>FormRetur: Notifikasi sukses
+        else Aksi Approve/Refund
+            ControllerRetur->>DataRetur: find(id)
+            ControllerRetur->>DataRetur: update(status)
+            DataRetur->>DataRetur: setApprovalDate()
+            DataRetur-->>ControllerRetur: Konfirmasi
+            ControllerRetur-->>FormRetur: Notifikasi sukses
+        end
+        deactivate ControllerRetur
+        FormRetur->>Staff: Tampilkan hasil aksi
+    end

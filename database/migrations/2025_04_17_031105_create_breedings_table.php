@@ -20,8 +20,8 @@ return new class extends Migration
             $table->string('photo', 255)->nullable();
             $table->text('description')->nullable();
             $table->integer('stock')->default(0);
-            $table->decimal('purchase_price', 12, 2)->nullable();
-            $table->decimal('selling_price', 12, 2);
+            $table->decimal('purchase_price', 8)->nullable();
+            $table->decimal('selling_price', 8);
             $table->boolean('is_active')->default(false);
             $table->timestamps();
             $table->softDeletes();

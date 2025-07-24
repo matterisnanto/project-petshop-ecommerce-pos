@@ -1,0 +1,68 @@
+sequenceDiagram
+    actor Staff
+    participant FormPromo as Form Promo Code
+    participant ControllerPromo as Controller Promo Code
+    participant DataPromo as Data Promo Code
+
+    Staff->>FormPromo: Buka Daftar Promo Code
+    activate FormPromo
+    FormPromo->>ControllerPromo: get(PromoCode)
+    activate ControllerPromo
+    ControllerPromo->>DataPromo: get(PromoCode)
+    DataPromo-->>ControllerPromo: Data Promo Code
+    ControllerPromo-->>FormPromo: Tampilkan tabel
+    deactivate ControllerPromo
+    deactivate FormPromo
+
+    alt Staff Membuat Promo Code Baru
+        Staff->>FormPromo: Klik "Buat Promo Code"
+        FormPromo->>ControllerPromo: create()
+        activate ControllerPromo
+        ControllerPromo-->>FormPromo: Tampilkan form kosong
+        deactivate ControllerPromo
+
+        Staff->>FormPromo: Isi detail promo code
+        FormPromo->>ControllerPromo: Validasi input
+        activate ControllerPromo
+        alt Validasi berhasil
+            ControllerPromo->>DataPromo: create(PromoCode)
+            DataPromo-->>ControllerPromo: Promo baru
+            ControllerPromo-->>FormPromo: Notifikasi sukses
+            FormPromo->>Staff: Tampilkan pesan sukses
+        else Validasi gagal
+            ControllerPromo-->>FormPromo: Tampilkan error
+            FormPromo->>Staff: Tampilkan pesan error
+        end
+        deactivate ControllerPromo
+    end
+
+    alt Staff Melakukan Aksi pada Promo Code
+        Staff->>FormPromo: Pilih aksi pada Promo
+        FormPromo->>ControllerPromo: handleAction()
+        activate ControllerPromo
+
+        alt Aksi Edit
+            ControllerPromo->>DataPromo: cari(id)
+            DataPromo-->>ControllerPromo: Data promo
+            ControllerPromo-->>FormPromo: Tampilkan form edit
+            Staff->>FormPromo: Perbarui data
+            FormPromo->>ControllerPromo: update(PromoCode)
+            activate ControllerPromo
+            ControllerPromo->>DataPromo: perbarui(data)
+            DataPromo-->>ControllerPromo: Data terupdate
+            ControllerPromo-->>FormPromo: Notifikasi sukses
+            deactivate ControllerPromo
+        else Aksi Hapus
+            ControllerPromo->>DataPromo: cari(id)
+            ControllerPromo->>DataPromo: delete(PromoCode)
+            DataPromo-->>ControllerPromo: Konfirmasi
+            ControllerPromo-->>FormPromo: Notifikasi sukses
+        else Aksi Toggle Status
+            ControllerPromo->>DataPromo: cari(id)
+            ControllerPromo->>DataPromo: toggleStatus()
+            DataPromo-->>ControllerPromo: Status baru
+            ControllerPromo-->>FormPromo: Notifikasi status berubah
+        end
+        deactivate ControllerPromo
+        FormPromo->>Staff: Tampilkan hasil aksi
+    end

@@ -1,0 +1,87 @@
+sequenceDiagram
+    actor Staff
+    participant FormPengembalian as Form transaction return
+    participant ControllerPengembalian as controller transaction return
+    participant TransaksiPengembalian as data transaction return
+    participant ItemPengembalian as data items return
+    participant Produk as data product
+    participant Hewan as data animals
+    participant TransaksiPOS  as data POS transaction
+    participant TransaksiOnline as data Olshop transaction
+    participant Grooming/Breeding/Hotel as data Grooming/Breeding/Hotel
+
+    Staff->>FormPengembalian: Buka Form Pengembalian
+    FormPengembalian->>FormPengembalian: menampilkan form
+
+    Staff->>FormPengembalian: Isi informasi dasar
+    FormPengembalian->>ControllerPengembalian: Perbarui state form
+    activate ControllerPengembalian
+    alt Pilih Transaksi POS
+        Staff->>FormPengembalian: Pilih jenis=POS
+        FormPengembalian->>TransaksiPOS: get(POS transaction)
+        TransaksiPOS-->>FormPengembalian: Daftar transaksi POS
+        Staff->>FormPengembalian: Pilih data transaksi POS
+    else Pilih Transaksi Online
+        Staff->>FormPengembalian: Pilih jenis=Online
+        FormPengembalian->>TransaksiOnline: get(Olshop transaction)
+        TransaksiOnline-->>FormPengembalian: Daftar transaksi Online
+        Staff->>FormPengembalian: Pilih data transaksi Online
+    end
+    deactivate ControllerPengembalian
+
+    loop Tambah Item Pengembalian
+        Staff->>FormPengembalian: Tambah item baru
+        FormPengembalian->>ControllerPengembalian: Inisialisasi item
+        activate ControllerPengembalian
+        
+        alt Pengembalian Produk
+            Staff->>FormPengembalian: Pilih jenis=Produk
+            FormPengembalian->>Produk: Query produk dari transaksi
+            Produk-->>FormPengembalian: Daftar produk
+            Staff->>FormPengembalian: Pilih produk
+            FormPengembalian->>Produk: Ambil detail produk
+            Produk-->>FormPengembalian: Harga dan detail
+        else Pengembalian Hewan
+            Staff->>FormPengembalian: Pilih jenis=Hewan
+            FormPengembalian->>Hewan: Query hewan dari transaksi
+            Hewan-->>FormPengembalian: Daftar hewan
+            Staff->>FormPengembalian: Pilih hewan
+            FormPengembalian->>Hewan: Ambil detail hewan
+            Hewan-->>FormPengembalian: Harga dan detail
+        else Pengembalian Layanan (Grooming/Breeding/Hotel)
+            Staff->>FormPengembalian: Pilih jenis layanan
+            FormPengembalian->>Grooming/Breeding/Hotel: Query layanan dari transaksi
+            Grooming/Breeding/Hotel-->>FormPengembalian: Daftar layanan
+            Staff->>FormPengembalian: Pilih layanan
+        end
+        
+        Staff->>FormPengembalian: Masukkan jumlah dan alasan
+        deactivate ControllerPengembalian
+    end
+
+    Staff->>FormPengembalian: Set status pengembalian
+    FormPengembalian->>ControllerPengembalian: Validasi perubahan status
+    activate ControllerPengembalian
+    alt Status membutuhkan tanggal persetujuan
+        ControllerPengembalian->>FormPengembalian: Set tanggal persetujuan
+    end
+    deactivate ControllerPengembalian
+
+    Staff->>FormPengembalian: Submit pengembalian
+    FormPengembalian->>ControllerPengembalian: Proses pengajuan
+    activate ControllerPengembalian
+    ControllerPengembalian->>TransaksiPengembalian: Buat record pengembalian
+    TransaksiPengembalian-->>ControllerPengembalian: ID Pengembalian
+    
+    loop Proses Item Pengembalian
+        ControllerPengembalian->>ItemPengembalian: Buat record item
+        alt Pengembalian Produk
+            ControllerPengembalian->>Produk: Restok inventori
+        else Pengembalian Hewan
+            ControllerPengembalian->>Hewan: Restok inventori
+        end
+    end
+    
+    ControllerPengembalian->>FormPengembalian: Tampilkan notifikasi sukses
+    deactivate ControllerPengembalian
+    FormPengembalian->>Staff: Tampilkan pesan sukses

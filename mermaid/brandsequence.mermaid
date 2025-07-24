@@ -1,0 +1,68 @@
+sequenceDiagram
+    actor Staff
+    participant FormBrand as Form Brand
+    participant ControllerBrand as controller brand
+    participant dataBrand as data brand
+
+    Staff->>FormBrand: Buka Daftar Brand
+    activate FormBrand
+    FormBrand->>ControllerBrand: get(Brand)
+    activate ControllerBrand
+    ControllerBrand->>dataBrand: get(Brand)
+    dataBrand-->>ControllerBrand: Data brand
+    ControllerBrand-->>FormBrand: Tampilkan tabel
+    deactivate ControllerBrand
+    deactivate FormBrand
+
+    alt Staff Membuat Brand Baru
+        Staff->>FormBrand: Klik "Tambah Brand Baru"
+        FormBrand->>ControllerBrand: create()
+        activate ControllerBrand
+        ControllerBrand-->>FormBrand: Tampilkan form kosong
+        deactivate ControllerBrand
+
+        Staff->>FormBrand: Isi detail brand:
+        FormBrand->>ControllerBrand: Validasi input
+        activate ControllerBrand
+        alt Validasi berhasil
+            ControllerBrand->>dataBrand: create(data brand)
+            dataBrand->>dataBrand: Generate slug
+            dataBrand-->>ControllerBrand: Brand baru
+            ControllerBrand-->>FormBrand: Notifikasi sukses
+            FormBrand->>Staff: Tampilkan pesan sukses
+        else Validasi gagal
+            ControllerBrand-->>FormBrand: Tampilkan error
+            FormBrand->>Staff: Tampilkan pesan error
+        end
+        deactivate ControllerBrand
+    end
+
+    alt Staff Melakukan Aksi pada Brand
+        Staff->>FormBrand: Pilih aksi pada brand
+        FormBrand->>ControllerBrand: handleAction()
+        activate ControllerBrand
+
+        alt Aksi View
+            ControllerBrand->>dataBrand: find(id)
+            dataBrand-->>ControllerBrand: Detail brand
+            ControllerBrand-->>FormBrand: Tampilkan detail
+        else Aksi Edit
+            ControllerBrand->>dataBrand: find(id)
+            dataBrand-->>ControllerBrand: Data brand
+            ControllerBrand-->>FormBrand: Tampilkan form edit
+            Staff->>FormBrand: Update data
+            FormBrand->>ControllerBrand: update()
+            activate ControllerBrand
+            ControllerBrand->>dataBrand: update(data)
+            dataBrand-->>ControllerBrand: Data terupdate
+            ControllerBrand-->>FormBrand: Notifikasi sukses
+            deactivate ControllerBrand
+        else Aksi Delete
+            ControllerBrand->>dataBrand: find(id)
+            ControllerBrand->>dataBrand: delete()
+            dataBrand-->>ControllerBrand: Konfirmasi
+            ControllerBrand-->>FormBrand: Notifikasi sukses
+        end
+        deactivate ControllerBrand
+        FormBrand->>Staff: Tampilkan hasil aksi
+    end

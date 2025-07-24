@@ -1,0 +1,77 @@
+sequenceDiagram
+    actor Staff
+    participant FormHotel as Form Hotel
+    participant ControllerHotel as Controller Hotel
+    participant DataHotel as Data Hotel
+    participant DataCategoryAnimal as Data Category Animals
+    participant DataHotelPackage as Data Hotel Package
+
+    Staff->>FormHotel: Buka Daftar Layanan Hotel
+    activate FormHotel
+    FormHotel->>ControllerHotel: get(Hotel)
+    activate ControllerHotel
+    ControllerHotel->>DataHotel: get(Hotel)
+    DataHotel-->>ControllerHotel: Data Hotel
+    ControllerHotel-->>FormHotel: Tampilkan tabel
+    deactivate ControllerHotel
+    deactivate FormHotel
+
+    alt Staff Membuat Layanan Hotel Baru
+        Staff->>FormHotel: Klik "Buat Layanan"
+        FormHotel->>ControllerHotel: create()
+        activate ControllerHotel
+        ControllerHotel->>DataCategoryAnimal: get(Category Animals)
+        DataCategoryAnimal-->>ControllerHotel: Daftar Category Animals
+        ControllerHotel-->>FormHotel: Tampilkan form kosong
+        deactivate ControllerHotel
+
+        Staff->>FormHotel: Isi detail Hotel
+        FormHotel->>ControllerHotel: Validasi input
+        activate ControllerHotel
+        alt Validasi berhasil
+            ControllerHotel->>ControllerHotel: Buat slug unik
+            ControllerHotel->>DataHotel: create(Hotel)
+            DataHotel-->>ControllerHotel: Layanan baru
+            ControllerHotel->>DataHotelPackage: create(Hotel Package)
+            DataHotelPackage-->>ControllerHotel: Paket berhasil dibuat
+            ControllerHotel-->>FormHotel: Notifikasi sukses
+            FormHotel->>Staff: Tampilkan pesan sukses
+        else Validasi gagal
+            ControllerHotel-->>FormHotel: Tampilkan error
+            FormHotel->>Staff: Tampilkan pesan error
+        end
+        deactivate ControllerHotel
+    end
+
+    alt Staff Melakukan Aksi pada Layanan Hotel
+        Staff->>FormHotel: Pilih aksi pada Layanan
+        FormHotel->>ControllerHotel: handleAksi()
+        activate ControllerHotel
+
+        alt Aksi Lihat Detail
+            ControllerHotel->>DataHotel: cari(id)
+            DataHotel-->>ControllerHotel: Detail Hotel
+            ControllerHotel-->>FormHotel: Tampilkan detail
+        else Aksi Edit
+            ControllerHotel->>DataHotel: cari(id)
+            DataHotel-->>ControllerHotel: Data Hotel
+            ControllerHotel->>DataCategoryAnimal: get(Category)
+            DataCategoryAnimal-->>ControllerHotel: Daftar Category
+            ControllerHotel-->>FormHotel: Tampilkan form edit
+            Staff->>FormHotel: Perbarui data
+            FormHotel->>ControllerHotel: update()
+            activate ControllerHotel
+            ControllerHotel->>ControllerHotel: Periksa perubahan thumbnail
+            ControllerHotel->>DataHotel: update(data Hotel)
+            DataHotel-->>ControllerHotel: Data terupdate
+            ControllerHotel-->>FormHotel: Notifikasi sukses
+            deactivate ControllerHotel
+        else Aksi Hapus
+            ControllerHotel->>DataHotel: cari(id)
+            ControllerHotel->>DataHotel: softDelete()
+            DataHotel-->>ControllerHotel: Konfirmasi
+            ControllerHotel-->>FormHotel: Notifikasi sukses
+        end
+        deactivate ControllerHotel
+        FormHotel->>Staff: Tampilkan hasil aksi
+    end

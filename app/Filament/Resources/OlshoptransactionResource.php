@@ -377,7 +377,7 @@ class OlshoptransactionResource extends Resource
 
     public static function getItemsRepeater(): Repeater
     {
-        return Forms\Components\Repeater::make('order')
+        return Forms\Components\Repeater::make('detail_order')
             ->relationship('orders')
             ->live()
             ->columns([
@@ -556,7 +556,7 @@ class OlshoptransactionResource extends Resource
 
     protected static function updateSubTotalAmount(Get $get, Set $set): void
     {
-        $selectedProducts = collect($get('order'))
+        $selectedProducts = collect($get('detail_order'))
             ->filter(fn($item) => !empty($item['product_id']) && !empty($item['quantity']));
 
         $prices = Product::find($selectedProducts->pluck('product_id'))
@@ -662,7 +662,7 @@ class OlshoptransactionResource extends Resource
 
     protected static function calculateTotalWeight(Get $get, Set $set): void
     {
-        $selectedProducts = collect($get('order'))
+        $selectedProducts = collect($get('detail_order'))
             ->filter(fn($item) => !empty($item['product_id']) && !empty($item['quantity']));
 
         $products = Product::find($selectedProducts->pluck('product_id'));

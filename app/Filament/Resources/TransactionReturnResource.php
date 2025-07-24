@@ -149,7 +149,6 @@ class TransactionReturnResource extends Resource
                                     ->options([
                                         'product' => 'Product',
                                         'animal' => 'Animal',
-                                        'grooming' => 'Grooming',
                                         'breeding' => 'Breeding',
                                         'hotel' => 'Hotel',
                                     ])
@@ -158,7 +157,6 @@ class TransactionReturnResource extends Resource
                                     ->afterStateUpdated(function ($state, Forms\Set $set) {
                                         $set('product_id', null);
                                         $set('animals_id', null);
-                                        $set('grooming_id', null);
                                         $set('breeding_id', null);
                                         $set('hotel_id', null);
                                     }),
@@ -171,9 +169,9 @@ class TransactionReturnResource extends Resource
                                                 titleAttribute: 'name',
                                                 modifyQueryUsing: fn(Builder $query, Forms\Get $get) =>
                                                 $get('../../type') === 'pos'
-                                                    ? $query->whereHas('order', fn($q) =>
+                                                    ? $query->whereHas('detail_order', fn($q) =>
                                                     $q->where('pos_transaction_id', $get('../../pos_transaction_id')))
-                                                    : $query->whereHas('order', fn($q) =>
+                                                    : $query->whereHas('detail_order', fn($q) =>
                                                     $q->where('olshop_transaction_id', $get('../../olshop_transaction_id')))
                                             )
                                             ->searchable()
@@ -195,9 +193,9 @@ class TransactionReturnResource extends Resource
                                                 titleAttribute: 'name',
                                                 modifyQueryUsing: fn(Builder $query, Forms\Get $get) =>
                                                 $get('../../type') === 'pos'
-                                                    ? $query->whereHas('order', fn($q) =>
+                                                    ? $query->whereHas('detail_order', fn($q) =>
                                                     $q->where('pos_transaction_id', $get('../../pos_transaction_id')))
-                                                    : $query->whereHas('order', fn($q) =>
+                                                    : $query->whereHas('detail_order', fn($q) =>
                                                     $q->where('olshop_transaction_id', $get('../../olshop_transaction_id')))
                                             )
                                             ->searchable()
@@ -219,7 +217,7 @@ class TransactionReturnResource extends Resource
                                                 name: 'grooming',
                                                 titleAttribute: 'id',
                                                 modifyQueryUsing: fn(Builder $query, Forms\Get $get) =>
-                                                $query->whereHas('order', fn($q) =>
+                                                $query->whereHas('detail_order', fn($q) =>
                                                 $q->where('pos_transaction_id', $get('../../pos_transaction_id')))
                                             )
                                             ->searchable()
@@ -234,7 +232,7 @@ class TransactionReturnResource extends Resource
                                                 name: 'breeding',
                                                 titleAttribute: 'id',
                                                 modifyQueryUsing: fn(Builder $query, Forms\Get $get) =>
-                                                $query->whereHas('order', fn($q) =>
+                                                $query->whereHas('detail_order', fn($q) =>
                                                 $q->where('pos_transaction_id', $get('../../pos_transaction_id')))
                                             )
                                             ->searchable()
@@ -249,7 +247,7 @@ class TransactionReturnResource extends Resource
                                                 name: 'hotel',
                                                 titleAttribute: 'id',
                                                 modifyQueryUsing: fn(Builder $query, Forms\Get $get) =>
-                                                $query->whereHas('order', fn($q) =>
+                                                $query->whereHas('detail_order', fn($q) =>
                                                 $q->where('pos_transaction_id', $get('../../pos_transaction_id')))
                                             )
                                             ->searchable()

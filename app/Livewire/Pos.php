@@ -346,7 +346,7 @@ class Pos extends Component implements HasForms
             session()->put('orderItems', $this->order_items);
             $this->calculateTotal();
             Notification::make()
-                ->title('Grooming service added to order')
+                ->title('Grooming service added to detail_order')
                 ->success()
                 ->send();
         }
@@ -385,7 +385,7 @@ class Pos extends Component implements HasForms
             session()->put('orderItems', $this->order_items);
             $this->calculateTotal();
             Notification::make()
-                ->title('Hotel service added to order')
+                ->title('Hotel service added to detail_order')
                 ->success()
                 ->send();
         }
@@ -408,7 +408,7 @@ class Pos extends Component implements HasForms
             session()->put('orderItems', $this->order_items);
             $this->calculateTotal();
             Notification::make()
-                ->title('Breeding service added to order')
+                ->title('Breeding service added to detail_order')
                 ->success()
                 ->send();
         }
@@ -579,12 +579,12 @@ class Pos extends Component implements HasForms
     {
 
         $transaction = POSTransaction::with([
-            'order.product',
-            'order.animal',
-            'order.grooming',
-            'order.hotel',
-            'order.breeding',
-            'order.petInformation',
+            'detail_order.product',
+            'detail_order.animal',
+            'detail_order.grooming',
+            'detail_order.hotel',
+            'detail_order.breeding',
+            'detail_order.petInformation',
             'paymentMethod'
         ])->find($transactionId);
 
@@ -696,13 +696,13 @@ class Pos extends Component implements HasForms
                     break;
             }
 
-            $order = Order::create($orderData);
+            $detail_order = Order::create($orderData);
 
             // Add pet information if exists for this item
             if (isset($petInfoByItem[$itemKey]) && in_array($item['type'], ['grooming', 'hotel', 'breeding'])) {
                 foreach ($petInfoByItem[$itemKey] as $petInfo) {
                     $petInfoData = [
-                        'order_id' => $order->id,
+                        'order_id' => $detail_order->id,
                         'name' => $petInfo['name'],
                         'age' => $petInfo['age'],
                         'photo' => $petInfo['photo'],

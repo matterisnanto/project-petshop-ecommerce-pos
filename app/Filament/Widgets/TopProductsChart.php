@@ -21,11 +21,11 @@ class TopProductsChart extends ChartWidget
     {
         $products = Order::select([
             'products.name',
-            DB::raw('SUM(order.quantity) as total_quantity'),
-            DB::raw('SUM(order.quantity * order.unit_price) as total_revenue')
+            DB::raw('SUM(detail_order.quantity) as total_quantity'),
+            DB::raw('SUM(detail_order.quantity * detail_order.unit_price) as total_revenue')
         ])
-            ->join('products', 'products.id', '=', 'order.product_id')
-            ->whereBetween('order.created_at', [now()->startOfMonth(), now()->endOfMonth()])
+            ->join('products', 'products.id', '=', 'detail_order.product_id')
+            ->whereBetween('detail_order.created_at', [now()->startOfMonth(), now()->endOfMonth()])
             ->groupBy('products.name')
             ->orderByDesc('total_quantity')
             ->limit(5)

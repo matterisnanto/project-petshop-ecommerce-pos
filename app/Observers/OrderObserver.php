@@ -11,22 +11,22 @@ class OrderObserver
     /**
      * Handle the Order "created" event.
      */
-    public function created(Order $order): void
+    public function created(Order $detail_order): void
     {
         // Hanya proses jika purchases_id kosong
-        if ($order->purchases_id !== null) {
+        if ($detail_order->purchases_id !== null) {
             return;
         }
 
-        if ($order->type === 'product' && $order->product_id) {
-            $product = Product::find($order->product_id);
+        if ($detail_order->type === 'product' && $detail_order->product_id) {
+            $product = Product::find($detail_order->product_id);
             if ($product) {
-                $product->decrement('stock', $order->quantity);
+                $product->decrement('stock', $detail_order->quantity);
             }
-        } elseif ($order->type === 'animal' && $order->animals_id) {
-            $animal = Animals::find($order->animals_id);
+        } elseif ($detail_order->type === 'animal' && $detail_order->animals_id) {
+            $animal = Animals::find($detail_order->animals_id);
             if ($animal) {
-                $animal->decrement('stock', $order->quantity);
+                $animal->decrement('stock', $detail_order->quantity);
 
                 // Nonaktifkan hewan jika stok habis
                 if ($animal->stock <= 0) {
@@ -39,19 +39,19 @@ class OrderObserver
     /**
      * Handle the Order "updated" event.
      */
-    public function updated(Order $order): void
+    public function updated(Order $detail_order): void
     {
         // Hanya proses jika purchases_id kosong
-        if ($order->purchases_id !== null) {
+        if ($detail_order->purchases_id !== null) {
             return;
         }
 
-        // Handle product order update
-        if ($order->type === 'product' && $order->product_id) {
-            $product = Product::find($order->product_id);
+        // Handle product detail_order update
+        if ($detail_order->type === 'product' && $detail_order->product_id) {
+            $product = Product::find($detail_order->product_id);
             if ($product) {
-                $originalQuantity = $order->getOriginal('quantity');
-                $newQuantity = $order->quantity;
+                $originalQuantity = $detail_order->getOriginal('quantity');
+                $newQuantity = $detail_order->quantity;
 
                 if ($originalQuantity != $newQuantity) {
                     $product->increment('stock', $originalQuantity);
@@ -59,12 +59,12 @@ class OrderObserver
                 }
             }
         }
-        // Handle animal order update
-        elseif ($order->type === 'animal' && $order->animals_id) {
-            $animal = Animals::find($order->animals_id);
+        // Handle animal detail_order update
+        elseif ($detail_order->type === 'animal' && $detail_order->animals_id) {
+            $animal = Animals::find($detail_order->animals_id);
             if ($animal) {
-                $originalQuantity = $order->getOriginal('quantity');
-                $newQuantity = $order->quantity;
+                $originalQuantity = $detail_order->getOriginal('quantity');
+                $newQuantity = $detail_order->quantity;
 
                 if ($originalQuantity != $newQuantity) {
                     $animal->increment('stock', $originalQuantity);
@@ -77,8 +77,8 @@ class OrderObserver
                 }
 
                 // Jika animals_id berubah
-                if ($order->isDirty('animals_id')) {
-                    $originalAnimal = Animals::find($order->getOriginal('animals_id'));
+                if ($detail_order->isDirty('animals_id')) {
+                    $originalAnimal = Animals::find($detail_order->getOriginal('animals_id'));
                     if ($originalAnimal) {
                         $originalAnimal->increment('stock', $originalQuantity);
                         $originalAnimal->update([
@@ -93,22 +93,22 @@ class OrderObserver
     /**
      * Handle the Order "deleted" event.
      */
-    public function deleted(Order $order): void
+    public function deleted(Order $detail_order): void
     {
         // Hanya proses jika purchases_id kosong
-        if ($order->purchases_id !== null) {
+        if ($detail_order->purchases_id !== null) {
             return;
         }
 
-        if ($order->type === 'product' && $order->product_id) {
-            $product = Product::find($order->product_id);
+        if ($detail_order->type === 'product' && $detail_order->product_id) {
+            $product = Product::find($detail_order->product_id);
             if ($product) {
-                $product->increment('stock', $order->quantity);
+                $product->increment('stock', $detail_order->quantity);
             }
-        } elseif ($order->type === 'animal' && $order->animals_id) {
-            $animal = Animals::find($order->animals_id);
+        } elseif ($detail_order->type === 'animal' && $detail_order->animals_id) {
+            $animal = Animals::find($detail_order->animals_id);
             if ($animal) {
-                $animal->increment('stock', $order->quantity);
+                $animal->increment('stock', $detail_order->quantity);
 
                 // Aktifkan kembali hewan jika stok menjadi > 0
                 if ($animal->stock > 0) {

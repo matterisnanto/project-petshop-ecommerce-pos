@@ -20,22 +20,22 @@ class ServicePerformance extends BaseWidget
         // Grooming stats
         $groomingOrders = Order::whereNotNull('grooming_id')->get();
         $groomingCount = $groomingOrders->count();
-        $groomingRevenue = $groomingOrders->sum(function ($order) {
-            return $order->quantity * $order->unit_price;
+        $groomingRevenue = $groomingOrders->sum(function ($detail_order) {
+            return $detail_order->quantity * $detail_order->unit_price;
         });
 
         // Breeding stats
         $breedingOrders = Order::whereNotNull('breeding_id')->get();
         $breedingCount = $breedingOrders->count();
-        $breedingRevenue = $breedingOrders->sum(function ($order) {
-            return $order->quantity * $order->unit_price;
+        $breedingRevenue = $breedingOrders->sum(function ($detail_order) {
+            return $detail_order->quantity * $detail_order->unit_price;
         });
 
         // Hotel stats
         $hotelOrders = Order::whereNotNull('hotel_id')->get();
         $hotelCount = $hotelOrders->count();
-        $hotelRevenue = $hotelOrders->sum(function ($order) {
-            return $order->quantity * $order->unit_price;
+        $hotelRevenue = $hotelOrders->sum(function ($detail_order) {
+            return $detail_order->quantity * $detail_order->unit_price;
         });
 
 

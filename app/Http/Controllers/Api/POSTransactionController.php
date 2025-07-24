@@ -15,7 +15,7 @@ class PosTransactionController extends Controller
     // GET /postransactions → postransactions.index
     public function index()
     {
-        $transactions = PosTransaction::with(['order.product', 'paymentMethod'])->get();
+        $transactions = PosTransaction::with(['detail_order.product', 'paymentMethod'])->get();
 
         $transactions->transform(function ($transaction) {
             return [
@@ -31,12 +31,12 @@ class PosTransactionController extends Controller
                     'name' => optional($transaction->paymentMethod)->name ?? 'Unknown',
                     'is_cash' => optional($transaction->paymentMethod)->is_cash ?? false,
                 ],
-                'items' => $transaction->order->map(function ($order) {
+                'items' => $transaction->detail_order->map(function ($detail_order) {
                     return [
-                        'product_id' => optional($order->product)->id,
-                        'product_name' => optional($order->product)->name ?? '-',
-                        'quantity' => $order->quantity,
-                        'unit_price' => $order->unit_price ?? 0,
+                        'product_id' => optional($detail_order->product)->id,
+                        'product_name' => optional($detail_order->product)->name ?? '-',
+                        'quantity' => $detail_order->quantity,
+                        'unit_price' => $detail_order->unit_price ?? 0,
                     ];
                 }),
                 'created_at' => $transaction->created_at,
@@ -100,7 +100,7 @@ class PosTransactionController extends Controller
             ]));
 
             foreach ($request->items as $item) {
-                $transaction->order()->create([
+                $transaction->detail_order()->create([
                     'product_id' => $item['product_id'],
                     'quantity' => $item['quantity'],
                     'unit_price' => $item['unit_price']
@@ -134,7 +134,7 @@ class PosTransactionController extends Controller
     // GET /postransactions/{id} → postransactions.show
     public function show($id)
     {
-        $transaction = PosTransaction::with(['order.product', 'paymentMethod'])->find($id);
+        $transaction = PosTransaction::with(['detail_order.product', 'paymentMethod'])->find($id);
 
         if (!$transaction) {
             return response()->json([

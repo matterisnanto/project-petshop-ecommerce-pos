@@ -83,7 +83,7 @@
                                 href="/trx-check" class="text-primary-600 dark:text-primary-400" target="_blank">TRX
                                 Check</a><br>
                             2. Lalu masukan nomor tersebut, dan tekan tombol search<br>
-                            3. Hubungi kami jika nomor TRX-id tidak valid dan berikan bukti order confirmation setelah
+                            3. Hubungi kami jika nomor TRX-id tidak valid dan berikan bukti detail_order confirmation setelah
                             24 jam
                         </p>
                     </div>

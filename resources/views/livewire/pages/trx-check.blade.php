@@ -196,14 +196,14 @@
                         </div>
 
                         <div class="divide-y divide-gray-200 dark:divide-gray-700">
-                            @foreach ($transaction->orders as $order)
+                            @foreach ($transaction->orders as $detail_order)
                                 <div class="p-4">
                                     <div class="flex gap-4">
                                         <!-- Product Image -->
                                         <div class="flex-shrink-0">
                                             <img class="h-20 w-20 rounded-lg object-cover border border-gray-200 dark:border-gray-600"
-                                                src="{{ $order->product->image_url ?? '/img/default-product.png' }}"
-                                                alt="{{ $order->product->name ?? 'Product image' }}"
+                                                src="{{ $detail_order->product->image_url ?? '/img/default-product.png' }}"
+                                                alt="{{ $detail_order->product->name ?? 'Product image' }}"
                                                 onerror="this.src='/img/default-product.png'">
                                         </div>
 
@@ -211,11 +211,11 @@
                                         <div class="flex-1 min-w-0 flex flex-col justify-between">
                                             <div>
                                                 <h4 class="text-base font-medium text-gray-900 dark:text-white">
-                                                    {{ $order->product->name ?? 'Product' }}
+                                                    {{ $detail_order->product->name ?? 'Product' }}
                                                 </h4>
-                                                @if ($order->product->weight)
+                                                @if ($detail_order->product->weight)
                                                     <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                                                        {{ number_format($order->product->weight / 1000, 2) }} kg
+                                                        {{ number_format($detail_order->product->weight / 1000, 2) }} kg
                                                     </p>
                                                 @endif
                                             </div>
@@ -225,7 +225,7 @@
                                                 <span class="text-sm text-gray-500 dark:text-gray-400">Quantity:
                                                 </span>
                                                 <span class="text-sm font-medium text-gray-900 dark:text-white">
-                                                    {{ $order->quantity }}
+                                                    {{ $detail_order->quantity }}
                                                 </span>
                                             </div>
                                         </div>
@@ -234,11 +234,11 @@
                                         <div class="flex-shrink-0 text-right">
                                             <div class="text-base font-semibold text-gray-900 dark:text-white">
                                                 Rp
-                                                {{ number_format($order->unit_price * $order->quantity, 0, ',', '.') }}
+                                                {{ number_format($detail_order->unit_price * $detail_order->quantity, 0, ',', '.') }}
                                             </div>
-                                            @if ($order->quantity > 1)
+                                            @if ($detail_order->quantity > 1)
                                                 <div class="text-xs text-gray-500 dark:text-gray-400">
-                                                    Rp {{ number_format($order->unit_price, 0, ',', '.') }} each
+                                                    Rp {{ number_format($detail_order->unit_price, 0, ',', '.') }} each
                                                 </div>
                                             @endif
                                         </div>
@@ -248,7 +248,7 @@
                                     <div
                                         class="mt-3 pt-3 border-t border-gray-100 dark:border-gray-700 flex justify-end">
                                         <button type="button" wire:navigate
-                                            href="/products/{{ $order->product->slug }}"
+                                            href="/products/{{ $detail_order->product->slug }}"
                                             class="text-sm text-primary-600 hover:text-primary-800 dark:text-primary-400 dark:hover:text-primary-300">
                                             Buy Again
                                         </button>
@@ -327,7 +327,7 @@
                                         @if ($transaction->is_paid)
                                             Your payment has been verified
                                         @else
-                                            Your order is in the payment verification process
+                                            Your detail_order is in the payment verification process
                                         @endif
                                     </p>
                                 </li>
@@ -372,7 +372,7 @@
                                                 $transaction->package_resi_number !== 'Accepted')
                                             Shipped with Resi: {{ $transaction->package_resi_number }}
                                         @elseif ($transaction->package_resi_number && $transaction->package_resi_number == 'Accepted')
-                                            Your order has been received
+                                            Your detail_order has been received
                                         @elseif ($transaction->package_resi_number && $transaction->package_resi_number == 'Being Processed')
                                             Processing Order
                                         @else
@@ -396,11 +396,11 @@
                                                 via {{ $transaction->shipping_service['courier'] ?? 'courier' }}
                                             @endif
                                         @elseif ($transaction->package_resi_number && $transaction->package_resi_number == 'Accepted')
-                                            Your order has been received
+                                            Your detail_order has been received
                                         @elseif ($transaction->package_resi_number && $transaction->package_resi_number == 'Being Processed')
                                             waiting for payment verification
                                         @else
-                                            Your order is being prepared for shipment
+                                            Your detail_order is being prepared for shipment
                                         @endif
                                     </p>
                                 </li>
@@ -447,7 +447,7 @@
                                                         delivery
                                                     @endif
                                                 @else
-                                                    your order has been received
+                                                    your detail_order has been received
                                                 @endif
                                             </p>
                                         @endif

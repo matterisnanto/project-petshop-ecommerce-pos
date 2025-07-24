@@ -1,0 +1,68 @@
+sequenceDiagram
+    actor Staff
+    participant FormCategory as Form Category
+    participant ControllerCategory as controller Category
+    participant dataCategory as data Category
+
+    Staff->>FormCategory: Buka Daftar Category
+    activate FormCategory
+    FormCategory->>ControllerCategory: get(Category)
+    activate ControllerCategory
+    ControllerCategory->>dataCategory: get(Category)
+    dataCategory-->>ControllerCategory: Data Category
+    ControllerCategory-->>FormCategory: Tampilkan tabel
+    deactivate ControllerCategory
+    deactivate FormCategory
+
+    alt Staff Membuat Category Baru
+        Staff->>FormCategory: Klik "Tambah Category Baru"
+        FormCategory->>ControllerCategory: create()
+        activate ControllerCategory
+        ControllerCategory-->>FormCategory: Tampilkan form kosong
+        deactivate ControllerCategory
+
+        Staff->>FormCategory: Isi detail Category:
+        FormCategory->>ControllerCategory: Validasi input
+        activate ControllerCategory
+        alt Validasi berhasil
+            ControllerCategory->>dataCategory: create(data Category)
+            ControllerCategory->>ControllerCategory: Generate slug
+            dataCategory-->>ControllerCategory: Category baru
+            ControllerCategory-->>FormCategory: Notifikasi sukses
+            FormCategory->>Staff: Tampilkan pesan sukses
+        else Validasi gagal
+            ControllerCategory-->>FormCategory: Tampilkan error
+            FormCategory->>Staff: Tampilkan pesan error
+        end
+        deactivate ControllerCategory
+    end
+
+    alt Staff Melakukan Aksi pada Category
+        Staff->>FormCategory: Pilih aksi pada Category
+        FormCategory->>ControllerCategory: handleAction()
+        activate ControllerCategory
+
+        alt Aksi View
+            ControllerCategory->>dataCategory: find(id)
+            dataCategory-->>ControllerCategory: Detail Category
+            ControllerCategory-->>FormCategory: Tampilkan detail
+        else Aksi Edit
+            ControllerCategory->>dataCategory: find(id)
+            dataCategory-->>ControllerCategory: Data Category
+            ControllerCategory-->>FormCategory: Tampilkan form edit
+            Staff->>FormCategory: Update data
+            FormCategory->>ControllerCategory: update()
+            activate ControllerCategory
+            ControllerCategory->>dataCategory: update(data)
+            dataCategory-->>ControllerCategory: Data terupdate
+            ControllerCategory-->>FormCategory: Notifikasi sukses
+            deactivate ControllerCategory
+        else Aksi Delete
+            ControllerCategory->>dataCategory: find(id)
+            ControllerCategory->>dataCategory: delete()
+            dataCategory-->>ControllerCategory: Konfirmasi
+            ControllerCategory-->>FormCategory: Notifikasi sukses
+        end
+        deactivate ControllerCategory
+        FormCategory->>Staff: Tampilkan hasil aksi
+    end

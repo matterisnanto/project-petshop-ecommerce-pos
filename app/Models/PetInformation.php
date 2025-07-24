@@ -11,7 +11,7 @@ class PetInformation extends Model
     //
     protected $fillable = ['order_id', 'name', 'category_animals_id', 'age', 'photo', 'description', 'check_in', 'check_out', 'days'];
 
-    public function order()
+    public function detail_order()
     {
         return $this->belongsTo(Order::class);
     }
@@ -35,10 +35,10 @@ class PetInformation extends Model
                     ->diffInDays(Carbon::parse($petInfo->check_out));
                 $petInfo->days = max(1, $days);
 
-                // Update the associated order's quantity if this is a hotel or breeding service
-                if ($petInfo->order && in_array($petInfo->order->type, ['hotel', 'breeding'])) {
-                    $petInfo->order->quantity = max(1, $days);
-                    $petInfo->order->save();
+                // Update the associated detail_order's quantity if this is a hotel or breeding service
+                if ($petInfo->detail_order && in_array($petInfo->detail_order->type, ['hotel', 'breeding'])) {
+                    $petInfo->detail_order->quantity = max(1, $days);
+                    $petInfo->detail_order->save();
                 }
             }
         });

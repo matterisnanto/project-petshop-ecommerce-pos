@@ -1,0 +1,83 @@
+sequenceDiagram
+    actor Staff
+    participant FormProduct as Form Product
+    participant ControllerProduct
+    participant dataProduct
+    participant dataCategory
+    participant dataBrand
+    participant dataCategoryHewan
+
+    Staff->>FormProduct: Buka Daftar Product
+    activate FormProduct
+    FormProduct->>ControllerProduct: get(Product)
+    activate ControllerProduct
+    ControllerProduct->>dataProduct: get(Product)
+    dataProduct-->>ControllerProduct: Data Product
+    ControllerProduct-->>FormProduct: Tampilkan tabel
+    deactivate ControllerProduct
+    deactivate FormProduct
+
+    alt Staff Membuat Product Baru
+        Staff->>FormProduct: Klik "create new product"
+        FormProduct->>ControllerProduct: create()
+        activate ControllerProduct
+        ControllerProduct-->>FormProduct: Tampilkan form kosong
+        deactivate ControllerProduct
+
+        Staff->>FormProduct: Isi detail Product:
+        FormProduct->>ControllerProduct: Validasi input
+        activate ControllerProduct
+        alt Validasi berhasil
+            ControllerProduct->>dataProduct: create(data Product)
+            dataProduct->>dataProduct: Generate slug
+            alt Ada upload gambar tambahan
+                loop Untuk setiap gambar
+                    dataProduct->>dataProductphotos: Simpan gambar
+                    dataProductphotos-->>dataProduct: Path gambar
+                end
+            end
+            dataProduct-->>ControllerProduct: Product baru
+            ControllerProduct-->>FormProduct: Notifikasi sukses
+            FormProduct->>Staff: Tampilkan pesan sukses
+        else Validasi gagal
+            ControllerProduct-->>FormProduct: Tampilkan error
+            FormProduct->>Staff: Tampilkan pesan error
+        end
+        deactivate ControllerProduct
+    end
+
+    alt Staff Melakukan Aksi pada Product
+        Staff->>FormProduct: Pilih aksi pada Product
+        FormProduct->>ControllerProduct: handleAction()
+        activate ControllerProduct
+
+        alt Aksi View
+            ControllerProduct->>dataProduct: find(id)
+            dataProduct-->>ControllerProduct: Detail Product
+            ControllerProduct-->>FormProduct: Tampilkan detail
+        else Aksi Edit
+            ControllerProduct->>dataProduct: find(id)
+            dataProduct-->>ControllerProduct: Data Product
+            ControllerProduct-->>FormProduct: Tampilkan form edit
+            Staff->>FormProduct: Update data
+            FormProduct->>ControllerProduct: update()
+            activate ControllerProduct
+            ControllerProduct->>dataProduct: update(data)
+            alt Gambar tambahan diupdate
+                loop Untuk setiap gambar
+                    dataProduct->>dataProductphotos: Simpan gambar baru
+                    dataProductphotos-->>dataProduct: Path gambar baru
+                end
+            end
+            dataProduct-->>ControllerProduct: Data terupdate
+            ControllerProduct-->>FormProduct: Notifikasi sukses
+            deactivate ControllerProduct
+        else Aksi Delete
+            ControllerProduct->>dataProduct: find(id)
+            ControllerProduct->>dataProduct: delete()
+            dataProduct-->>ControllerProduct: Konfirmasi
+            ControllerProduct-->>FormProduct: Notifikasi sukses
+        end
+        deactivate ControllerProduct
+        FormProduct->>Staff: Tampilkan hasil aksi
+    end

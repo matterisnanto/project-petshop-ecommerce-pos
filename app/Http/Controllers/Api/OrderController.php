@@ -17,22 +17,22 @@ class OrderController extends Controller
     {
         $orders = Order::with(['product', 'posTransaction.paymentMethod'])->get();
 
-        $orders->transform(function ($order) {
+        $orders->transform(function ($detail_order) {
             return [
-                'id' => $order->id,
-                'transaction_name' => optional($order->posTransaction)->name ?? '-',
+                'id' => $detail_order->id,
+                'transaction_name' => optional($detail_order->posTransaction)->name ?? '-',
                 'payment_method' => [
-                    'name' => optional(optional($order->posTransaction)->paymentMethod)->name ?? 'Unknown',
-                    'is_cash' => optional(optional($order->posTransaction)->paymentMethod)->is_cash ?? false,
+                    'name' => optional(optional($detail_order->posTransaction)->paymentMethod)->name ?? 'Unknown',
+                    'is_cash' => optional(optional($detail_order->posTransaction)->paymentMethod)->is_cash ?? false,
                 ],
                 'product' => [
-                    'product_id' => optional($order->product)->id,
-                    'product_name' => optional($order->product)->name ?? '-',
+                    'product_id' => optional($detail_order->product)->id,
+                    'product_name' => optional($detail_order->product)->name ?? '-',
                 ],
-                'quantity' => $order->quantity ?? 0,
-                'unit_price' => $order->unit_price ?? 0,
-                'created_at' => $order->created_at,
-                'updated_at' => $order->updated_at,
+                'quantity' => $detail_order->quantity ?? 0,
+                'unit_price' => $detail_order->unit_price ?? 0,
+                'created_at' => $detail_order->created_at,
+                'updated_at' => $detail_order->updated_at,
             ];
         });
 
@@ -70,7 +70,7 @@ class OrderController extends Controller
                 ], 422);
             }
 
-            $order = Order::create([
+            $detail_order = Order::create([
                 'pos_transaction_id' => $request->pos_transaction_id,
                 'product_id' => $request->product_id,
                 'quantity' => $request->quantity,
@@ -84,7 +84,7 @@ class OrderController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Order berhasil dibuat',
-                'data' => $order
+                'data' => $detail_order
             ], 201);
         } catch (\Exception $e) {
             DB::rollBack();
@@ -99,9 +99,9 @@ class OrderController extends Controller
     // GET /orders/{id}
     public function show($id)
     {
-        $order = Order::with(['product', 'posTransaction.paymentMethod'])->find($id);
+        $detail_order = Order::with(['product', 'posTransaction.paymentMethod'])->find($id);
 
-        if (!$order) {
+        if (!$detail_order) {
             return response()->json([
                 'success' => false,
                 'message' => 'Order tidak ditemukan'
@@ -110,16 +110,16 @@ class OrderController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $order
+            'data' => $detail_order
         ], 200);
     }
 
     // PUT /orders/{id}
     public function update(Request $request, $id)
     {
-        $order = Order::find($id);
+        $detail_order = Order::find($id);
 
-        if (!$order) {
+        if (!$detail_order) {
             return response()->json([
                 'success' => false,
                 'message' => 'Order tidak ditemukan'
@@ -139,28 +139,28 @@ class OrderController extends Controller
             ], 422);
         }
 
-        $order->update($request->only(['quantity', 'unit_price']));
+        $detail_order->update($request->only(['quantity', 'unit_price']));
 
         return response()->json([
             'success' => true,
             'message' => 'Order berhasil diperbarui',
-            'data' => $order
+            'data' => $detail_order
         ], 200);
     }
 
     // DELETE /orders/{id}
     public function destroy($id)
     {
-        $order = Order::find($id);
+        $detail_order = Order::find($id);
 
-        if (!$order) {
+        if (!$detail_order) {
             return response()->json([
                 'success' => false,
                 'message' => 'Order tidak ditemukan'
             ], 404);
         }
 
-        $order->delete();
+        $detail_order->delete();
 
         return response()->json([
             'success' => true,

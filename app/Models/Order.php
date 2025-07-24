@@ -13,7 +13,7 @@ class Order extends Model
 {
     use HasFactory;
 
-    protected $table = 'order';
+    protected $table = 'detail_order';
 
     protected $fillable = ['pos_transaction_id', 'olshop_transaction_id', 'purchases_id', 'type', 'product_id', 'animals_id', 'grooming_id', 'hotel_id', 'breeding_id', 'quantity', 'unit_price'];
 

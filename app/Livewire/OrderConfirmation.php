@@ -33,7 +33,7 @@ class OrderConfirmation extends Component
 
     public function render()
     {
-        return view('livewire.pages.order-confirmation', [
+        return view('livewire.pages.detail_order-confirmation', [
             'transaction' => $this->transaction
         ]);
     }

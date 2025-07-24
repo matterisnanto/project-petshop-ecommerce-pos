@@ -16,12 +16,11 @@ return new class extends Migration
             $table->string('name', 100);
             $table->string('slug', 100)->unique();
             $table->foreignId('category_animals_id')->nullable()->constrained()->nullOnDelete();
-            $table->foreignId('category_grooming_id')->nullable()->constrained()->nullOnDelete();
             $table->string('photo', 255)->nullable();
             $table->text('description')->nullable();
             $table->integer('stock')->default(0);
-            $table->decimal('purchase_price', 12, 2)->nullable();
-            $table->decimal('selling_price', 12, 2);
+            $table->decimal('purchase_price', 8)->nullable();
+            $table->decimal('selling_price', 8);
             $table->boolean('is_active')->default(false);
             $table->timestamps();
             $table->softDeletes();
