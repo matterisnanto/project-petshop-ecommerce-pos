@@ -11,12 +11,12 @@ class OlshopTransaction extends Model
 {
     protected $table = 'olshop_transactions';
     //
-    protected $fillable = ['name', 'phone', 'email', 'promo_code_id', 'sub_total_amount', 'grand_total_amount', 'discount_amount', 'province', 'city_regency', 'post_code', 'complete_address', 'is_paid', 'trx_id', 'courier', 'shipping_service', 'weight_total', 'shipping_cost', 'estimated_delivery', 'payment_method_id', 'proof'];
+    protected $fillable = ['name', 'phone', 'email', 'promo_code_id', 'sub_total_amount', 'grand_total_amount', 'discount_amount', 'province', 'city_regency', 'district', 'sub_district', 'post_code', 'complete_address', 'is_paid', 'trx_id', 'courier', 'shipping_service', 'weight_total', 'shipping_cost', 'estimated_delivery', 'payment_method_id', 'proof'];
 
 
     public function orders(): HasMany
     {
-        return $this->hasMany(detail_order::class, 'olshop_transaction_id');
+        return $this->hasMany(order::class, 'olshop_transaction_id');
     }
     public function products(): BelongsTo
     {

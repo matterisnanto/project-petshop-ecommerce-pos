@@ -10,25 +10,50 @@ class RajaOngkirService
     public static function getDomesticDestinations(string $type, $parentId = null): array
     {
         $apiKey = config('services.rajaongkir.key');
+        $baseUrl = config('services.rajaongkir.base_url');
 
-        $baseUrl = 'https://api.rajaongkir.com/starter'; // Bisa diubah ke basic/pro/enterprise
         $endpoint = match ($type) {
-            'province' => '/province',
-            'city'     => "/city?province=$parentId",
+            'province' => '/destination/province',
+            'city'     => "/destination/city/$parentId",
+            'district' => "/destination/district/$parentId",
+            'subdistrict' => "/destination/sub-district/$parentId",
             default    => '',
         };
 
-        $response = Http::withHeaders([
-            'key' => $apiKey,
-        ])->get($baseUrl . $endpoint);
+        try {
+            $response = Http::withHeaders([
+                'key' => $apiKey,
+            ])->timeout(10)->get($baseUrl . $endpoint);
 
-        if ($response->successful()) {
-            return [
-                'data' => $response->json()['rajaongkir']['results'],
-            ];
+            if (!$response->successful()) {
+                Log::error('RajaOngkir API Error', [
+                    'type' => $type,
+                    'parentId' => $parentId,
+                    'status' => $response->status(),
+                    'response' => $response->json(),
+                ]);
+                return ['data' => []];
+            }
+
+            $responseData = $response->json();
+
+            // Handle different response structures
+            if (isset($responseData['rajaongkir']['results'])) {
+                return ['data' => $responseData['rajaongkir']['results']];
+            }
+
+            if (isset($responseData['data'])) {
+                return ['data' => $responseData['data']];
+            }
+
+            return ['data' => []];
+        } catch (\Exception $e) {
+            Log::error('RajaOngkir Service Exception: ' . $e->getMessage(), [
+                'type' => $type,
+                'parentId' => $parentId
+            ]);
+            return ['data' => []];
         }
-
-        return ['data' => []];
     }
 
     public static function getShippingCost($origin, $destination, $weight, $courier): array
@@ -39,33 +64,39 @@ class RajaOngkirService
         try {
             $response = Http::withHeaders([
                 'key' => $apiKey,
-            ])->post($baseUrl . '/cost', [
+            ])->post($baseUrl . '/calculate/district/domestic-cost', [
+                'origin' => $origin,
+                'destination' => $destination,
+                'weight' => $weight,
+                'courier' => $courier,
+                'price' => 'lowest', // Ensure we get sorted by lowest price
+            ]);
+
+            Log::debug('RajaOngkir Shipping Cost Request:', [
                 'origin' => $origin,
                 'destination' => $destination,
                 'weight' => $weight,
                 'courier' => $courier,
             ]);
 
-            Log::debug('RajaOngkir RAW Response:', $response->json());
-
             if (!$response->successful()) {
-                throw new \Exception($response->json()['rajaongkir']['status']['description'] ?? 'API Error');
+                $error = $response->json();
+                throw new \Exception($error['message'] ?? $error['rajaongkir']['status']['description'] ?? 'API Error');
             }
 
-            $data = $response->json()['rajaongkir'];
+            $data = $response->json();
 
-            // Validasi response structure
-            if (!isset($data['results'][0]['costs'])) {
+            // Validate response structure
+            if (!isset($data['data']) || !is_array($data['data'])) {
                 throw new \Exception('Invalid API response structure');
             }
 
             return [
-                'data' => $data['results'],
-                'origin_details' => $data['origin_details'] ?? null,
-                'destination_details' => $data['destination_details'] ?? null,
+                'data' => $data['data'],
+                'meta' => $data['meta'] ?? null,
             ];
         } catch (\Exception $e) {
-            Log::error('RajaOngkir Error: ' . $e->getMessage());
+            Log::error('RajaOngkir Shipping Cost Error: ' . $e->getMessage());
             throw $e;
         }
     }

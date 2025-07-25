@@ -37,8 +37,8 @@ return [
 
     'rajaongkir' => [
         'key' => env('RAJAONGKIR_API_KEY'),
-        'base_url' => env('RAJAONGKIR_BASE_URL', 'https://api.rajaongkir.com/starter'),
-        'origin_city' => env('RAJAONGKIR_ORIGIN_CITY', '78'),
+        'base_url' => env('RAJAONGKIR_BASE_URL', 'https://rajaongkir.komerce.id/api/v1'),
+        'origin_subdistrict' => env('RAJAONGKIR_ORIGIN_SUBDISTRICT'),
     ],
 
 ];
