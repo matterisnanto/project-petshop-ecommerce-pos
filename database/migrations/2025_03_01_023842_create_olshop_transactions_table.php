@@ -22,7 +22,7 @@ return new class extends Migration
             $table->decimal('grand_total_amount', 8);
             $table->string('province', 50);
             $table->string('city_regency', 50);
-            $table->string('post_code', 10);
+            $table->integer('post_code', 10);
             $table->text('complete_address');
             $table->boolean('is_paid')->default(false);
             $table->string('trx_id', 50)->unique();

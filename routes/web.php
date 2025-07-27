@@ -17,9 +17,10 @@ use App\Livewire\ShoppingCart;
 use App\Exports\TemplateExport;
 use App\Livewire\AnimalsDetail;
 use App\Livewire\ProductDetail;
-use App\Livewire\OrderConfirmation;
 use App\Livewire\PolicyandPrivacy;
+use App\Livewire\OrderConfirmation;
 use App\Livewire\TermsandConditions;
+use Illuminate\Support\Facades\Http;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Route;
 
@@ -37,7 +38,7 @@ Route::get('/shopping-cart', ShoppingCart::class)->name('shoppingcart');
 
 Route::get('/shopping-cart/checkout', Checkout::class)->name('checkout');
 
-Route::get('/detail_order-confirmation/{transaction_id}', OrderConfirmation::class)->name('detail_order-confirmation');
+Route::get('/order-confirmation/{transaction_id}', OrderConfirmation::class)->name('order-confirmation');
 
 Route::get('/pet-grooming', PetGrooming::class)->name('pet-grooming');
 
@@ -69,3 +70,21 @@ Route::get('/pos/receipt/{transaction}', [Pos::class, 'downloadReceipt'])
 Route::get('/download-template', function () {
     return Excel::download(new TemplateExport, 'templateProduct.xlsx');
 })->name('download-template');
+
+Route::get('/test-komerce-api', function () {
+    $apiKey = config('services.komerce.api_key');
+    $keyword = 'BOJONG GEDE';
+
+    $response = Http::withHeaders([
+        'x-api-key' => $apiKey,
+    ])->get('https://api-sandbox.collaborator.komerce.id/tariff/api/v1/destination/search', [
+        'keyword' => $keyword
+    ]);
+
+    return [
+        'status' => $response->status(),
+        'response' => $response->json(),
+        'api_key_used' => $apiKey ? '****' . substr($apiKey, -4) : 'null',
+        'headers_sent' => ['x-api-key' => '****' . substr($apiKey, -4)]
+    ];
+});

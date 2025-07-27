@@ -54,14 +54,11 @@
                                     <div class="sm:col-span-2">
                                         <label for="your_name"
                                             class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">
-                                            Name</label>
-                                        <input type="text" id="your_name" wire:model.blur="name"
-                                            {{-- wire:keydown.debounce.500ms="saveField('name')" --}}
+                                            Name
+                                        </label>
+                                        <input type="text" id="your_name" wire:model.live="name"
                                             class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500"
                                             placeholder="James Bowen" required />
-                                        @error('name')
-                                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                        @enderror
                                     </div>
 
                                     <!-- Phone Field -->
@@ -96,16 +93,13 @@
                                                 +62
                                             </button>
                                             <div class="relative w-full">
-                                                <input type="text" id="phone-input" wire:model.blur="phone"
-                                                    {{-- wire:keydown.debounce.500ms="saveField('phone')" --}}
+                                                <input type="text" id="phone-input" wire:model.live="phone"
                                                     class="z-20 block w-full rounded-e-lg border border-s-0 border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:border-s-gray-700 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500"
                                                     placeholder="123-456-7890" required />
                                             </div>
                                         </div>
-                                        @error('phone')
-                                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                        @enderror
                                     </div>
+
 
                                     <!-- Email Field -->
                                     <div>
@@ -113,13 +107,9 @@
                                             class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">
                                             Email
                                         </label>
-                                        <input type="email" id="your_email" wire:model.blur="email"
-                                            {{-- wire:keydown.debounce.500ms="saveField('email')" --}}
+                                        <input type="email" id="your_email" wire:model.live="email"
                                             class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500"
                                             placeholder="jamesbowen@mail.com" required />
-                                        @error('email')
-                                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                        @enderror
                                     </div>
 
                                     <!-- Address Fields -->
@@ -184,14 +174,10 @@
                                             class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">
                                             Complete Address
                                         </label>
-                                        <input type="text" id="detail-address" wire:model.blur="complete_address"
-                                            {{-- wire:keydown.debounce.500ms="saveField('complete_address')" --}}
+                                        <input type="text" id="detail-address"
                                             class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500"
                                             placeholder="Example : 8-11 Islington Grn, London N1 2XR, United Kingdom"
                                             required />
-                                        @error('complete_address')
-                                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                        @enderror
                                     </div>
                                 </div>
                             </div>
@@ -210,25 +196,13 @@
                                             Courier
                                         </label>
                                     </div>
-                                    <select id="select-courier" wire:model="selectedCourier"
-                                        wire:change="onUpdatedSelectedCourier"
+                                    <select id="select-courier" wire:model.live="selectedCourier"
                                         class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500">
                                         <option value="">Select Courier</option>
                                         <option value="jne">JNE</option>
-                                        <option value="sicepat">SiCepat</option>
-                                        <option value="jnt">JNT</option>
-                                        <option value="ninja">Ninja Express</option>
                                         <option value="tiki">TIKI</option>
-                                        <option value="lion">Lion Parcel</option>
-                                        <option value="anteraja">Anteraja</option>
                                         <option value="pos">POS Indonesia</option>
-                                        <option value="rpx">RPX</option>
                                     </select>
-                                    @error('selectedCourier')
-                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                    @enderror
-
-
                                 </div>
                                 <div class="mb-2 flex items-center gap-2">
                                     <label for="shipping-service"
@@ -236,62 +210,18 @@
                                         Shipping Service
                                     </label>
                                 </div>
-                                @if (empty($shippingServices))
-                                    <div class="flex flex-col items-center justify-center">
-                                        <img class="h-30 sm:h-48 w-auto" src="{{ asset('img/cat-on-box.png') }}"
-                                            alt="No courier selected">
-                                        <h1
-                                            class="mt-2 sm:mt-4 text-lg sm:text-2xl font-bold text-gray-800 dark:text-gray-200">
-                                            No Courier
-                                            Selected Yet</h1>
-                                        <p class="sm:mt-2 text-sm sm:text-xl text-gray-600 dark:text-gray-400">Please
-                                            select a
-                                            courier to see
-                                            available shipping options</p>
-                                        <p wire:loading wire:target="selectedCourier"
-                                            class="sm:mt-2 text-sm sm:text-xl text-gray-600 dark:text-gray-400">
-                                            Loading Shipping Service...</p>
-                                    </div>
-                                @else
-                                    <div wire:loading wire:target="selectedCourier" class="text-sm text-gray-500">
-                                        Loading Shipping Service...
-                                    </div>
-                                @endif
-                                <div id="select-shipping-service" class="grid grid-cols-1 gap-4 md:grid-cols-3">
-                                    @foreach ($shippingServices as $index => $service)
-                                        <div
-                                            class="rounded-lg border border-gray-200 bg-gray-50 p-4 ps-4 dark:border-gray-700 dark:bg-gray-800">
-                                            <div class="flex items-start">
-                                                <div class="flex h-5 items-center">
-                                                    <input id="service-{{ $index }}"
-                                                        wire:model="selectedService" value="{{ $index }}"
-                                                        wire:change="onUpdatedSelectedService('{{ $index }}')"
-                                                        type="radio" name="delivery-method"
-                                                        class="h-4 w-4 border-gray-300 bg-white text-primary-600 focus:ring-2 focus:ring-primary-600 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-primary-600" />
-                                                </div>
-                                                <div class="ms-4 text-sm">
-                                                    <label for="service-{{ $index }}"
-                                                        class="font-medium leading-none text-gray-900 dark:text-white">
-                                                        {{ $service['service'] }}
-                                                    </label>
-                                                    <p
-                                                        class="mt-1 text-xs font-normal text-gray-500 dark:text-gray-400">
-                                                        {{ $service['description'] }}
-                                                    </p>
-                                                    <p class="mt-1 text-sm font-medium text-gray-900 dark:text-white">
-                                                        {{ format_currency($service['cost']) }}
-                                                        <span class="text-xs text-gray-500 dark:text-gray-400">
-                                                            (ETA: {{ $service['etd'] }})
-                                                        </span>
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endforeach
+                                <div class="flex flex-col items-center justify-center">
+                                    <img class="h-30 sm:h-48 w-auto" src="{{ asset('img/cat-on-box.png') }}"
+                                        alt="No courier selected">
+                                    <h1
+                                        class="mt-2 sm:mt-4 text-lg sm:text-2xl font-bold text-gray-800 dark:text-gray-200">
+                                        No Courier Selected Yet</h1>
+                                    <p class="sm:mt-2 text-sm sm:text-xl text-gray-600 dark:text-gray-400">Please
+                                        select a courier to see available shipping options</p>
                                 </div>
-                                @error('selectedService')
-                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                @enderror
+                                <div id="select-shipping-service" wire:model.live="selectedShippingService"
+                                    class="grid grid-cols-1 gap-4 md:grid-cols-3">
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -322,7 +252,7 @@
                                     <dt class="text-base font-normal text-gray-500 dark:text-gray-400">Shipping cost
                                     </dt>
                                     <dd class="text-base font-medium text-gray-900 dark:text-white">
-                                        {{ format_currency($this->shippingCost) }}</dd>
+                                        Rp0</dd>
                                 </dl>
                             </div>
 
@@ -330,22 +260,14 @@
                                 class="flex items-center justify-between gap-4 border-t border-gray-200 pt-2 dark:border-gray-700">
                                 <dt class="text-base font-bold text-gray-900 dark:text-white">Total</dt>
                                 <dd class="text-base font-bold text-gray-900 dark:text-white">
-                                    {{ format_currency($this->total) }}</dd>
+                                    Rp0</dd>
                             </dl>
                         </div>
-
-
                     </div>
                     <div
                         class="space-y-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 sm:p-6">
                         <p class="text-xl font-semibold text-gray-900 dark:text-white">Payment</p>
                         <div>
-                            <div class="mb-2 flex items-center gap-2">
-                                <label for="select-payment-method"
-                                    class="block text-sm font-medium text-gray-900 dark:text-white">
-                                    Payment Method
-                                </label>
-                            </div>
                             <select id="select-payment-method" wire:model="selectedPaymentMethod"
                                 wire:change="onPaymentMethodSelected($event.target.value)"
                                 class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500">
@@ -367,15 +289,6 @@
                                 class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500"
                                 value="{{ $accountNumber }}" />
                         </div>
-                        {{-- <div>
-                            <label for="total_paid"
-                                class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">
-                                Amount to be transferred
-                            </label>
-                            <input id="total_paid" readonly
-                                class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500"
-                                placeholder="{{ format_currency($this->total) }}" />
-                        </div> --}}
                         <div>
                             <label for="total_paid"
                                 class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">
@@ -384,13 +297,12 @@
                             <div class="flex items-center">
                                 <label
                                     class="z-10 inline-flex shrink-0 items-center rounded-s-lg border border-gray-300 bg-gray-100 px-4 py-2.5 text-center text-sm font-medium text-gray-900 hover:bg-gray-200 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-700">
-
                                     Rp
                                 </label>
                                 <div class="relative w-full">
-                                    <input type="text" id="total_paid" readonly
+                                    <input type="text" id="total_paid"
                                         class="z-20 block w-full rounded-e-lg border border-s-0 border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:border-s-gray-700 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500"
-                                        placeholder="{{ number_format($this->total, 0, ',', '.') }}" required />
+                                        placeholder="0" required />
                                 </div>
                             </div>
                         </div>
@@ -402,78 +314,31 @@
                                 <label for="dropzone-file"
                                     class="dark:hover:bg-bray-800 flex h-64 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:border-gray-500 dark:hover:bg-gray-600">
                                     <div class="flex flex-col items-center justify-center pb-6 pt-5">
-                                        @if ($paymentProofPath)
-                                            <img src="{{ Storage::url($paymentProofPath) }}"
-                                                alt="Payment proof preview" class="mb-4 h-32 object-contain">
-                                            <p class="mb-2 text-sm text-gray-500 dark:text-gray-400">
-                                                <span class="font-semibold">Payment proof uploaded</span>
-                                            </p>
-                                            <p class="text-xs text-gray-500 dark:text-gray-400">Click to change</p>
-                                        @else
-                                            <svg class="mb-4 h-8 w-8 text-gray-500 dark:text-gray-400"
-                                                aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                                viewBox="0 0 20 16">
-                                                <path stroke="currentColor" stroke-linecap="round"
-                                                    stroke-linejoin="round" stroke-width="2"
-                                                    d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2" />
-                                            </svg>
-                                            <p class="mb-2 text-sm text-gray-500 dark:text-gray-400">
-                                                <span class="font-semibold">Click to upload</span> or drag and drop
-                                            </p>
-                                            <p class="text-xs text-gray-500 dark:text-gray-400">
-                                                PNG, JPG (MAX. 2MB)
-                                            </p>
-                                        @endif
+                                        <svg class="mb-4 h-8 w-8 text-gray-500 dark:text-gray-400" aria-hidden="true"
+                                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                                            <path stroke="currentColor" stroke-linecap="round"
+                                                stroke-linejoin="round" stroke-width="2"
+                                                d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2" />
+                                        </svg>
+                                        <p class="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                                            <span class="font-semibold">Click to upload</span> or drag and drop
+                                        </p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400">
+                                            PNG, JPG (MAX. 2MB)
+                                        </p>
                                     </div>
-                                    <input id="dropzone-file" type="file" class="hidden"
-                                        wire:model="paymentProof" accept="image/*" />
+                                    <input id="dropzone-file" wire:model.live="paymentProofPath" type="file"
+                                        class="hidden" accept="image/*" />
                                 </label>
                             </div>
-
-                            @error('paymentProof')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-
-                            @if ($isUploading)
-                                <div class="mt-2 text-sm text-blue-600">Uploading payment proof...</div>
-                            @endif
-
-                            @if (session('payment_upload_success'))
-                                <div class="mt-2 text-sm text-green-600">{{ session('payment_upload_success') }}</div>
-                            @endif
-
-                            @if (session('payment_upload_error'))
-                                <div class="mt-2 text-sm text-red-600">{{ session('payment_upload_error') }}</div>
-                            @endif
                         </div>
-                        {{-- <div class="g-recaptcha" data-sitekey="6LciExQrAAAAAJDe051H5IMiz2Po0cm-I2yCSQgR"></div>
-                        @error('g-recaptcha-response')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                        @enderror --}}
-                        <button wire:click="proceedOrder" wire:loading.attr="disabled"
-                            onclick="event.preventDefault()"
+                        <button onclick="event.preventDefault()"
                             class="mt-4 flex w-full items-center justify-center rounded-lg bg-primary-500 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-600 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
-                            <span wire:loading.remove>Proceed Order</span>
-                            <span wire:loading>
-                                Processing...
-                            </span>
+                            <span>Proceed Order</span>
                         </button>
-                        @error('order_error')
-                            <div class="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg">
-                                Order processing failed: {{ $message }}
-                                <br>Please try again or contact support.
-                            </div>
-                        @enderror
                     </div>
                 </div>
             </div>
         </form>
     </section>
-    {{-- <script>
-        document.addEventListener('livewire:init', () => {
-            Livewire.on('postalCodeUpdated', (postalCode) => {
-                // Lakukan sesuatu dengan postalCode jika diperlukan
-            });
-        });
-    </script> --}}
 </div>

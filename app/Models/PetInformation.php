@@ -9,7 +9,7 @@ class PetInformation extends Model
 {
     protected $table = 'pet_information';
     //
-    protected $fillable = ['order_id', 'name', 'category_animals_id', 'age', 'photo', 'description', 'check_in', 'check_out', 'days'];
+    protected $fillable = ['detail_order_id', 'name', 'category_animals_id', 'age', 'photo', 'description', 'check_in', 'check_out', 'days'];
 
     public function detail_order()
     {

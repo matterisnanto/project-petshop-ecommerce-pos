@@ -346,7 +346,7 @@ class Pos extends Component implements HasForms
             session()->put('orderItems', $this->order_items);
             $this->calculateTotal();
             Notification::make()
-                ->title('Grooming service added to detail_order')
+                ->title('Grooming service added to order')
                 ->success()
                 ->send();
         }
@@ -385,7 +385,7 @@ class Pos extends Component implements HasForms
             session()->put('orderItems', $this->order_items);
             $this->calculateTotal();
             Notification::make()
-                ->title('Hotel service added to detail_order')
+                ->title('Hotel service added to order')
                 ->success()
                 ->send();
         }
@@ -408,7 +408,7 @@ class Pos extends Component implements HasForms
             session()->put('orderItems', $this->order_items);
             $this->calculateTotal();
             Notification::make()
-                ->title('Breeding service added to detail_order')
+                ->title('Breeding service added to order')
                 ->success()
                 ->send();
         }

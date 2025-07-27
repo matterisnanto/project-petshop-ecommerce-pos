@@ -48,7 +48,7 @@ class PetInformationResource extends Resource
             ->schema([
                 Forms\Components\Section::make('Order Information')
                     ->schema([
-                        Forms\Components\Select::make('order_id')
+                        Forms\Components\Select::make('detail_order_id')
                             ->label('Order')
                             ->relationship(
                                 name: 'detail_order',

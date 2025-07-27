@@ -13,7 +13,6 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Session;
 
-
 #[Title('Checkout - Cindy Petshop')]
 class Checkout extends Component
 {
@@ -29,12 +28,14 @@ class Checkout extends Component
     public $appliedPromoCode = null;
 
     // Address fields
-    public $provinces = [];
-    public $cities = [];
+    public $address = null;
+    public $addressSearchQuery = '';
+    public $addressSearchResults = [];
+    public $showAddressDropdown = false;
+    public $isSearching = false;
+    public $destinationId = null;
     public $shippingServices = [];
 
-    public $selectedProvince = null;
-    public $selectedCity = null;
     public $selectedCourier = null;
     public $selectedService = null;
 
@@ -55,10 +56,9 @@ class Checkout extends Component
     protected $rules = [
         'name' => 'required|string|max:255',
         'email' => 'required|email|max:255',
-        'phone' => 'required|string|max:20',
+        'phone' => 'required|string|max:20|regex:/^[0-9]{10,13}$/',
         'complete_address' => 'required|string|max:500',
-        'selectedProvince' => 'required',
-        'selectedCity' => 'required',
+        'address' => 'required|json',
         'selectedCourier' => 'required',
         'selectedService' => 'required',
         'selectedPaymentMethod' => 'required',
@@ -72,30 +72,41 @@ class Checkout extends Component
         'phone.required' => 'Phone number is required.',
         'phone.regex' => 'Phone number must be 10-13 digits.',
         'complete_address.required' => 'Complete address is required.',
-        'selectedProvince.required' => 'Please select a province.',
-        'selectedCity.required' => 'Please select a city/regency.',
+        'address.required' => 'Please select an address from the dropdown.',
         'selectedCourier.required' => 'Please select a courier.',
         'selectedService.required' => 'Please select a shipping service.',
-        'selectedPaymentMethod.required' => 'Please select a payment method.'
+        'selectedPaymentMethod.required' => 'Please select a payment method.',
+        'paymentProof.required' => 'Payment proof is required.',
+        'paymentProof.image' => 'Payment proof must be an image.',
+        'paymentProof.max' => 'Payment proof must not exceed 2MB.'
     ];
 
     public function mount()
     {
         $this->checkPreviousUrl();
         $this->loadCartData();
-
-        // Jika tidak ada checkout_data, reset shipping cost
-        if (!Session::has('checkout_data')) {
-            $this->shippingCost = 0;
-            $this->selectedService = null;
-            $this->shippingServices = [];
-            $this->updateCartTotalsWithShipping(0);
-        }
-
         $this->loadSavedFormData();
-        $this->loadDependentData();
-        $this->loadProvinces();
         $this->loadPaymentMethods();
+
+        // Initialize address if already in session
+        if (Session::has('checkout_data.address')) {
+            $this->address = Session::get('checkout_data.address');
+            $this->parseAddressFromSession();
+        }
+    }
+
+    protected function parseAddressFromSession()
+    {
+        try {
+            $addressData = json_decode($this->address, true);
+            if ($addressData) {
+                $this->destinationId = $addressData['destination_id'] ?? null;
+                $this->postalCode = $addressData['post_code'] ?? '';
+                $this->addressSearchQuery = $this->getAddressLabel($this->address);
+            }
+        } catch (\Exception $e) {
+            Log::error('Error parsing address from session: ' . $e->getMessage());
+        }
     }
 
     protected function checkPreviousUrl()
@@ -103,10 +114,7 @@ class Checkout extends Component
         $previousUrl = url()->previous();
         $currentUrl = url()->current();
 
-        if (
-            !$previousUrl || $previousUrl === route('shoppingcart') ||
-            !str_contains($previousUrl, '/shopping-cart/checkout')
-        ) {
+        if (!$previousUrl || $previousUrl === route('shoppingcart') || !str_contains($previousUrl, '/shopping-cart/checkout')) {
             Session::forget('checkout_data');
         }
     }
@@ -116,18 +124,19 @@ class Checkout extends Component
         $this->cartItems = Session::get('cart', []);
         $cartTotals = Session::get('cart_totals', []);
 
-        // Jangan load shipping_cost jika checkout_data tidak ada
-        $checkoutData = Session::get('checkout_data', []);
-        if (empty($checkoutData)) {
-            unset($cartTotals['shipping_cost']);
-        }
-
         $this->subtotal = $cartTotals['subtotal'] ?? 0;
         $this->savings = $cartTotals['savings'] ?? 0;
         $this->appliedPromoCode = $cartTotals['appliedPromoCode'] ?? null;
-        $this->totalWeight = $cartTotals['totalWeight'] ?? 0;
+        $this->totalWeight = max(1, $cartTotals['totalWeight'] ?? 0); // Ensure minimum weight of 1 gram
         $this->itemCount = $cartTotals['itemCount'] ?? 0;
-        $this->shippingCost = $cartTotals['shipping_cost'] ?? 0;
+
+        // Only load shipping cost if checkout data exists
+        if (Session::has('checkout_data')) {
+            $this->shippingCost = $cartTotals['shipping_cost'] ?? 0;
+        } else {
+            $this->shippingCost = 0;
+        }
+
         $this->total = $cartTotals['total'] ?? $this->subtotal;
     }
 
@@ -140,149 +149,119 @@ class Checkout extends Component
                 $this->$key = $value;
             }
         }
-    }
 
-    protected function loadDependentData()
-    {
-        if ($this->selectedProvince && empty($this->cities)) {
-            $this->loadCities();
-        }
-
-        if ($this->selectedCity && empty($this->postalCode)) {
-            $this->loadPostalCode($this->selectedCity);
-        }
-
-        if ($this->selectedCourier && $this->selectedCity && empty($this->shippingServices)) {
+        // Load shipping services if courier and destination are set
+        if ($this->selectedCourier && $this->destinationId) {
             $this->getShippingCosts();
         }
-
-        if ($this->selectedPaymentMethod && empty($this->accountNumber)) {
-            $this->onPaymentMethodSelected($this->selectedPaymentMethod);
-        }
-
-        if (isset($checkoutData['selectedServiceDetails'])) {
-            $this->shippingCost = $checkoutData['selectedServiceDetails']['cost'];
-            $this->updateCartTotalsWithShipping($this->shippingCost);
-        }
     }
 
-
-    public function loadProvinces()
+    public function updatedAddressSearchQuery($value)
     {
-        try {
-            $apiKey = config('services.rajaongkir.key');
-
-            // Validasi khusus paket starter
-            if (strpos(config('services.rajaongkir.base_url'), 'starter') === false) {
-                throw new \Exception('Base URL harus mengarah ke paket starter');
-            }
-
-            $response = Http::withHeaders([
-                'key' => $apiKey
-            ])->get('https://api.rajaongkir.com/starter/province');
-
-            // Debugging response
-            Log::debug('RajaOngkir Response:', [
-                'status' => $response->status(),
-                'body' => $response->body()
-            ]);
-
-            if ($response->status() === 401) {
-                throw new \Exception('API Key tidak valid untuk paket starter');
-            }
-
-            if ($response->status() === 404) {
-                throw new \Exception('Pastikan menggunakan endpoint /starter/');
-            }
-
-            $data = $response->json();
-
-            if (!isset($data['rajaongkir']['results'])) {
-                throw new \Exception('Format response tidak sesuai paket starter');
-            }
-
-            $this->provinces = $data['rajaongkir']['results'];
-        } catch (\Exception $e) {
-            $errorMsg = 'Paket Starter Error: ' . $e->getMessage();
-            Log::error($errorMsg);
-            session()->flash('error', $errorMsg);
-            $this->provinces = [];
-        }
-    }
-
-    public function loadCities()
-    {
-        $this->reset(['cities', 'selectedCity', 'postalCode', 'selectedCourier', 'shippingServices']);
-
-        if (empty($this->selectedProvince)) {
+        if (strlen($value) < 3) {
+            $this->addressSearchResults = [];
+            $this->showAddressDropdown = true;
+            $this->isSearching = false;
             return;
         }
 
-        try {
-            $response = Http::withHeaders([
-                'key' => config('services.rajaongkir.key')
-            ])->get('https://api.rajaongkir.com/starter/city', [
-                'province' => $this->selectedProvince
-            ]);
+        $this->isSearching = true;
+        $this->showAddressDropdown = true;
 
-            if ($response->successful()) {
-                $data = $response->json();
-                $this->cities = $data['rajaongkir']['results'] ?? [];
-                $this->saveFormData(); // Save after loading cities
+        try {
+            $this->addressSearchResults = $this->getAddressSearchResults($value);
+        } catch (\Exception $e) {
+            Log::error('Address search error: ' . $e->getMessage());
+            $this->addressSearchResults = [];
+            session()->flash('error', 'Failed to search addresses. Please try again.');
+        } finally {
+            $this->isSearching = false;
+        }
+    }
+
+    public function selectAddress($addressJson)
+    {
+        $this->address = $addressJson;
+        $this->addressSearchQuery = $this->getAddressLabel($addressJson);
+        $this->showAddressDropdown = false;
+
+        try {
+            $addressData = json_decode($addressJson, true);
+            if (!isset($addressData['destination_id'])) {
+                throw new \Exception('Invalid address data - missing destination_id');
+            }
+            $this->destinationId = $addressData['destination_id'] ?? null;
+            $this->postalCode = $addressData['post_code'] ?? '';
+            Log::debug('Selected address data', $addressData);
+
+            $this->saveFormData();
+
+            // If courier is already selected, get shipping costs
+            if ($this->selectedCourier) {
+                $this->getShippingCosts();
             }
         } catch (\Exception $e) {
-            Log::error('Error loading cities: ' . $e->getMessage());
-            $this->cities = [];
+            Log::error('Address selection error: ' . $e->getMessage());
+            session()->flash('error', 'Failed to select address. Please try again.');
         }
     }
 
-    public function updatedSelectedCity($cityId)
-    {
-        if (!$cityId) {
-            $this->postalCode = '';
-            return;
-        }
-
-        // Cari postal code dari data kota yang sudah dimuat
-        foreach ($this->cities as $city) {
-            if ($city['city_id'] == $cityId) {
-                $this->postalCode = $city['postal_code'] ?? '';
-                return;
-            }
-        }
-
-        // Jika tidak ditemukan, ambil dari API
-        $this->fetchPostalCodeFromApi($cityId);
-    }
-
-    protected function fetchPostalCodeFromApi($cityId)
+    protected function getAddressLabel($addressJson)
     {
         try {
-            $response = Http::withHeaders([
-                'key' => config('services.rajaongkir.key')
-            ])->get('https://api.rajaongkir.com/starter/city', [
-                'id' => $cityId
-            ]);
-
-            if ($response->successful()) {
-                $data = $response->json();
-                $city = $data['rajaongkir']['results'] ?? null;
-
-                if ($city && isset($city['postal_code'])) {
-                    $this->postalCode = $city['postal_code'];
-                }
-            }
+            $addressData = json_decode($addressJson, true);
+            return implode(', ', array_filter([
+                $addressData['subdistrict_name'] ?? $addressData['subdistrict'] ?? null,
+                $addressData['district_name'] ?? $addressData['district'] ?? null,
+                $addressData['city_name'] ?? $addressData['city'] ?? null,
+                $addressData['province_name'] ?? $addressData['province'] ?? null
+            ]));
         } catch (\Exception $e) {
-            Log::error("Error fetching postal code: " . $e->getMessage());
+            Log::error('Error getting address label: ' . $e->getMessage());
+            return '';
         }
     }
 
-    public function loadPostalCode($cityId)
+    protected function getAddressSearchResults($search)
     {
-        $this->selectedCity = $cityId;
-        $this->saveFormData(); // Save after updating city
+        $apiKey = config('services.komerce.x_api_key');
+        if (empty($apiKey)) {
+            throw new \Exception('Komerce API key not configured');
+        }
 
-        // Rest of the method remains the same...
+        $response = Http::withHeaders([
+            'x-api-key' => $apiKey,
+        ])->get('https://api-sandbox.collaborator.komerce.id/tariff/api/v1/destination/search', [
+            'keyword' => $search
+        ]);
+
+        if (!$response->successful()) {
+            throw new \Exception('Address search failed with status: ' . $response->status());
+        }
+
+        $data = $response->json()['data'] ?? [];
+
+        return collect($data)
+            ->mapWithKeys(function ($item) {
+                $label = implode(', ', array_filter([
+                    $item['subdistrict_name'] ?? null,
+                    $item['district_name'] ?? null,
+                    $item['city_name'] ?? null,
+                    $item['province_name'] ?? null
+                ]));
+
+                $value = json_encode([
+                    'subdistrict' => $item['subdistrict_name'] ?? null,
+                    'district' => $item['district_name'] ?? null,
+                    'city' => $item['city_name'] ?? null,
+                    'province' => $item['province_name'] ?? null,
+                    'post_code' => $item['zip_code'] ?? null,
+                    'destination_id' => $item['id'] ?? null,
+                ]);
+
+                return [$value => $label];
+            })
+            ->toArray();
     }
 
     public function onUpdatedSelectedCourier()
@@ -292,43 +271,82 @@ class Checkout extends Component
 
     public function getShippingCosts()
     {
-        $this->shippingServices = [];
-        $this->selectedService = null;
-        $this->shippingCost = 0;
+        $this->reset(['shippingServices', 'selectedService', 'shippingCost']);
 
-        if (empty($this->selectedCity) || empty($this->selectedCourier)) {
+        if (empty($this->destinationId)) {
+            Log::error('Destination ID is empty');
             return;
         }
 
-        // Ensure minimum weight of 1 gram
-        $weight = max(1, $this->totalWeight);
+        if (empty($this->selectedCourier)) {
+            Log::error('No courier selected');
+            return;
+        }
 
         try {
-            $response = Http::withHeaders([
-                'key' => config('services.rajaongkir.key')
-            ])->post(config('services.rajaongkir.base_url') . '/cost', [
-                'origin' => config('services.rajaongkir.origin_city'),
-                'destination' => $this->selectedCity,
-                'weight' => $weight,
-                'courier' => $this->selectedCourier
+            $apiKey = config('services.rajaongkir.key');
+            $response = Http::asForm()->withHeaders([
+                'key' => $apiKey,
+            ])->post('https://rajaongkir.komerce.id/api/v1/calculate/domestic-cost', [
+                'origin' => config('services.rajaongkir.origin_subdistrict'),
+                'destination' => $this->destinationId,
+                'weight' => $this->totalWeight,
+                'courier' => $this->selectedCourier,
+                'price' => 'lowest'
             ]);
 
-            if ($response->successful()) {
-                $data = $response->json();
-                Log::debug('Shipping API Response:', $data);
+            if (!$response->successful()) {
+                Log::error('Shipping API failed', [
+                    'status' => $response->status(),
+                    'response' => $response->body(),
+                    'request' => [
+                        'origin' => config('services.rajaongkir.origin_subdistrict'),
+                        'destination' => $this->destinationId,
+                        'weight' => $this->totalWeight,
+                        'courier' => $this->selectedCourier
+                    ]
+                ]);
+                throw new \Exception('Shipping API failed with status: ' . $response->status());
+            }
 
-                if (isset($data['rajaongkir']['results'][0]['costs'])) {
-                    $this->shippingServices = $data['rajaongkir']['results'][0]['costs'];
-                } else {
-                    session()->flash('error', 'No shipping options available for this destination');
+            $data = $response->json();
+
+            if (isset($data['data'])) {
+                $this->formatShippingServices($data['data']);
+
+                // If there's a previously selected service in session, try to reselect it
+                $checkoutData = Session::get('checkout_data', []);
+                if (
+                    isset($checkoutData['selectedService']) &&
+                    isset($this->shippingServices[$checkoutData['selectedService']])
+                ) {
+                    $this->onUpdatedSelectedService($checkoutData['selectedService']);
                 }
             } else {
-                session()->flash('error', 'Failed to get shipping options: ' . $response->status());
+                session()->flash('error', 'No shipping options available for this destination');
             }
         } catch (\Exception $e) {
             Log::error("Error fetching shipping costs: " . $e->getMessage());
             session()->flash('error', 'Failed to load shipping options. Please try again.');
         }
+    }
+
+    protected function formatShippingServices($services)
+    {
+        $formattedServices = [];
+
+        foreach ($services as $service) {
+            $key = strtolower($service['code'] . '_' . str_replace(' ', '_', $service['service']));
+            $formattedServices[$key] = [
+                'code' => $service['code'],
+                'service' => $service['service'],
+                'description' => $service['description'],
+                'cost' => $service['cost'],
+                'etd' => $service['etd']
+            ];
+        }
+
+        $this->shippingServices = $formattedServices;
     }
 
     public function onUpdatedSelectedService($serviceKey)
@@ -338,7 +356,7 @@ class Checkout extends Component
         }
 
         $service = $this->shippingServices[$serviceKey];
-        $this->shippingCost = $service['cost'][0]['value'];
+        $this->shippingCost = $service['cost'];
         $this->selectedService = $serviceKey;
 
         $this->saveShippingServiceToSession($serviceKey);
@@ -352,13 +370,13 @@ class Checkout extends Component
         $serviceDetails = [
             'selectedService' => $serviceKey,
             'selectedServiceDetails' => [
-                'courier' => $this->selectedCourier,
+                'courier' => $service['code'],
                 'service' => $service['service'],
                 'description' => $service['description'],
-                'cost' => $service['cost'][0]['value'],
-                'etd' => $service['cost'][0]['etd']
+                'cost' => $service['cost'],  // Direct value access
+                'etd' => $service['etd']    // Direct value access
             ],
-            'shippingCost' => $service['cost'][0]['value']
+            'shippingCost' => $service['cost']  // Direct value access
         ];
 
         $checkoutData = Session::get('checkout_data', []);
@@ -380,7 +398,6 @@ class Checkout extends Component
         $this->total = $cartTotals['total'];
     }
 
-
     public function loadPaymentMethods()
     {
         $this->paymentMethods = PaymentMethod::where('olshop_transaction', true)->get();
@@ -397,63 +414,21 @@ class Checkout extends Component
             }
         }
 
-        $this->saveFormData(); // Save after updating payment method
+        $this->saveFormData();
     }
 
     public function updated($propertyName)
     {
         $this->validateOnly($propertyName);
-        $this->saveFormData();
 
         // Special handling for certain properties
-        if ($propertyName === 'selectedProvince') {
-            $this->loadCities();
-        } elseif ($propertyName === 'selectedCity') {
-            $this->loadPostalCode($this->selectedCity);
-        } elseif ($propertyName === 'selectedCourier') {
+        if ($propertyName === 'selectedCourier' && $this->destinationId) {
             $this->getShippingCosts();
         } elseif ($propertyName === 'selectedPaymentMethod') {
             $this->onPaymentMethodSelected($this->selectedPaymentMethod);
         }
 
-        // Recalculate totals when relevant fields change
-        // if (in_array($propertyName, ['selectedService', 'selectedPaymentMethod'])) {
-        //     $this->calculateTotals();
-        // }
-    }
-
-    public function saveField($field)
-    {
-        $this->validateOnly($field);
-        $this->persistFieldToSession($field, $this->$field);
-    }
-    public function updatedName($value)
-    {
-        $this->validateOnly('name');
-        $this->persistFieldToSession('name', $value);
-    }
-
-    public function updatedPhone($value)
-    {
-        $this->validateOnly('phone');
-        $this->persistFieldToSession('phone', $value);
-    }
-    public function updatedEmail($value)
-    {
-        $this->validateOnly('email');
-        $this->persistFieldToSession('email', $value);
-    }
-    public function updatedCompleteAddress($value)
-    {
-        $this->validateOnly('complete_address');
-        $this->persistFieldToSession('complete_address', $value);
-    }
-
-    protected function persistFieldToSession($field, $value)
-    {
-        $checkoutData = Session::get('checkout_data', []);
-        $checkoutData[$field] = $value;
-        Session::put('checkout_data', $checkoutData);
+        $this->saveFormData();
     }
 
     protected function saveFormData()
@@ -462,77 +437,26 @@ class Checkout extends Component
             'name' => $this->name,
             'phone' => $this->phone,
             'email' => $this->email,
-            'selectedProvince' => $this->selectedProvince,
-            'selectedCity' => $this->selectedCity,
             'postalCode' => $this->postalCode,
             'complete_address' => $this->complete_address,
+            'address' => $this->address,
             'selectedCourier' => $this->selectedCourier,
+            'selectedService' => $this->selectedService,
             'selectedPaymentMethod' => $this->selectedPaymentMethod,
             'payment_proof_path' => $this->paymentProofPath,
         ];
 
-        // Jika ada selected service, tambahkan ke data
-        if ($this->selectedService !== null && isset($this->shippingServices[$this->selectedService])) {
-            $service = $this->shippingServices[$this->selectedService];
-            $checkoutData['selectedService'] = $this->selectedService;
-            $checkoutData['selectedServiceDetails'] = [
-                'courier' => $this->selectedCourier,
-                'service' => $service['service'],
-                'description' => $service['description'],
-                'cost' => $service['cost'][0]['value'],
-                'etd' => $service['cost'][0]['etd']
-            ];
-            $checkoutData['shippingCost'] = $service['cost'][0]['value'];
-        }
-
         Session::put('checkout_data', $checkoutData);
-
-        // Debugging: Log isi session terakhir
-        Log::debug('Full session data after save:', Session::get('checkout_data'));
-    }
-
-
-
-    protected function calculateCartTotals()
-    {
-        $this->subtotal = 0;
-        $this->totalWeight = 0;
-
-        foreach ($this->cartItems as $item) {
-            $this->subtotal += $item['price'] * $item['quantity'];
-            $this->totalWeight += $item['weight'] * $item['quantity'];
-        }
-
-        $cartTotals = Session::get('cart_totals', []);
-        $this->savings = $cartTotals['savings'] ?? 0;
-        $this->appliedPromoCode = $cartTotals['appliedPromoCode'] ?? null;
-        $this->itemCount = array_sum(array_column($this->cartItems, 'quantity'));
-
-        $cartTotals = [
-            'subtotal' => $this->subtotal,
-            'total' => $this->subtotal + $this->shippingCost - $this->savings,
-            'savings' => $this->savings,
-            'itemCount' => $this->itemCount,
-            'totalWeight' => $this->totalWeight,
-            'appliedPromoCode' => $this->appliedPromoCode,
-            'shipping_cost' => $this->shippingCost
-        ];
-
-        Session::put('cart_totals', $cartTotals);
-        $this->total = $cartTotals['total'];
     }
 
     public function updatedPaymentProof()
     {
         $this->isUploading = true;
-
         $this->validateOnly('paymentProof');
 
         try {
-            // Store the file and get the path
             $path = $this->paymentProof->store('payment-proofs', 'public');
 
-            // Save the path to session
             $checkoutData = Session::get('checkout_data', []);
             $checkoutData['payment_proof_path'] = $path;
             Session::put('checkout_data', $checkoutData);
@@ -544,37 +468,45 @@ class Checkout extends Component
         } catch (\Exception $e) {
             $this->isUploading = false;
             session()->flash('payment_upload_error', 'Failed to upload payment proof: ' . $e->getMessage());
+            $this->addError('paymentProof', 'Failed to upload payment proof');
         }
-    }
-
-    public function resetCheckoutData()
-    {
-        Session::forget('checkout_data');
-        // Juga reset shipping-related data in cart_totals
-        $cartTotals = Session::get('cart_totals', []);
-        unset($cartTotals['shipping_cost']);
-        Session::put('cart_totals', $cartTotals);
     }
 
     public function proceedOrder()
     {
+
+        Log::debug('Starting proceedOrder');
         $this->validate();
 
         try {
+            $this->validate();
+            Log::debug('Validation passed');
+
             $checkoutData = Session::get('checkout_data', []);
             $cartTotals = Session::get('cart_totals', []);
             $cartItems = Session::get('cart', []);
 
-            // Prepare shipping service details as JSON
-            $shippingServiceDetails = json_encode([
-                'courier' => $this->selectedCourier,
-                'service' => $this->shippingServices[$this->selectedService]['service'] ?? null,
-                'description' => $this->shippingServices[$this->selectedService]['description'] ?? null,
-                'cost' => $this->shippingCost,
-                'etd' => $this->shippingServices[$this->selectedService]['cost'][0]['etd'] ?? null
+            Log::debug('Session data retrieved', [
+                'checkout_data' => $checkoutData,
+                'cart_totals' => $cartTotals,
+                'cart_items_count' => count($cartItems)
             ]);
 
-            // Create transaction with exact field structure as in your example
+            // Prepare shipping service details
+            $service = $this->shippingServices[$this->selectedService] ?? null;
+            if (!$service) {
+                throw new \Exception('Invalid shipping service selected');
+            }
+
+            $shippingServiceDetails = [
+                'courier' => $this->selectedCourier,
+                'service' => $service['service'],
+                'description' => $service['description'],
+                'cost' => $service['cost'],  // Direct value if not array
+                'etd' => $service['etd']
+            ];
+
+            // Create transaction
             $transaction = OlshopTransaction::create([
                 'name' => $this->name,
                 'phone' => $this->phone,
@@ -583,39 +515,40 @@ class Checkout extends Component
                 'promo_code_id' => $cartTotals['appliedPromoCode'] ?? null,
                 'discount_amount' => $cartTotals['savings'] ?? 0,
                 'grand_total_amount' => $cartTotals['total'],
-                'province' => $this->selectedProvince,
-                'city_regency' => $this->selectedCity,
+                'address' => $this->address,
                 'post_code' => $this->postalCode,
                 'complete_address' => $this->complete_address,
                 'is_paid' => false,
                 'trx_id' => 'TRX-' . date('Ymd') . '-' . strtoupper(uniqid()),
                 'package_resi_number' => 'Being Processed',
                 'courier' => $this->selectedCourier,
-                'shipping_service' => $shippingServiceDetails,
+                'shipping_service' => json_encode($shippingServiceDetails),
                 'weight_total' => $this->totalWeight,
-                'shipping_cost' => $this->shippingCost,
-                'estimated_delivery' => $this->shippingServices[$this->selectedService]['cost'][0]['etd'] ?? null,
+                'shipping_cost' => $service['cost'],
+                'estimated_delivery' => $service['etd'],
                 'payment_method_id' => $this->selectedPaymentMethod,
                 'proof' => $this->paymentProofPath,
             ]);
 
-            // Create detail_order items
-            foreach ($cartItems as $items) {
+            // Create order items
+            foreach ($cartItems as $item) {
                 Order::create([
                     'olshop_transaction_id' => $transaction->id,
                     'type' => 'product',
-                    'product_id' => $items['id'],
-                    'quantity' => $items['quantity'],
-                    'unit_price' => $items['price'],
+                    'product_id' => $item['id'],
+                    'quantity' => $item['quantity'],
+                    'unit_price' => $item['price'],
                 ]);
             }
 
             // Clear session
             Session::forget(['cart', 'cart_totals', 'checkout_data']);
-            return redirect()->route('detail_order-confirmation', ['transaction_id' => $transaction->trx_id]);
+
+            return redirect()->route('order-confirmation', ['transaction_id' => $transaction->trx_id]);
         } catch (\Exception $e) {
-            Log::error('Error processing detail_order: ' . $e->getMessage());
-            $this->addError('order_error', 'Terjadi kesalahan saat memproses detail_order. Silakan coba lagi.');
+            Log::error('Error processing order: ' . $e->getMessage());
+            $this->addError('order_error', 'Error processing order: ' . $e->getMessage());
+            session()->flash('order_error', 'Failed to process order. Please try again.');
         }
     }
 

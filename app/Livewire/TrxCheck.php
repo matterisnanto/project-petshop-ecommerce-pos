@@ -49,7 +49,7 @@ class TrxCheck extends Component
         }
 
         if ($this->transaction->orders->isEmpty()) {
-            $this->error = 'Transaction found but detail_order items are missing.';
+            $this->error = 'Transaction found but order items are missing.';
             $this->showErrorModal = true;
             $this->transaction = null;
             return;

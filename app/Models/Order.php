@@ -57,6 +57,6 @@ class Order extends Model
 
     public function petInformation()
     {
-        return $this->hasMany(PetInformation::class, 'order_id');
+        return $this->hasMany(PetInformation::class, 'detail_order_id');
     }
 }
