@@ -269,13 +269,15 @@ class OlshoptransactionResource extends Resource
                                 ->options(function (Get $get) {
                                     $options = $get('shipping_service_options') ?? [];
 
-                                    // If in edit mode and current value not in options, add it
+                                    // Handle existing value in edit mode
                                     $currentValue = $get('shipping_service');
                                     if ($currentValue && !array_key_exists($currentValue, $options)) {
                                         try {
                                             $data = json_decode($currentValue, true);
                                             if ($data) {
-                                                $options[$currentValue] = self::formatShippingServiceDisplay($data);
+                                                // Create formatted display for existing value
+                                                $formatted = self::formatShippingServiceDisplay($data);
+                                                $options[$currentValue] = $formatted;
                                             }
                                         } catch (\Exception $e) {
                                             // Ignore if invalid JSON
@@ -728,12 +730,30 @@ class OlshoptransactionResource extends Resource
 
     protected static function formatShippingServiceDisplay(array $data): string
     {
+        $courier = $data['courier'] ?? $data['shipping_name'] ?? 'Unknown';
+        $service = $data['service'] ?? $data['service_name'] ?? 'Unknown';
+        $cost = $data['cost'] ?? 0;
         $etd = empty($data['etd']) ? '1-7 days' : $data['etd'];
+
+        // Format nama kurir jika hanya kode
+        $courierNames = [
+            'jne' => 'JNE',
+            'tiki' => 'TIKI',
+            'pos' => 'POS Indonesia',
+            'jnt' => 'J&T Express',
+            'sicepat' => 'SiCepat',
+            'ninja' => 'Ninja Xpress',
+            'anteraja' => 'AnterAja',
+            'lion' => 'Lion Parcel',
+        ];
+
+        $courierDisplay = $courierNames[strtolower($courier)] ?? $courier;
+
         return sprintf(
             '%s - %s (Rp %s, %s)',
-            $data['shipping_name'],
-            $data['service_name'],
-            number_format($data['cost'], 0, ',', '.'),
+            $courierDisplay,
+            $service,
+            number_format($cost, 0, ',', '.'),
             $etd
         );
     }
