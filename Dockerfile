@@ -1,4 +1,6 @@
-# Gunakan base image PHP 8.2 dengan FPM
+# =================================================================
+# TAHAP 1: Build dependensi dan kode aplikasi (disebut 'vendor')
+# =================================================================
 FROM php:8.2-fpm as vendor
 
 # Install dependensi sistem yang dibutuhkan
@@ -20,7 +22,7 @@ RUN apt-get update && apt-get install -y \
     nodejs \
     npm
 
-# Install ekstensi PHP yang umum untuk Laravel
+# Install ekstensi PHP
 RUN docker-php-ext-install pdo_mysql mbstring zip exif pcntl bcmath gd intl
 
 # Install Composer
@@ -29,16 +31,21 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Set direktori kerja
 WORKDIR /var/www
 
-# Copy file composer dan install dependensi vendor
-COPY composer.json composer.lock ./
+# ---> PERUBAHAN PENTING DI SINI <---
+# Salin SEMUA file aplikasi DULU
+COPY . .
+
+# BARU jalankan composer install setelah semua file ada
 RUN composer install --no-interaction --optimize-autoloader --no-dev
 
-# Bangun image aplikasi final
+
+# =================================================================
+# TAHAP 2: Bangun image aplikasi final
+# =================================================================
 FROM php:8.2-fpm
 
-# Copy semua dari image vendor
+# Copy composer dari tahap sebelumnya
 COPY --from=vendor /usr/bin/composer /usr/bin/composer
-COPY --from=vendor /var/www/vendor /var/www/vendor
 
 # Install dependensi sistem yang dibutuhkan saat runtime
 RUN apt-get update && apt-get install -y \
@@ -63,18 +70,14 @@ RUN docker-php-ext-install pdo_mysql mbstring zip exif pcntl bcmath gd intl
 # Set direktori kerja
 WORKDIR /var/www
 
-# Copy seluruh kode aplikasi
-COPY . .
+# Copy seluruh kode aplikasi (termasuk vendor) dari tahap build pertama
+COPY --from=vendor /var/www /var/www
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
 RUN chmod -R 775 /var/www/storage /var/www/bootstrap/cache
 
-# Bersihkan cache konfigurasi lama
-RUN php artisan config:clear && php artisan route:clear && php artisan view:clear
-
-# Optimasi untuk produksi
-RUN composer install --no-interaction --optimize-autoloader --no-dev
+# Optimasi untuk produksi (jalankan lagi untuk memastikan semua link benar)
 RUN php artisan config:cache
 RUN php artisan route:cache
 RUN php artisan view:cache

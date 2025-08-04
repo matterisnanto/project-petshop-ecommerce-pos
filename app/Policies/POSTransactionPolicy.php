@@ -3,10 +3,10 @@
 namespace App\Policies;
 
 use App\Models\User;
-use App\Models\POSTransaction;
+use App\Models\PosTransaction;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class POSTransactionPolicy
+class PosTransactionPolicy
 {
     use HandlesAuthorization;
 
