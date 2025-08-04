@@ -19,7 +19,7 @@ return new class extends Migration
             $table->foreignId('breeds_id')->nullable()->constrained()->nullOnDelete();
             $table->string('photo', 255)->nullable();
             $table->text('description')->nullable();
-            $table->integer('stock')->default(0);
+            $table->integer('stock', 2)->default(0);
             $table->decimal('purchase_price', 8)->nullable();
             $table->decimal('selling_price', 8);
             $table->boolean('is_active')->default(false);

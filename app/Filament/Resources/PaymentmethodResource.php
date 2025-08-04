@@ -6,7 +6,7 @@ use Filament\Forms;
 use Filament\Tables;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
-use App\Models\Paymentmethod;
+use App\Models\PaymentMethod;
 use Filament\Resources\Resource;
 use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Builder;
@@ -16,7 +16,7 @@ use App\Filament\Resources\PaymentmethodResource\RelationManagers;
 
 class PaymentmethodResource extends Resource
 {
-    protected static ?string $model = Paymentmethod::class;
+    protected static ?string $model = PaymentMethod::class;
 
     protected static ?string $navigationLabel = 'Payment Method';
 

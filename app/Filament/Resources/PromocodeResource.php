@@ -6,7 +6,7 @@ use Filament\Forms;
 use Filament\Tables;
 use Filament\Forms\Get;
 use Filament\Forms\Form;
-use App\Models\Promocode;
+use App\Models\PromoCode;
 use Filament\Tables\Table;
 use Illuminate\Support\Carbon;
 use Filament\Resources\Resource;
@@ -19,7 +19,7 @@ use App\Filament\Resources\PromocodeResource\RelationManagers;
 
 class PromocodeResource extends Resource
 {
-    protected static ?string $model = Promocode::class;
+    protected static ?string $model = PromoCode::class;
 
     protected static ?string $navigationLabel = 'Promo Code';
 

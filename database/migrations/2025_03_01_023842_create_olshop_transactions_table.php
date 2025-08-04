@@ -20,8 +20,7 @@ return new class extends Migration
             $table->foreignId('promo_code_id')->nullable()->constrained()->nullOnDelete();
             $table->decimal('discount_amount', 8)->default(0);
             $table->decimal('grand_total_amount', 8);
-            $table->string('province', 50);
-            $table->string('city_regency', 50);
+            $table->text('complete_address');
             $table->integer('post_code', 10);
             $table->text('complete_address');
             $table->boolean('is_paid')->default(false);

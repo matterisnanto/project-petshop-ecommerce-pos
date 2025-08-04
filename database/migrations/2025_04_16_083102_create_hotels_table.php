@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId('category_animals_id')->nullable()->constrained()->nullOnDelete();
             $table->text('description')->nullable();
             $table->decimal('price_per_day', 8);
-            $table->integer('capacity');
+            $table->integer('capacity', 2);
             $table->string('thumbnail', 255)->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();

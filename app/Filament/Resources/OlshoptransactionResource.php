@@ -13,7 +13,7 @@ use Filament\Tables\Table;
 use Illuminate\Support\Str;
 use App\Models\PaymentMethod;
 use Filament\Resources\Resource;
-use App\Models\Olshoptransaction;
+use App\Models\OlshopTransaction;
 use App\Services\RajaOngkirService;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;

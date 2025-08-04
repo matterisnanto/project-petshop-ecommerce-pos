@@ -22,7 +22,7 @@ return new class extends Migration
             $table->foreignId('grooming_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('breeding_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('hotel_id')->nullable()->constrained()->nullOnDelete();
-            $table->integer('quantity');
+            $table->integer('quantity', 3);
             $table->decimal('unit_price', 8);
             $table->timestamps();
             $table->softDeletes();
