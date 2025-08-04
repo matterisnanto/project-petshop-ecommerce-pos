@@ -1,0 +1,24 @@
+# Dependencies
+/vendor/
+/node_modules/
+
+# Laravel Storage & Public Storage link
+/storage/
+/public/storage
+
+# Environment files
+.env
+.env.backup
+Homestead.yaml
+Homestead.json
+
+# IDE / OS files
+.idea/
+.vscode/
+*.DS_Store
+npm-debug.log
+yarn-error.log
+
+# Laravel files
+/bootstrap/cache/*
+!.gitignore

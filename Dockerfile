@@ -16,11 +16,12 @@ RUN apt-get update && apt-get install -y \
     curl \
     libonig-dev \
     libzip-dev \
+    libicu-dev \
     nodejs \
     npm
 
 # Install ekstensi PHP yang umum untuk Laravel
-RUN docker-php-ext-install pdo_mysql mbstring zip exif pcntl bcmath gd
+RUN docker-php-ext-install pdo_mysql mbstring zip exif pcntl bcmath gd intl
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -53,10 +54,11 @@ RUN apt-get update && apt-get install -y \
     curl \
     libonig-dev \
     libzip-dev \
+    libicu-dev \
     nginx
 
 # Install ekstensi PHP
-RUN docker-php-ext-install pdo_mysql mbstring zip exif pcntl bcmath gd
+RUN docker-php-ext-install pdo_mysql mbstring zip exif pcntl bcmath gd intl
 
 # Set direktori kerja
 WORKDIR /var/www
