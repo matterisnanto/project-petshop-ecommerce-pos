@@ -2,7 +2,7 @@
 
 namespace App\Observers;
 
-use App\Models\Order;
+use App\Models\DetailOrder;
 use App\Models\Animals;
 use App\Models\Product;
 
@@ -11,7 +11,7 @@ class OrderObserver
     /**
      * Handle the Order "created" event.
      */
-    public function created(Order $detail_order): void
+    public function created(DetailOrder $detail_order): void
     {
         // Hanya proses jika purchases_id kosong
         if ($detail_order->purchases_id !== null) {
@@ -39,7 +39,7 @@ class OrderObserver
     /**
      * Handle the Order "updated" event.
      */
-    public function updated(Order $detail_order): void
+    public function updated(DetailOrder $detail_order): void
     {
         // Hanya proses jika purchases_id kosong
         if ($detail_order->purchases_id !== null) {
@@ -93,7 +93,7 @@ class OrderObserver
     /**
      * Handle the Order "deleted" event.
      */
-    public function deleted(Order $detail_order): void
+    public function deleted(DetailOrder $detail_order): void
     {
         // Hanya proses jika purchases_id kosong
         if ($detail_order->purchases_id !== null) {

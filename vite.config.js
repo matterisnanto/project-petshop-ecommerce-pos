@@ -10,8 +10,4 @@ export default defineConfig({
         }),
         tailwindcss(),
     ],
-    // server: {
-    //     host: '192.168.2.15', 
-    //     port: 5173,         
-    //   },
 });

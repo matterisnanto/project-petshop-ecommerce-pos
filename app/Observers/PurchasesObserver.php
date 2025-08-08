@@ -4,7 +4,7 @@ namespace App\Observers;
 
 use App\Models\Animals;
 use App\Models\Product;
-use App\Models\Purchases;
+use App\Models\Purchase;
 use Illuminate\Support\Facades\Log;
 
 class PurchasesObserver
@@ -12,7 +12,7 @@ class PurchasesObserver
     /**
      * Handle the Purchases "created" event.
      */
-    public function created(Purchases $purchases): void
+    public function created(Purchase $purchases): void
     {
         // Jika langsung dibuat dengan status received
         if ($purchases->status === 'received') {
@@ -23,7 +23,7 @@ class PurchasesObserver
     /**
      * Handle the Purchases "updated" event.
      */
-    public function updated(Purchases $purchases): void
+    public function updated(Purchase $purchases): void
     {
         // Hanya proses jika status berubah
         if (!$purchases->isDirty('status')) {
@@ -50,7 +50,7 @@ class PurchasesObserver
     /**
      * Handle the Purchases "deleted" event.
      */
-    public function deleted(Purchases $purchases): void
+    public function deleted(Purchase $purchases): void
     {
         // Jika purchase dihapus dan statusnya received, kurangi stok
         if ($purchases->status === 'received') {
@@ -61,7 +61,7 @@ class PurchasesObserver
     /**
      * Handle the Purchases "restored" event.
      */
-    public function restored(Purchases $purchases): void
+    public function restored(Purchase $purchases): void
     {
         // Jika purchase direstore dan statusnya received, tambah stok
         if ($purchases->status === 'received') {
@@ -72,7 +72,7 @@ class PurchasesObserver
     /**
      * Update inventory based on purchase items
      */
-    protected function updateInventory(Purchases $purchases, string $operation): void
+    protected function updateInventory(Purchase $purchases, string $operation): void
     {
         if (!in_array($operation, ['increment', 'decrement'])) {
             return;

@@ -2,10 +2,7 @@
 
 namespace App\Filament\Widgets;
 
-use App\Models\Grooming;
-use App\Models\Breeding;
-use App\Models\Hotel;
-use App\Models\Order;
+use App\Models\DetailOrder;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
@@ -25,14 +22,14 @@ class SalesPerformanceWidget extends BaseWidget
     {
 
         // Product stats
-        $productOrders = Order::whereNotNull('product_id')->get();
+        $productOrders = DetailOrder::whereNotNull('product_id')->get();
         $productCount = $productOrders->count();
         $productRevenue = $productOrders->sum(function ($detail_order) {
             return $detail_order->quantity * $detail_order->unit_price;
         });
 
         // Animal stats
-        $animalOrders = Order::whereNotNull('animals_id')->get();
+        $animalOrders = DetailOrder::whereNotNull('animals_id')->get();
         $animalCount = $animalOrders->count();
         $animalRevenue = $animalOrders->sum(function ($detail_order) {
             return $detail_order->quantity * $detail_order->unit_price;

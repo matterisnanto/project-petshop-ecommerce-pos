@@ -3,9 +3,11 @@
 namespace App\Livewire;
 
 use App\Models\Brand;
+use App\Models\Brands;
 use App\Models\Product;
 use Livewire\Component;
 use App\Models\Category;
+use App\Models\Categories;
 use Livewire\WithPagination;
 use Livewire\Attributes\Title;
 use App\Models\CategoryAnimals;
@@ -46,7 +48,7 @@ class ProductList extends Component
         $this->sortBy = request('sortBy', 'default');
 
         if (!empty($this->selectedCategories)) {
-            $category = Category::find($this->selectedCategories[0]);
+            $category = Categories::find($this->selectedCategories[0]);
             $this->categoryName = $category ? $category->name : 'All Products';
         }
         // Session::forget('cart_totals');
@@ -70,7 +72,7 @@ class ProductList extends Component
 
         $products = $filteredQuery->paginate(12);
 
-        $brands = Brand::select('id', 'name')
+        $brands = Brands::select('id', 'name')
             ->withCount(['products' => function ($query) {
                 $query->where('is_active', true)
                     ->where('stock', '>', 5);
@@ -82,7 +84,7 @@ class ProductList extends Component
             ->orderBy('name')
             ->get();
 
-        $categories = Category::select('id', 'name')
+        $categories = Categories::select('id', 'name')
             ->withCount(['products' => function ($query) {
                 $query->where('is_active', true)
                     ->where('stock', '>', 5);

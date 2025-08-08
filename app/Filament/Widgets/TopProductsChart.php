@@ -2,7 +2,7 @@
 
 namespace App\Filament\Widgets;
 
-use App\Models\Order;
+use App\Models\DetailOrder;
 use App\Models\Product;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Facades\DB;
@@ -19,7 +19,7 @@ class TopProductsChart extends ChartWidget
 
     protected function getData(): array
     {
-        $products = Order::select([
+        $products = DetailOrder::select([
             'products.name',
             DB::raw('SUM(detail_order.quantity) as total_quantity'),
             DB::raw('SUM(detail_order.quantity * detail_order.unit_price) as total_revenue')

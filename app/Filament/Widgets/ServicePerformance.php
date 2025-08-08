@@ -2,10 +2,7 @@
 
 namespace App\Filament\Widgets;
 
-use App\Models\Grooming;
-use App\Models\Breeding;
-use App\Models\Hotel;
-use App\Models\Order;
+use App\Models\DetailOrder;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
@@ -18,21 +15,21 @@ class ServicePerformance extends BaseWidget
     protected function getStats(): array
     {
         // Grooming stats
-        $groomingOrders = Order::whereNotNull('grooming_id')->get();
+        $groomingOrders = DetailOrder::whereNotNull('grooming_id')->get();
         $groomingCount = $groomingOrders->count();
         $groomingRevenue = $groomingOrders->sum(function ($detail_order) {
             return $detail_order->quantity * $detail_order->unit_price;
         });
 
         // Breeding stats
-        $breedingOrders = Order::whereNotNull('breeding_id')->get();
+        $breedingOrders = DetailOrder::whereNotNull('breeding_id')->get();
         $breedingCount = $breedingOrders->count();
         $breedingRevenue = $breedingOrders->sum(function ($detail_order) {
             return $detail_order->quantity * $detail_order->unit_price;
         });
 
         // Hotel stats
-        $hotelOrders = Order::whereNotNull('hotel_id')->get();
+        $hotelOrders = DetailOrder::whereNotNull('hotel_id')->get();
         $hotelCount = $hotelOrders->count();
         $hotelRevenue = $hotelOrders->sum(function ($detail_order) {
             return $detail_order->quantity * $detail_order->unit_price;

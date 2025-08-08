@@ -8,15 +8,13 @@
     "require": {
         "php": "^8.2",
         "bezhansalleh/filament-shield": "3.2.6",
-        "dedoc/scramble": "^0.12.12",
+        "dedoc/scramble": "^0.12.28",
         "dompdf/dompdf": "^3.1",
         "filament/filament": "^3.2",
         "flowframe/laravel-trend": "^0.4.0",
         "guzzlehttp/guzzle": "^7.9",
         "laravel/framework": "^12.0",
-        "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.10.1",
-        "maatwebsite/excel": "^3.1",
         "mallardduck/blade-lucide-icons": "^1.23",
         "yoeunes/toastr": "^3.1"
     },
@@ -27,18 +25,14 @@
         "laravel/sail": "^1.41",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.6",
-        "pestphp/pest": "^3.7",
-        "pestphp/pest-plugin-laravel": "^3.1"
+        "phpunit/phpunit": "^11.5.3"
     },
     "autoload": {
         "psr-4": {
             "App\\": "app/",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/"
-        },
-        "files": [
-            "app/Helpers/helpers.php"
-        ]
+        }
     },
     "autoload-dev": {
         "psr-4": {
@@ -47,7 +41,8 @@
     },
     "scripts": {
         "post-autoload-dump": [
-            "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+            "@php artisan config:clear",
+            "@php artisan clear-compiled",
             "@php artisan package:discover --ansi",
             "@php artisan filament:upgrade"
         ],
@@ -64,7 +59,11 @@
         ],
         "dev": [
             "Composer\\Config::disableProcessTimeout",
-            "npx concurrently -c \"#93c5fd,#c4b5fd,#fb7185,#fdba74\" \"php artisan serve\" \"php artisan queue:listen --tries=1\" \"php artisan pail --timeout=0\" \"npm run dev\" --names=server,queue,logs,vite"
+            "npx concurrently -c \"#93c5fd,#c4b5fd,#fdba74\" \"php artisan serve\" \"php artisan queue:listen --tries=1\" \"npm run dev\" --names='server,queue,vite'"
+        ],
+        "test": [
+            "@php artisan config:clear --ansi",
+            "@php artisan test"
         ]
     },
     "extra": {

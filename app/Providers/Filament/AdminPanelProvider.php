@@ -6,21 +6,19 @@ use Filament\Pages;
 use Filament\Panel;
 use Filament\Widgets;
 use Filament\PanelProvider;
-use Filament\Enums\ThemeMode;
 use Filament\Navigation\MenuItem;
 use Filament\Support\Colors\Color;
-use App\Filament\Pages\Auth\EditProfile;
 use Filament\Http\Middleware\Authenticate;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Filament\Http\Middleware\AuthenticateSession;
+use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
-use App\Filament\Pages\Settings;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -30,21 +28,11 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
-            // logo & favicon configuration
             ->brandName('Cindypetshop')
             ->brandLogo(asset('img/logo/Logonameblack.png'))
             ->brandLogoHeight('3rem')
             ->favicon(asset('favicon/favicon.svg'))
-            // user configuration
             ->login()
-            // ->registration()
-            // ->passwordReset()
-            // ->emailVerification()
-            // ->darkMode(false)
-            ->defaultThemeMode(ThemeMode::Light)
-            ->profile()
-            // ->profile(EditProfile::class)
-            // panel configuration
             ->colors([
                 'primary' => Color::Pink,
             ])
@@ -70,14 +58,12 @@ class AdminPanelProvider extends PanelProvider
                     ->label('Home pages')
                     ->url('/')
                     ->icon('heroicon-o-home'),
-                // ...
             ])
             ->authMiddleware([
                 Authenticate::class,
             ])
             ->plugins([
-                \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make()
-            ])
-            ->sidebarCollapsibleOnDesktop();
+                FilamentShieldPlugin::make()
+            ]);
     }
 }

@@ -14,7 +14,7 @@ use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 
 class Dashboard extends BaseDashboard
 {
-    // use HasPageShield;
+    use HasPageShield;
 
     protected static ?string $navigationIcon = 'heroicon-o-chart-bar';
 

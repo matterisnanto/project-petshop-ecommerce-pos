@@ -3,9 +3,10 @@
 namespace App\Filament\Widgets;
 
 use App\Models\Purchase;
+use App\Models\Purchases;
 use Filament\Widgets\StatsOverviewWidget\Stat;
-use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
+use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 
 class PurchaseWidget extends BaseWidget
 {
