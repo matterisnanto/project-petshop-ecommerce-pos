@@ -2,7 +2,7 @@
 
 namespace App\Filament\Widgets;
 
-use App\Models\POSTransaction;
+use App\Models\PosTransaction;
 use App\Models\OlshopTransaction;
 use Filament\Widgets\ChartWidget;
 use Flowframe\Trend\Trend;

@@ -7,8 +7,6 @@ use Filament\Tables;
 use Filament\Forms\Set;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
-use Illuminate\Support\Str;
-use Illuminate\Support\Carbon;
 use App\Models\CategoryAnimals;
 use Filament\Resources\Resource;
 use Illuminate\Support\Collection;

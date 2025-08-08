@@ -2,7 +2,7 @@
 
 namespace App\Filament\Widgets;
 
-use App\Models\Purchases;
+use App\Models\Purchase;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
@@ -21,10 +21,10 @@ class PurchaseWidget extends BaseWidget
     {
 
         // Purchases stats
-        $totalPurchasing = Purchases::count();
-        $ordered = Purchases::where('status', 'ordered')->count();
-        $received = Purchases::where('status', 'received')->count();
-        $cancelled = Purchases::where('status', 'cancelled')->count();
+        $totalPurchasing = Purchase::count();
+        $ordered = Purchase::where('status', 'ordered')->count();
+        $received = Purchase::where('status', 'received')->count();
+        $cancelled = Purchase::where('status', 'cancelled')->count();
 
         return [
 

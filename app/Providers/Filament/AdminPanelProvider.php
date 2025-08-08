@@ -43,7 +43,7 @@ class AdminPanelProvider extends PanelProvider
             // ->darkMode(false)
             ->defaultThemeMode(ThemeMode::Light)
             ->profile()
-            ->profile(EditProfile::class)
+            // ->profile(EditProfile::class)
             // panel configuration
             ->colors([
                 'primary' => Color::Pink,

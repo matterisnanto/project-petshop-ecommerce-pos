@@ -14,17 +14,16 @@ use Illuminate\Support\Str;
 use App\Models\PaymentMethod;
 use Filament\Resources\Resource;
 use App\Models\OlshopTransaction;
-use App\Services\RajaOngkirService;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 use Filament\Forms\Components\Repeater;
 use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Resources\OlshoptransactionResource\Pages;
-use App\Filament\Resources\OlshoptransactionResource\RelationManagers;
+use App\Filament\Resources\OlshopTransactionResource\Pages;
+use App\Filament\Resources\OlshopTransactionResource\RelationManagers;
 
-class OlshoptransactionResource extends Resource
+class OlshopTransactionResource extends Resource
 {
     protected static ?string $model = OlshopTransaction::class;
 
@@ -538,7 +537,7 @@ class OlshoptransactionResource extends Resource
     }
 
 
-    // Tambahkan method ini di class OlshoptransactionResource
+    // Tambahkan method ini di class OlshopTransactionResource
     protected static function applyPromoCode(Get $get, Set $set): void
     {
         $promoCodeId = $get('promo_code_id');
@@ -816,9 +815,9 @@ class OlshoptransactionResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListOlshoptransactions::route('/'),
-            'create' => Pages\CreateOlshoptransaction::route('/create'),
-            'edit' => Pages\EditOlshoptransaction::route('/{record}/edit'),
+            'index' => Pages\ListOlshopTransactions::route('/'),
+            'create' => Pages\CreateOlshopTransaction::route('/create'),
+            'edit' => Pages\EditOlshopTransaction::route('/{record}/edit'),
         ];
     }
 }

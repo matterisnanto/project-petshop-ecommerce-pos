@@ -2,15 +2,16 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Animals;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class AnimalsPhoto extends Model
 {
     use HasFactory;
 
     protected $table = 'animals_photos';
-    //
+
     protected $fillable = ['photo', 'animals_id'];
 
     public function animals()

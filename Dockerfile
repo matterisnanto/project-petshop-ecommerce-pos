@@ -1,90 +1,53 @@
 # =================================================================
-# TAHAP 1: Build dependensi dan kode aplikasi (disebut 'vendor')
+# SINGLE STAGE BUILD - VERSI FINAL DENGAN JALAN PINTAS APP_KEY
 # =================================================================
-FROM php:8.2-fpm as vendor
+FROM php:8.2-fpm
 
-# Install dependensi sistem yang dibutuhkan
+# Install SEMUA dependensi termasuk nginx dan supervisor
 RUN apt-get update && apt-get install -y \
-    build-essential \
-    libpng-dev \
-    libjpeg62-turbo-dev \
-    libfreetype6-dev \
-    locales \
-    zip \
-    jpegoptim optipng pngquant gifsicle \
-    vim \
-    unzip \
-    git \
-    curl \
-    libonig-dev \
-    libzip-dev \
-    libicu-dev \
-    nodejs \
-    npm
-
-# Install ekstensi PHP
-RUN docker-php-ext-install pdo_mysql mbstring zip exif pcntl bcmath gd intl
+    build-essential libpng-dev libjpeg62-turbo-dev libfreetype6-dev \
+    locales zip unzip git curl libonig-dev libzip-dev libicu-dev \
+    nginx nano supervisor openssl
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Set direktori kerja
-WORKDIR /var/www
-
-# ---> PERUBAHAN PENTING DI SINI <---
-# Salin SEMUA file aplikasi DULU
-COPY . .
-
-# BARU jalankan composer install setelah semua file ada
-RUN composer install --no-interaction --optimize-autoloader --no-dev
-
-
-# =================================================================
-# TAHAP 2: Bangun image aplikasi final
-# =================================================================
-FROM php:8.2-fpm
-
-# Copy composer dari tahap sebelumnya
-COPY --from=vendor /usr/bin/composer /usr/bin/composer
-
-# Install dependensi sistem yang dibutuhkan saat runtime
-RUN apt-get update && apt-get install -y \
-    libpng-dev \
-    libjpeg62-turbo-dev \
-    libfreetype6-dev \
-    locales \
-    zip \
-    jpegoptim optipng pngquant gifsicle \
-    vim \
-    unzip \
-    git \
-    curl \
-    libonig-dev \
-    libzip-dev \
-    libicu-dev \
-    nginx
-
-# Install ekstensi PHP
+# Install semua ekstensi PHP
 RUN docker-php-ext-install pdo_mysql mbstring zip exif pcntl bcmath gd intl
 
-# Set direktori kerja
+# Salin file konfigurasi supervisor dan nginx yang sudah kita buat
+COPY docker-config/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY docker-config/nginx.conf /etc/nginx/sites-available/default
+
+# Tetapkan direktori kerja
 WORKDIR /var/www
 
-# Copy seluruh kode aplikasi (termasuk vendor) dari tahap build pertama
-COPY --from=vendor /var/www /var/www
+# Salin semua file aplikasi ke dalam image
+COPY . .
 
-# Set permissions
-RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
-RUN chmod -R 775 /var/www/storage /var/www/bootstrap/cache
+# Buat struktur direktori storage
+RUN mkdir -p storage/app/public storage/framework/sessions storage/framework/views storage/framework/cache/data storage/logs
 
-# Optimasi untuk produksi (jalankan lagi untuk memastikan semua link benar)
-RUN php artisan config:cache
-RUN php artisan route:cache
-RUN php artisan view:cache
-RUN php artisan filament:optimize
+# Berikan kepemilikan SEMUA file ke www-data
+RUN chown -R www-data:www-data /var/www
 
-# Expose port 9000 untuk PHP-FPM
-EXPOSE 9000
+# Ganti user menjadi www-data
+USER www-data
 
-# Jalankan PHP-FPM
-CMD ["php-fpm"]
+# Install dependensi Composer
+RUN composer install --no-interaction --optimize-autoloader --no-dev --no-scripts
+
+# ---> INI ADALAH PERUBAHAN UTAMA <---
+# 2 & 3. Buat file .env dan generate APP_KEY secara MANUAL tanpa artisan
+RUN cp .env.example .env && \
+    sed -i '/^APP_KEY=/c\APP_KEY=base64:'"$(openssl rand -base64 32)" .env
+
+# Jalankan semua perintah optimasi
+RUN php artisan config:cache && php artisan route:cache && \
+    php artisan view:cache && php artisan filament:optimize
+
+# Expose port web (80)
+EXPOSE 80
+
+# Perintah akhir adalah menjalankan supervisor
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]

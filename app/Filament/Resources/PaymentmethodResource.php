@@ -11,10 +11,10 @@ use Filament\Resources\Resource;
 use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Resources\PaymentmethodResource\Pages;
-use App\Filament\Resources\PaymentmethodResource\RelationManagers;
+use App\Filament\Resources\PaymentMethodResource\Pages;
+use App\Filament\Resources\PaymentMethodResource\RelationManagers;
 
-class PaymentmethodResource extends Resource
+class PaymentMethodResource extends Resource
 {
     protected static ?string $model = PaymentMethod::class;
 
@@ -216,9 +216,9 @@ class PaymentmethodResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListPaymentmethods::route('/'),
-            'create' => Pages\CreatePaymentmethod::route('/create'),
-            // 'edit' => Pages\EditPaymentmethod::route('/{record}/edit'),
+            'index' => Pages\ListPaymentMethods::route('/'),
+            'create' => Pages\CreatePaymentMethod::route('/create'),
+            // 'edit' => Pages\EditPaymentMethod::route('/{record}/edit'),
         ];
     }
 }

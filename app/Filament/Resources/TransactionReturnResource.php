@@ -417,7 +417,6 @@ class TransactionReturnResource extends Resource
         return [
             'index' => Pages\ListTransactionReturns::route('/'),
             'create' => Pages\CreateTransactionReturn::route('/create'),
-            // 'edit' => Pages\EditTransactionReturn::route('/{record}/edit'),
         ];
     }
 }

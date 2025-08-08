@@ -2,14 +2,19 @@
 
 namespace App\Models;
 
+use App\Models\Brands;
+use App\Models\Supplier;
+use App\Models\Categories;
+use App\Models\DetailOrder;
 use Illuminate\Support\Str;
+use App\Models\ProductPhoto;
+use App\Models\CategoryAnimals;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Product extends Model
 {
@@ -21,12 +26,12 @@ class Product extends Model
 
     public function category(): BelongsTo
     {
-        return $this->belongsTo(Category::class, 'category_id');
+        return $this->belongsTo(Categories::class, 'category_id');
     }
 
     public function brand(): BelongsTo
     {
-        return $this->belongsTo(Brand::class, 'brand_id');
+        return $this->belongsTo(Brands::class, 'brand_id');
     }
 
     public function categoryAnimals()
@@ -102,6 +107,6 @@ class Product extends Model
 
     public function detail_order(): HasMany
     {
-        return $this->hasMany(Order::class);
+        return $this->hasMany(DetailOrder::class);
     }
 }

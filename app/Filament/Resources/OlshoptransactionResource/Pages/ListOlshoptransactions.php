@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Filament\Resources\OlshoptransactionResource\Pages;
+namespace App\Filament\Resources\OlshopTransactionResource\Pages;
 
-use App\Filament\Resources\OlshoptransactionResource;
+use App\Filament\Resources\OlshopTransactionResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 
-class ListOlshoptransactions extends ListRecords
+class ListOlshopTransactions extends ListRecords
 {
-    protected static string $resource = OlshoptransactionResource::class;
+    protected static string $resource = OlshopTransactionResource::class;
 
     protected function getHeaderActions(): array
     {

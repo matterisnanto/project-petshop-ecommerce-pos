@@ -13,11 +13,11 @@ use Filament\Resources\Resource;
 use Filament\Support\Enums\FontWeight;
 use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Builder;
-use App\Filament\Resources\PromocodeResource\Pages;
+use App\Filament\Resources\PromoCodeResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Resources\PromocodeResource\RelationManagers;
+use App\Filament\Resources\PromoCodeResource\RelationManagers;
 
-class PromocodeResource extends Resource
+class PromoCodeResource extends Resource
 {
     protected static ?string $model = PromoCode::class;
 
@@ -204,9 +204,8 @@ class PromocodeResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListPromocodes::route('/'),
-            'create' => Pages\CreatePromocode::route('/create'),
-            // 'edit' => Pages\EditPromocode::route('/{record}/edit'),
+            'index' => Pages\ListPromoCodes::route('/'),
+            'create' => Pages\CreatePromoCode::route('/create'),
         ];
     }
 }

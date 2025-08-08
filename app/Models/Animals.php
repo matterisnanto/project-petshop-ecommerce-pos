@@ -2,20 +2,23 @@
 
 namespace App\Models;
 
+use App\Models\Breeds;
+use App\Models\DetailOrder;
 use Illuminate\Support\Str;
 use App\Models\AnimalsPhoto;
+use App\Models\CategoryAnimals;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Animals extends Model
 {
     use HasFactory;
     use SoftDeletes;
     protected $table = 'animals';
-    //
+
     protected $fillable = ['name', 'slug', 'barcode', 'category_animals_id', 'breeds_id', 'age', 'weight', 'stock', 'gender', 'health_status', 'vaccination_status', 'thumbnail', 'description', 'purchase_price', 'selling_price', 'is_active'];
 
     public function categoryAnimals()
@@ -66,8 +69,8 @@ class Animals extends Model
         });
     }
 
-    public function detail_order(): HasMany
+    public function detailOrder(): HasMany
     {
-        return $this->hasMany(Order::class);
+        return $this->hasMany(DetailOrder::class);
     }
 }

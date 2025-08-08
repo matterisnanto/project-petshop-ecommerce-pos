@@ -58,23 +58,6 @@
     </script>
 </body>
 
-{{-- <script>
-    // Set initial theme based on browser preference
-    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        document.documentElement.classList.add('dark')
-    } else {
-        document.documentElement.classList.remove('dark')
-    }
-
-    // Listen for changes in browser preference
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-        if (e.matches) {
-            document.documentElement.classList.add('dark')
-        } else {
-            document.documentElement.classList.remove('dark')
-        }
-    })
-</script> --}}
 <script>
     // Inisialisasi pertama kali
     document.addEventListener('livewire:initialized', () => {

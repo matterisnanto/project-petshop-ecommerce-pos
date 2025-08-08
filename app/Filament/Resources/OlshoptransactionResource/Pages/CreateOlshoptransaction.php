@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Filament\Resources\OlshoptransactionResource\Pages;
+namespace App\Filament\Resources\OlshopTransactionResource\Pages;
 
-use App\Filament\Resources\OlshoptransactionResource;
+use App\Filament\Resources\OlshopTransactionResource;
 use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
 
-class CreateOlshoptransaction extends CreateRecord
+class CreateOlshopTransaction extends CreateRecord
 {
-    protected static string $resource = OlshoptransactionResource::class;
+    protected static string $resource = OlshopTransactionResource::class;
 }

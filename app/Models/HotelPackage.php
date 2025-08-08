@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Hotel;
 use Illuminate\Database\Eloquent\Model;
 
 class HotelPackage extends Model

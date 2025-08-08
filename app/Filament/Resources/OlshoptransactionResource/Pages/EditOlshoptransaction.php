@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Filament\Resources\OlshoptransactionResource\Pages;
+namespace App\Filament\Resources\OlshopTransactionResource\Pages;
 
-use App\Filament\Resources\OlshoptransactionResource;
+use App\Filament\Resources\OlshopTransactionResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 
-class EditOlshoptransaction extends EditRecord
+class EditOlshopTransaction extends EditRecord
 {
-    protected static string $resource = OlshoptransactionResource::class;
+    protected static string $resource = OlshopTransactionResource::class;
 
     protected function getHeaderActions(): array
     {

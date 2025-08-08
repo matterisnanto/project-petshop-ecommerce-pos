@@ -9,7 +9,6 @@ use App\Models\Grooming;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use App\Models\CategoryAnimals;
-use App\Models\CategoryGrooming;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\FontWeight;
 use Illuminate\Support\Facades\Storage;
@@ -482,7 +481,6 @@ class GroomingResource extends Resource
         return [
             'index' => Pages\ListGroomings::route('/'),
             'create' => Pages\CreateGrooming::route('/create'),
-            // 'edit' => Pages\EditGrooming::route('/{record}/edit'),
         ];
     }
 }

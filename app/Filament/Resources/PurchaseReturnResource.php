@@ -4,11 +4,7 @@ namespace App\Filament\Resources;
 
 use Filament\Forms;
 use Filament\Tables;
-use App\Models\Order;
-use App\Models\Animals;
-use App\Models\Product;
 use Filament\Forms\Form;
-use App\Models\Purchases;
 use Filament\Tables\Table;
 use App\Models\PurchaseReturn;
 use Filament\Resources\Resource;
@@ -93,7 +89,7 @@ class PurchaseReturnResource extends Resource
                                     ->preload()
                                     ->columnSpan(2)
                                     ->afterStateUpdated(function ($state, Forms\Set $set) {
-                                        $purchase = \App\Models\Purchases::find($state);
+                                        $purchase = \App\Models\Purchase::find($state);
                                         $set('supplier_id', $purchase?->supplier_id);
                                         $set('supplier_name', $purchase?->supplier?->name . ' (' . $purchase?->supplier?->phone . ')' . ' - ' . $purchase?->supplier->address);
                                     }),
@@ -160,7 +156,7 @@ class PurchaseReturnResource extends Resource
                                                 if ($get('type') !== 'product' || !$purchaseId) return [];
 
                                                 // Ambil produk dari purchase detail_order yang dipilih
-                                                return \App\Models\Order::where('purchases_id', $purchaseId)
+                                                return \App\Models\DetailOrder::where('purchases_id', $purchaseId)
                                                     ->whereNotNull('product_id')
                                                     ->with('product')
                                                     ->get()
@@ -188,7 +184,7 @@ class PurchaseReturnResource extends Resource
                                                 if ($get('type') !== 'animal' || !$purchaseId) return [];
 
                                                 // Ambil animals dari purchase detail_order yang dipilih
-                                                return \App\Models\Order::where('purchases_id', $purchaseId)
+                                                return \App\Models\DetailOrder::where('purchases_id', $purchaseId)
                                                     ->whereNotNull('animals_id')
                                                     ->with('animal')
                                                     ->get()
@@ -231,14 +227,14 @@ class PurchaseReturnResource extends Resource
                                                 if (!$purchaseId) return null;
 
                                                 if ($productId) {
-                                                    $detail_order = \App\Models\Order::where('purchases_id', $purchaseId)
+                                                    $detail_order = \App\Models\DetailOrder::where('purchases_id', $purchaseId)
                                                         ->where('product_id', $productId)
                                                         ->first();
                                                     return $detail_order ? $detail_order->quantity : null;
                                                 }
 
                                                 if ($animalId) {
-                                                    $detail_order = \App\Models\Order::where('purchases_id', $purchaseId)
+                                                    $detail_order = \App\Models\DetailOrder::where('purchases_id', $purchaseId)
                                                         ->where('animals_id', $animalId)
                                                         ->first();
                                                     return $detail_order ? $detail_order->quantity : null;
@@ -255,14 +251,14 @@ class PurchaseReturnResource extends Resource
                                                 if (!$purchaseId) return null;
 
                                                 if ($productId) {
-                                                    $detail_order = \App\Models\Order::where('purchases_id', $purchaseId)
+                                                    $detail_order = \App\Models\DetailOrder::where('purchases_id', $purchaseId)
                                                         ->where('product_id', $productId)
                                                         ->first();
                                                     return $detail_order ? "of {$detail_order->quantity}" : null;
                                                 }
 
                                                 if ($animalId) {
-                                                    $detail_order = \App\Models\Order::where('purchases_id', $purchaseId)
+                                                    $detail_order = \App\Models\DetailOrder::where('purchases_id', $purchaseId)
                                                         ->where('animals_id', $animalId)
                                                         ->first();
                                                     return $detail_order ? "of {$detail_order->quantity}" : null;

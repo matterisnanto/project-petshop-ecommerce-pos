@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Animals;
+use App\Models\Product;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -12,7 +13,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class CategoryAnimals extends Model
 {
     use HasFactory;
+
     use SoftDeletes;
+
     protected $table = 'category_animals';
     //
     protected $fillable = ['name', 'slug', 'description', 'icon'];

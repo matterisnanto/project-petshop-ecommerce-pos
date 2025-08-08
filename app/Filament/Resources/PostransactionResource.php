@@ -5,7 +5,6 @@ namespace App\Filament\Resources;
 use Filament\Forms;
 use Filament\Tables;
 use App\Models\Hotel;
-
 use App\Models\Animals;
 use App\Models\Product;
 use Filament\Forms\Get;
@@ -16,23 +15,16 @@ use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
 use App\Models\PaymentMethod;
-use App\Models\POSTransaction;
+use App\Models\PosTransaction;
 use Filament\Resources\Resource;
-use Filament\Forms\Components\Group;
-use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\Textarea;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\FileUpload;
-use App\Filament\Resources\PostransactionResource\Pages;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\PosTransactionResource\Pages;
+use App\Filament\Resources\PosTransactionResource\RelationManagers;
 
-class PostransactionResource extends Resource
+class PosTransactionResource extends Resource
 {
     protected static ?string $model = PosTransaction::class;
 
@@ -92,9 +84,9 @@ class PostransactionResource extends Resource
                                     ->required(),
                             ])
                             ->columnSpanFull(),
-                        Section::make('Ordered Items')
+                        Forms\Components\Section::make('Ordered Items')
                             ->schema([
-                                Repeater::make('detail_order')
+                                Forms\Components\Repeater::make('detail_order')
                                     ->relationship()
                                     ->live()
                                     ->statePath('orderItems')
@@ -103,7 +95,7 @@ class PostransactionResource extends Resource
                                         self::updateTotalPrice($get, $set);
                                     })
                                     ->schema([
-                                        Select::make('type')
+                                        Forms\Components\Select::make('type')
                                             ->options([
                                                 'product' => 'Product',
                                                 'animal' => 'Animal',
@@ -124,7 +116,7 @@ class PostransactionResource extends Resource
                                                 self::updateTotalPrice($get, $set);
                                             }),
 
-                                        Select::make('product_id')
+                                        Forms\Components\Select::make('product_id')
                                             ->label('Product')
                                             ->live(debounce: 500)
                                             ->options(Product::query()->where('stock', '>', 0)->pluck('name', 'id'))
@@ -140,7 +132,7 @@ class PostransactionResource extends Resource
                                                 self::updateTotalPrice($get, $set);
                                             }),
 
-                                        Select::make('animals_id')
+                                        Forms\Components\Select::make('animals_id')
                                             ->label('Animal')
                                             ->options(Animals::query()->where('is_active', true)->where('stock', '>', 0)->pluck('name', 'id'))
                                             ->columnSpan(4)
@@ -156,7 +148,7 @@ class PostransactionResource extends Resource
                                                 self::updateTotalPrice($get, $set);
                                             }),
 
-                                        Select::make('grooming_id')
+                                        Forms\Components\Select::make('grooming_id')
                                             ->label('Grooming Service')
                                             ->options(Grooming::query()->where('is_active', true)->pluck('name', 'id'))
                                             ->columnSpan(4)
@@ -171,7 +163,7 @@ class PostransactionResource extends Resource
                                                 self::updateTotalPrice($get, $set);
                                             }),
 
-                                        Select::make('hotel_id')
+                                        Forms\Components\Select::make('hotel_id')
                                             ->label('Hotel Service')
                                             ->options(Hotel::query()->where('is_active', true)->pluck('name', 'id'))
                                             ->columnSpan(4)
@@ -186,7 +178,7 @@ class PostransactionResource extends Resource
                                                 self::updateTotalPrice($get, $set);
                                             }),
 
-                                        Select::make('breeding_id')
+                                        Forms\Components\Select::make('breeding_id')
                                             ->label('Breeding Service')
                                             ->options(Breeding::query()->where('is_active', true)->pluck('name', 'id'))
                                             ->columnSpan(4)
@@ -201,7 +193,7 @@ class PostransactionResource extends Resource
                                                 self::updateTotalPrice($get, $set);
                                             }),
 
-                                        TextInput::make('quantity')
+                                        Forms\Components\TextInput::make('quantity')
                                             ->required()
                                             ->numeric()
                                             ->default(1)
@@ -231,13 +223,13 @@ class PostransactionResource extends Resource
                                                 self::updateTotalPrice($get, $set);
                                             }),
 
-                                        TextInput::make('stock')
+                                        Forms\Components\TextInput::make('stock')
                                             ->numeric()
                                             ->readOnly()
                                             ->columnSpan(1)
                                             ->visible(fn(Get $get): bool => $get('type') === 'product'),
 
-                                        TextInput::make('unit_price')
+                                        Forms\Components\TextInput::make('unit_price')
                                             ->required()
                                             ->numeric()
                                             ->readOnly()
@@ -245,28 +237,28 @@ class PostransactionResource extends Resource
                                             ->live(),
 
                                         // Pet Information Section (visible only for grooming and hotel)
-                                        Repeater::make('petInformation')
+                                        Forms\Components\Repeater::make('petInformation')
                                             ->relationship()
                                             ->schema([
-                                                TextInput::make('name')
+                                                Forms\Components\TextInput::make('name')
                                                     ->required()
                                                     ->label('Pet Name'),
-                                                TextInput::make('age')
+                                                Forms\Components\TextInput::make('age')
                                                     ->numeric()
                                                     ->required()
                                                     ->label('Pet Age'),
-                                                FileUpload::make('photo')
+                                                Forms\Components\FileUpload::make('photo')
                                                     ->image()
                                                     ->directory('pet-photos')
                                                     ->required()
                                                     ->label('Pet Photo'),
-                                                Textarea::make('description')
+                                                Forms\Components\Textarea::make('description')
                                                     ->required()
                                                     ->label('Pet Description'),
-                                                DatePicker::make('check_in'),
-                                                DatePicker::make('check_out')
+                                                Forms\Components\DatePicker::make('check_in'),
+                                                Forms\Components\DatePicker::make('check_out')
                                                     ->afterOrEqual('check_in'),
-                                                TextInput::make('days')
+                                                Forms\Components\TextInput::make('days')
                                                     ->readOnly(),
                                             ])
                                             ->columnSpanFull()
@@ -481,9 +473,9 @@ class PostransactionResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListPostransactions::route('/'),
-            'create' => Pages\CreatePostransaction::route('/create'),
-            // 'edit' => Pages\EditPostransaction::route('/{record}/edit'),
+            'index' => Pages\ListPosTransactions::route('/'),
+            'create' => Pages\CreatePosTransaction::route('/create'),
+            // 'edit' => Pages\EditPosTransaction::route('/{record}/edit'),
         ];
     }
 }

@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Filament\Resources\PostransactionResource\Pages;
+namespace App\Filament\Resources\PosTransactionResource\Pages;
 
-use App\Filament\Resources\PostransactionResource;
+use App\Filament\Resources\PosTransactionResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 
-class ListPostransactions extends ListRecords
+class ListPosTransactions extends ListRecords
 {
-    protected static string $resource = PostransactionResource::class;
+    protected static string $resource = PosTransactionResource::class;
 
     protected function getHeaderActions(): array
     {

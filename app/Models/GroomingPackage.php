@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Grooming;
 use Illuminate\Database\Eloquent\Model;
 
 class GroomingPackage extends Model

@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Filament\Resources\PostransactionResource\Pages;
+namespace App\Filament\Resources\PosTransactionResource\Pages;
 
-use App\Filament\Resources\PostransactionResource;
+use App\Filament\Resources\PosTransactionResource;
 use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
 
-class CreatePostransaction extends CreateRecord
+class CreatePosTransaction extends CreateRecord
 {
-    protected static string $resource = PostransactionResource::class;
+    protected static string $resource = PosTransactionResource::class;
 }

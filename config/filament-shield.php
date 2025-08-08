@@ -3,8 +3,8 @@
 return [
     'shield_resource' => [
         'should_register_navigation' => true,
-        'slug' => 'roles',
-        'navigation_sort' => 21,
+        'slug' => 'shield/roles',
+        'navigation_sort' => -1,
         'navigation_badge' => true,
         'navigation_group' => true,
         'is_globally_searchable' => false,
@@ -63,12 +63,14 @@ return [
     ],
 
     'exclude' => [
-        'enabled' => false,
+        'enabled' => true,
 
-        'pages' => [],
+        'pages' => [
+            'Dashboard',
+        ],
 
         'widgets' => [
-            'AccountWidget',
+            'AccountWidget', 'FilamentInfoWidget',
         ],
 
         'resources' => [],

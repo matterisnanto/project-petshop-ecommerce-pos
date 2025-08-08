@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use App\Models\Purchase;
+use App\Models\Supplier;
+use App\Models\ReturnItem;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -18,7 +21,7 @@ class PurchaseReturn extends Model
 
     public function purchases()
     {
-        return $this->belongsTo(Purchases::class);
+        return $this->belongsTo(Purchase::class);
     }
 
     public function returnItems(): HasMany

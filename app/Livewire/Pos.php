@@ -23,7 +23,7 @@ use Filament\Forms\Form;
 use Illuminate\Support\Str;
 use App\Models\PaymentMethod;
 use App\Models\PetInformation;
-use App\Models\POSTransaction;
+use App\Models\PosTransaction;
 use Illuminate\Support\Facades\Log;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Components\Repeater;
@@ -578,7 +578,7 @@ class Pos extends Component implements HasForms
     public function downloadReceipt($transactionId)
     {
 
-        $transaction = POSTransaction::with([
+        $transaction = PosTransaction::with([
             'detail_order.product',
             'detail_order.animal',
             'detail_order.grooming',
@@ -635,7 +635,7 @@ class Pos extends Component implements HasForms
 
         $formState = $this->form->getState();
 
-        $postransaction = POSTransaction::create([
+        $postransaction = PosTransaction::create([
             'trx_id' => $this->trx_id,
             'name' => $this->name_customer,
             'phone' => $this->phone,

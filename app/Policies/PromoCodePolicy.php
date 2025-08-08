@@ -3,10 +3,10 @@
 namespace App\Policies;
 
 use App\Models\User;
-use App\Models\Promocode;
+use App\Models\PromoCode;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class PromocodePolicy
+class PromoCodePolicy
 {
     use HandlesAuthorization;
 
@@ -15,15 +15,15 @@ class PromocodePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_promocode');
+        return $user->can('view_any_promo::code');
     }
 
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Promocode $promocode): bool
+    public function view(User $user, PromoCode $promoCode): bool
     {
-        return $user->can('view_promocode');
+        return $user->can('view_promo::code');
     }
 
     /**
@@ -31,23 +31,23 @@ class PromocodePolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_promocode');
+        return $user->can('create_promo::code');
     }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Promocode $promocode): bool
+    public function update(User $user, PromoCode $promoCode): bool
     {
-        return $user->can('update_promocode');
+        return $user->can('update_promo::code');
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Promocode $promocode): bool
+    public function delete(User $user, PromoCode $promoCode): bool
     {
-        return $user->can('delete_promocode');
+        return $user->can('delete_promo::code');
     }
 
     /**
@@ -55,15 +55,15 @@ class PromocodePolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_promocode');
+        return $user->can('delete_any_promo::code');
     }
 
     /**
      * Determine whether the user can permanently delete.
      */
-    public function forceDelete(User $user, Promocode $promocode): bool
+    public function forceDelete(User $user, PromoCode $promoCode): bool
     {
-        return $user->can('force_delete_promocode');
+        return $user->can('force_delete_promo::code');
     }
 
     /**
@@ -71,15 +71,15 @@ class PromocodePolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_promocode');
+        return $user->can('force_delete_any_promo::code');
     }
 
     /**
      * Determine whether the user can restore.
      */
-    public function restore(User $user, Promocode $promocode): bool
+    public function restore(User $user, PromoCode $promoCode): bool
     {
-        return $user->can('restore_promocode');
+        return $user->can('restore_promo::code');
     }
 
     /**
@@ -87,15 +87,15 @@ class PromocodePolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_promocode');
+        return $user->can('restore_any_promo::code');
     }
 
     /**
      * Determine whether the user can replicate.
      */
-    public function replicate(User $user, Promocode $promocode): bool
+    public function replicate(User $user, PromoCode $promoCode): bool
     {
-        return $user->can('replicate_promocode');
+        return $user->can('replicate_promo::code');
     }
 
     /**
@@ -103,6 +103,6 @@ class PromocodePolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_promocode');
+        return $user->can('reorder_promo::code');
     }
 }

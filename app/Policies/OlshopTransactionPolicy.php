@@ -3,10 +3,10 @@
 namespace App\Policies;
 
 use App\Models\User;
-use App\Models\Olshoptransaction;
+use App\Models\OlshopTransaction;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class OlshoptransactionPolicy
+class OlshopTransactionPolicy
 {
     use HandlesAuthorization;
 
@@ -15,15 +15,15 @@ class OlshoptransactionPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_olshoptransaction');
+        return $user->can('view_any_olshop::transaction');
     }
 
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Olshoptransaction $olshoptransaction): bool
+    public function view(User $user, OlshopTransaction $olshopTransaction): bool
     {
-        return $user->can('view_olshoptransaction');
+        return $user->can('view_olshop::transaction');
     }
 
     /**
@@ -31,23 +31,23 @@ class OlshoptransactionPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_olshoptransaction');
+        return $user->can('create_olshop::transaction');
     }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Olshoptransaction $olshoptransaction): bool
+    public function update(User $user, OlshopTransaction $olshopTransaction): bool
     {
-        return $user->can('update_olshoptransaction');
+        return $user->can('update_olshop::transaction');
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Olshoptransaction $olshoptransaction): bool
+    public function delete(User $user, OlshopTransaction $olshopTransaction): bool
     {
-        return $user->can('delete_olshoptransaction');
+        return $user->can('delete_olshop::transaction');
     }
 
     /**
@@ -55,15 +55,15 @@ class OlshoptransactionPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_olshoptransaction');
+        return $user->can('delete_any_olshop::transaction');
     }
 
     /**
      * Determine whether the user can permanently delete.
      */
-    public function forceDelete(User $user, Olshoptransaction $olshoptransaction): bool
+    public function forceDelete(User $user, OlshopTransaction $olshopTransaction): bool
     {
-        return $user->can('force_delete_olshoptransaction');
+        return $user->can('force_delete_olshop::transaction');
     }
 
     /**
@@ -71,15 +71,15 @@ class OlshoptransactionPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_olshoptransaction');
+        return $user->can('force_delete_any_olshop::transaction');
     }
 
     /**
      * Determine whether the user can restore.
      */
-    public function restore(User $user, Olshoptransaction $olshoptransaction): bool
+    public function restore(User $user, OlshopTransaction $olshopTransaction): bool
     {
-        return $user->can('restore_olshoptransaction');
+        return $user->can('restore_olshop::transaction');
     }
 
     /**
@@ -87,15 +87,15 @@ class OlshoptransactionPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_olshoptransaction');
+        return $user->can('restore_any_olshop::transaction');
     }
 
     /**
      * Determine whether the user can replicate.
      */
-    public function replicate(User $user, Olshoptransaction $olshoptransaction): bool
+    public function replicate(User $user, OlshopTransaction $olshopTransaction): bool
     {
-        return $user->can('replicate_olshoptransaction');
+        return $user->can('replicate_olshop::transaction');
     }
 
     /**
@@ -103,6 +103,6 @@ class OlshoptransactionPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_olshoptransaction');
+        return $user->can('reorder_olshop::transaction');
     }
 }

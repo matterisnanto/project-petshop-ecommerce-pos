@@ -3,8 +3,10 @@
 namespace App\Exports;
 
 use App\Models\Brand;
+use App\Models\Brands;
 use App\Models\Category;
 use App\Models\Supplier;
+use App\Models\Categories;
 use Maatwebsite\Excel\Events\AfterSheet;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Concerns\WithEvents;
@@ -64,8 +66,8 @@ class ProductsExport implements FromCollection, WithHeadings, WithTitle, WithEve
             $sheet = $event->sheet->getDelegate();
 
             // Get category IDs from the database
-            $categoryIds = Category::pluck('id')->toArray();
-            $brandIds = Brand::pluck('id')->toArray();
+            $categoryIds = Categories::pluck('id')->toArray();
+            $brandIds = Brands::pluck('id')->toArray();
             $supplierIds = Supplier::pluck('id')->toArray();
 
             // Convert category IDs to a comma-separated string
@@ -147,7 +149,7 @@ class CategoriesExport implements FromCollection, WithHeadings, WithTitle
 {
     public function collection()
     {
-        return Category::select('id', 'name')->get();
+        return Categories::select('id', 'name')->get();
     }
 
     public function headings(): array
@@ -168,7 +170,7 @@ class BrandsExport implements FromCollection, WithHeadings, WithTitle
 {
     public function collection()
     {
-        return Brand::select('id', 'name')->get();
+        return Brands::select('id', 'name')->get();
     }
 
     public function headings(): array

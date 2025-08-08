@@ -2,7 +2,11 @@
 
 namespace App\Models;
 
+use App\Models\Breeds;
+use App\Models\DetailOrder;
 use Illuminate\Support\Str;
+use App\Models\BreedingPackage;
+use App\Models\CategoryAnimals;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -49,6 +53,6 @@ class Breeding extends Model
 
     public function detail_order(): HasMany
     {
-        return $this->hasMany(Order::class);
+        return $this->hasMany(DetailOrder::class);
     }
 }

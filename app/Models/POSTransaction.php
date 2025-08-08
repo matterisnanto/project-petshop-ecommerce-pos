@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Models\Product;
+use App\Models\DetailOrder;
 use App\Models\PaymentMethod;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -25,9 +27,9 @@ class PosTransaction extends Model
     ];
 
 
-    public function detail_order(): HasMany
+    public function detailOrder(): HasMany
     {
-        return $this->hasMany(Order::class);
+        return $this->hasMany(DetailOrder::class);
     }
 
     public function product(): BelongsTo
@@ -49,11 +51,11 @@ class PosTransaction extends Model
 
     public function productOrders()
     {
-        return $this->hasMany(Order::class)->whereNotNull('product_id');
+        return $this->hasMany(DetailOrder::class)->whereNotNull('product_id');
     }
 
     public function animalOrders()
     {
-        return $this->hasMany(Order::class)->whereNotNull('animals_id');
+        return $this->hasMany(DetailOrder::class)->whereNotNull('animals_id');
     }
 }

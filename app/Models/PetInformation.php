@@ -2,18 +2,21 @@
 
 namespace App\Models;
 
+use App\Models\DetailOrder;
+use App\Models\PosTransaction;
 use Illuminate\Support\Carbon;
+use App\Models\CategoryAnimals;
 use Illuminate\Database\Eloquent\Model;
 
 class PetInformation extends Model
 {
     protected $table = 'pet_information';
     //
-    protected $fillable = ['detail_order_id', 'name', 'category_animals_id', 'age', 'photo', 'description', 'check_in', 'check_out', 'days'];
+    protected $fillable = ['detail_order_id', 'name', 'category_animals_id', 'age', 'photo', 'description', 'check_in', 'check_out', 'days', 'on_petshop'];
 
     public function detail_order()
     {
-        return $this->belongsTo(Order::class);
+        return $this->belongsTo(DetailOrder::class);
     }
 
     public function posTransaction()

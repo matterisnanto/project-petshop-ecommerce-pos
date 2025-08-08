@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\DetailOrder;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -42,6 +43,6 @@ class Grooming extends Model
 
     public function detail_order(): HasMany
     {
-        return $this->hasMany(Order::class);
+        return $this->hasMany(DetailOrder::class);
     }
 }

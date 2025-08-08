@@ -4,9 +4,9 @@ namespace App\Filament\Resources;
 
 use Filament\Forms;
 use Filament\Tables;
-use App\Models\Order;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
+use App\Models\DetailOrder;
 use App\Models\PetInformation;
 use Filament\Resources\Resource;
 use Illuminate\Database\Eloquent\Builder;
@@ -59,7 +59,7 @@ class PetInformationResource extends Resource
                             ->preload()
                             ->required()
                             ->columnSpanFull()
-                            ->getOptionLabelFromRecordUsing(function (Order $detail_order) {
+                            ->getOptionLabelFromRecordUsing(function (DetailOrder $detail_order) {
                                 return "{$detail_order->posTransaction->trx_id} - Customer name: {$detail_order->posTransaction->name}";
                             }),
                     ]),

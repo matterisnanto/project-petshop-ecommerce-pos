@@ -4,12 +4,11 @@ namespace App\Filament\Resources;
 
 use Filament\Forms;
 use Filament\Tables;
-use App\Models\Brand;
+use App\Models\Brands;
 use App\Models\Product;
 use Filament\Forms\Set;
-use App\Models\Category;
-use App\Models\Supplier;
 use Filament\Forms\Form;
+use App\Models\Categories;
 use Filament\Tables\Table;
 use App\Models\CategoryAnimals;
 use Filament\Resources\Resource;
@@ -225,7 +224,7 @@ class ProductResource extends Resource
                                                     ->live(onBlur: true)
                                                     ->afterStateUpdated(function (Set $set, $state) {
                                                         if (!empty($state)) {
-                                                            $set('slug', Category::generateUniqueSlug($state));
+                                                            $set('slug', Categories::generateUniqueSlug($state));
                                                         }
                                                     })
                                                     ->columnSpan(['md' => 2]),
@@ -293,7 +292,7 @@ class ProductResource extends Resource
                                                     ->label('Brand Name')
                                                     ->afterStateUpdated(function (Set $set, $state) {
                                                         if (!empty($state)) {
-                                                            $set('slug', Brand::generateUniqueSlug($state));
+                                                            $set('slug', Brands::generateUniqueSlug($state));
                                                         }
                                                     })
                                                     ->required()

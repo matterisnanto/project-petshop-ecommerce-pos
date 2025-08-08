@@ -454,7 +454,6 @@ class HotelResource extends Resource
         return [
             'index' => Pages\ListHotels::route('/'),
             'create' => Pages\CreateHotel::route('/create'),
-            // 'edit' => Pages\EditHotel::route('/{record}/edit'),
         ];
     }
 }

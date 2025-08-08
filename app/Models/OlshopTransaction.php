@@ -2,6 +2,10 @@
 
 namespace App\Models;
 
+use App\Models\Product;
+use App\Models\PromoCode;
+use App\Models\DetailOrder;
+use App\Models\PaymentMethod;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -16,7 +20,7 @@ class OlshopTransaction extends Model
 
     public function orders(): HasMany
     {
-        return $this->hasMany(Order::class, 'olshop_transaction_id');
+        return $this->hasMany(DetailOrder::class, 'olshop_transaction_id');
     }
     public function products(): BelongsTo
     {

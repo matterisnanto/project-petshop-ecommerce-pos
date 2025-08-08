@@ -4,7 +4,7 @@ namespace App\Filament\Widgets;
 
 use Carbon\Carbon;
 use Flowframe\Trend\Trend;
-use App\Models\POSTransaction;
+use App\Models\PosTransaction;
 use Flowframe\Trend\TrendValue;
 use App\Models\OlshopTransaction;
 use Filament\Widgets\ChartWidget;

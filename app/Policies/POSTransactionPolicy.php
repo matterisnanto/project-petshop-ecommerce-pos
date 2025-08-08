@@ -15,15 +15,15 @@ class PosTransactionPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_postransaction');
+        return $user->can('view_any_pos::transaction');
     }
 
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, POSTransaction $pOSTransaction): bool
+    public function view(User $user, PosTransaction $posTransaction): bool
     {
-        return $user->can('view_postransaction');
+        return $user->can('view_pos::transaction');
     }
 
     /**
@@ -31,23 +31,23 @@ class PosTransactionPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_postransaction');
+        return $user->can('create_pos::transaction');
     }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, POSTransaction $pOSTransaction): bool
+    public function update(User $user, PosTransaction $posTransaction): bool
     {
-        return $user->can('update_postransaction');
+        return $user->can('update_pos::transaction');
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, POSTransaction $pOSTransaction): bool
+    public function delete(User $user, PosTransaction $posTransaction): bool
     {
-        return $user->can('delete_postransaction');
+        return $user->can('delete_pos::transaction');
     }
 
     /**
@@ -55,15 +55,15 @@ class PosTransactionPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_postransaction');
+        return $user->can('delete_any_pos::transaction');
     }
 
     /**
      * Determine whether the user can permanently delete.
      */
-    public function forceDelete(User $user, POSTransaction $pOSTransaction): bool
+    public function forceDelete(User $user, PosTransaction $posTransaction): bool
     {
-        return $user->can('force_delete_postransaction');
+        return $user->can('force_delete_pos::transaction');
     }
 
     /**
@@ -71,15 +71,15 @@ class PosTransactionPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_postransaction');
+        return $user->can('force_delete_any_pos::transaction');
     }
 
     /**
      * Determine whether the user can restore.
      */
-    public function restore(User $user, POSTransaction $pOSTransaction): bool
+    public function restore(User $user, PosTransaction $posTransaction): bool
     {
-        return $user->can('restore_postransaction');
+        return $user->can('restore_pos::transaction');
     }
 
     /**
@@ -87,15 +87,15 @@ class PosTransactionPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_postransaction');
+        return $user->can('restore_any_pos::transaction');
     }
 
     /**
      * Determine whether the user can replicate.
      */
-    public function replicate(User $user, POSTransaction $pOSTransaction): bool
+    public function replicate(User $user, PosTransaction $posTransaction): bool
     {
-        return $user->can('replicate_postransaction');
+        return $user->can('replicate_pos::transaction');
     }
 
     /**
@@ -103,6 +103,6 @@ class PosTransactionPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_postransaction');
+        return $user->can('reorder_pos::transaction');
     }
 }

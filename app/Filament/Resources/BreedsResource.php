@@ -11,9 +11,8 @@ use Filament\Tables\Table;
 use App\Models\CategoryAnimals;
 use Filament\Resources\Resource;
 use Illuminate\Support\Collection;
-use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Section;
-use Filament\Tables\Columns\TextColumn;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\BreedsResource\Pages;
@@ -39,7 +38,7 @@ class BreedsResource extends Resource
     {
         return $form
             ->schema([
-                Section::make('Breed Details')
+                Forms\Components\Section::make('Breed Details')
                     ->description('Add or modify animal breed information')
                     ->icon('heroicon-o-information-circle')
                     ->collapsible()
