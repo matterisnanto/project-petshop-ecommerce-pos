@@ -237,7 +237,7 @@ class PurchaseResource extends Resource
                                                     ->description('Product categorization')
                                                     ->icon('heroicon-o-tag')
                                                     ->schema([
-                                                        Forms\Components\Select::make('category_id')
+                                                        Forms\Components\Select::make('categories_id')
                                                             ->label('Category')
                                                             ->options(Categories::all()->pluck('name', 'id'))
                                                             ->searchable()
@@ -293,7 +293,7 @@ class PurchaseResource extends Resource
                                                                 return Categories::create($data)->id;
                                                             })
                                                             ->columnSpan(['md' => 1]),
-                                                        Forms\Components\Select::make('brand_id')
+                                                        Forms\Components\Select::make('brands_id')
                                                             ->label('Brand')
                                                             ->options(Brands::all()->pluck('name', 'id'))
                                                             ->searchable()
@@ -413,7 +413,7 @@ class PurchaseResource extends Resource
                                                             ])->columns(3),
                                                         Forms\Components\Grid::make()
                                                             ->schema([
-                                                                Forms\Components\Select::make('category_id')
+                                                                Forms\Components\Select::make('categoryanimals_id')
                                                                     ->label('Category')
                                                                     ->options(CategoryAnimals::all()->pluck('name', 'id'))
                                                                     ->required()

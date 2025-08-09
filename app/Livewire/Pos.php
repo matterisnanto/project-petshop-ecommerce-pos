@@ -10,7 +10,7 @@ use Dompdf\Options;
 
 use Filament\Forms;
 use App\Models\Hotel;
-use App\Models\Order;
+use App\Models\DetailOrder;
 use App\Models\Animals;
 
 use App\Models\Product;
@@ -579,12 +579,12 @@ class Pos extends Component implements HasForms
     {
 
         $transaction = PosTransaction::with([
-            'detail_order.product',
-            'detail_order.animal',
-            'detail_order.grooming',
-            'detail_order.hotel',
-            'detail_order.breeding',
-            'detail_order.petInformation',
+            'detailOrder.product',
+            'detailOrder.animal',
+            'detailOrder.grooming',
+            'detailOrder.hotel',
+            'detailOrder.breeding',
+            'detailOrder.petInformation',
             'paymentMethod'
         ])->find($transactionId);
 
@@ -696,7 +696,7 @@ class Pos extends Component implements HasForms
                     break;
             }
 
-            $detail_order = Order::create($orderData);
+            $detail_order = DetailOrder::create($orderData);
 
             // Add pet information if exists for this item
             if (isset($petInfoByItem[$itemKey]) && in_array($item['type'], ['grooming', 'hotel', 'breeding'])) {

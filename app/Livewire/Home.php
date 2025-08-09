@@ -6,7 +6,7 @@ use Livewire\Component;
 use Livewire\Attributes\Title;
 use Illuminate\Support\Facades\Session;
 
-#[Title('Home - Cindy Petshop')]
+#[Title('Home - CindyPetshop')]
 class Home extends Component
 {
 

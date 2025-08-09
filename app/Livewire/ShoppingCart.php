@@ -9,7 +9,7 @@ use Illuminate\Support\Carbon;
 use Livewire\Attributes\Title;
 use Illuminate\Support\Facades\Session;
 
-#[Title('Shopping Cart - Cindy Petshop')]
+#[Title('Shopping Cart - CindyPetshop')]
 class ShoppingCart extends Component
 {
     public $cartItems = [];

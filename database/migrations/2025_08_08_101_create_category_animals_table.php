@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('category_animals', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 50);
-            $table->string('slug', 100)->unique();
+            $table->string('name', 20);
+            $table->string('slug', 20)->unique();
             $table->text('description')->nullable();
             $table->string('icon', 255)->nullable();
             $table->timestamps();

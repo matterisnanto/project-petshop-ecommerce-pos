@@ -10,7 +10,7 @@ use Livewire\Attributes\Title;
 use App\Models\CategoryAnimals;
 
 
-#[Title('Animals - Cindy Petshop')]
+#[Title('Animals - CindyPetshop')]
 class AnimalsList extends Component
 {
     use WithPagination;
@@ -73,7 +73,7 @@ class AnimalsList extends Component
             ->orderBy('name')
             ->get();
 
-        $categories = CategoryAnimals::select('id', 'name')
+        $category = CategoryAnimals::select('id', 'name')
             ->withCount(['animals' => function ($query) {
                 $query->where('is_active', true)
                     ->where('stock', '>', 0);
@@ -88,7 +88,7 @@ class AnimalsList extends Component
         return view('livewire.pages.animals-list', [
             'animals' => $animals,
             'breeds' => $breeds,
-            'categories' => $categories,
+            'category' => $category,
             'currentSort' => $this->sortBy
         ]);
     }

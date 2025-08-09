@@ -244,7 +244,7 @@
             Paket Grooming Terbaik untuk Hewan Kesayangan Anda
         </h2>
         <p class=" font-light text-gray-500 sm:text-xl dark:text-gray-400">
-            Di Cindy Petshop, kami menyediakan layanan grooming profesional dengan harga terjangkau, untuk
+            Di CindyPetshop, kami menyediakan layanan grooming profesional dengan harga terjangkau, untuk
             anjing dan kucing kesayangan Anda.
         </p>
     </div>

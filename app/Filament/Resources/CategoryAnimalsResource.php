@@ -208,8 +208,8 @@ class CategoryAnimalsResource extends Resource
                     Tables\Actions\DeleteBulkAction::make()
                         ->label('Delete selected')
                         ->icon('heroicon-o-trash')
-                        ->modalHeading('Delete selected categories')
-                        ->modalDescription('Are you sure you want to delete these categories? This action cannot be undone.'),
+                        ->modalHeading('Delete selected category')
+                        ->modalDescription('Are you sure you want to delete these category? This action cannot be undone.'),
 
                     Tables\Actions\RestoreBulkAction::make()
                         ->label('Restore Selected')
@@ -232,7 +232,7 @@ class CategoryAnimalsResource extends Resource
                     ->label('New Category')
                     ->icon('heroicon-o-plus'),
             ])
-            ->emptyStateDescription('No animal categories found. Create one to get started!')
+            ->emptyStateDescription('No animal category found. Create one to get started!')
             ->defaultSort('name', 'asc')
             ->deferLoading()
             ->persistSearchInSession()

@@ -7,7 +7,7 @@ use Livewire\Attributes\Title;
 use App\Models\OlshopTransaction;
 use Illuminate\Support\Facades\Session;
 
-#[Title('TRX Check - Cindy Petshop')]
+#[Title('TRX Check - CindyPetshop')]
 class TrxCheck extends Component
 {
     public $transactionId;

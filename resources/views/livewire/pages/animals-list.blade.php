@@ -277,7 +277,7 @@
                             <!-- Category Tab -->
                             <div class="hidden grid-cols-2 gap-4 md:grid-cols-3 p-4 rounded-lg bg-gray-50 dark:bg-gray-800"
                                 id="category" role="tabpanel" aria-labelledby="category-tab">
-                                @foreach ($categories->groupBy(function ($item) {
+                                @foreach ($category->groupBy(function ($item) {
         return strtoupper(substr($item->name, 0, 1));
     }) as $initial => $categoryGroup)
                                     <div class="space-y-2">

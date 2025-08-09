@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('grooming_packages', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 100);
+            $table->string('name', 30);
             $table->decimal('price', 8)->nullable();
             $table->text('description')->nullable();
             $table->foreignId('grooming_id')->constrained()->cascadeOnDelete();

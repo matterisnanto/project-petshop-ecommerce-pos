@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('hotel_packages', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 50);
+            $table->string('name', 30);
             $table->decimal('price', 8)->nullable();
             $table->text('description')->nullable();
             $table->foreignId('hotel_id')->constrained()->cascadeOnDelete();

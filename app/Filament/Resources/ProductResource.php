@@ -160,7 +160,6 @@ class ProductResource extends Resource
                                         }
                                         return true;
                                     })
-                                    ->required()
                                     ->helperText('Additional product views or angles'),
                             ])
                             ->grid(2)
@@ -203,8 +202,8 @@ class ProductResource extends Resource
                     ->collapsible()
                     ->columns(2)
                     ->schema([
-                        Forms\Components\Select::make('category_id')
-                            ->relationship('category', 'name')
+                        Forms\Components\Select::make('categories_id')
+                            ->relationship('categories', 'name')
                             ->label('Product Category')
                             ->native(false)
                             ->searchable()
@@ -275,8 +274,8 @@ class ProductResource extends Resource
                             ->noSearchResultsMessage('No categories found')
                             ->searchPrompt('Search categories'),
 
-                        Forms\Components\Select::make('brand_id')
-                            ->relationship('brand', 'name')
+                        Forms\Components\Select::make('brands_id')
+                            ->relationship('brands', 'name')
                             ->label('Brand')
                             ->native(false)
                             ->searchable()
@@ -483,7 +482,7 @@ class ProductResource extends Resource
                     ->color('primary')
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('brand.name')
+                Tables\Columns\TextColumn::make('brands.name')
                     ->label('Brand')
                     ->sortable()
                     ->badge()
@@ -492,7 +491,7 @@ class ProductResource extends Resource
                     ->searchable()
                     ->toggleable(),
 
-                Tables\Columns\TextColumn::make('category.name')
+                Tables\Columns\TextColumn::make('categories.name')
                     ->label('Category')
                     ->sortable()
                     ->badge()
@@ -564,16 +563,16 @@ class ProductResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('category_id')
+                Tables\Filters\SelectFilter::make('categories_id')
                     ->label('Category')
-                    ->relationship('category', 'name')
+                    ->relationship('categories', 'name')
                     ->searchable()
                     ->preload()
                     ->multiple(),
 
-                Tables\Filters\SelectFilter::make('brand_id')
+                Tables\Filters\SelectFilter::make('brands_id')
                     ->label('Brand')
-                    ->relationship('brand', 'name')
+                    ->relationship('brands', 'name')
                     ->searchable()
                     ->preload()
                     ->multiple(),
@@ -683,7 +682,7 @@ class ProductResource extends Resource
             ->persistFiltersInSession()
             ->persistSearchInSession()
             ->groups([
-                Tables\Grouping\Group::make('category.name')
+                Tables\Grouping\Group::make('categories.name')
                     ->label('Category')
                     ->collapsible(),
 
@@ -695,7 +694,7 @@ class ProductResource extends Resource
                     ->collapsible(),
             ])
             ->groupingSettingsInDropdownOnDesktop()
-            ->defaultGroup('category.name');
+            ->defaultGroup('categories.name');
     }
 
     public static function getRelations(): array

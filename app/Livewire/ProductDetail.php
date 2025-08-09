@@ -7,7 +7,7 @@ use Livewire\Component;
 use Livewire\Attributes\Title;
 use Illuminate\Support\Facades\Session;
 
-#[Title('Product - Cindy Petshop')]
+#[Title('Product - CindyPetshop')]
 class ProductDetail extends Component
 {
     public Product $product;

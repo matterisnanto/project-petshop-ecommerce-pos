@@ -6,7 +6,7 @@ use App\Models\Hotel;
 use Livewire\Component;
 use Livewire\Attributes\Title;
 
-#[Title('Pet Hotel - Cindy Petshop')]
+#[Title('Pet Hotel - CindyPetshop')]
 class PetHotel extends Component
 {
     public function render()

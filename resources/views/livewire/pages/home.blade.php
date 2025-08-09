@@ -339,7 +339,7 @@
                 src="{{ asset('img\testimonial\Gambar WhatsApp 2025-05-15 pukul 16.15.07_21ca179f.jpg') }}"
                 alt="feature image">
             <div class="text-gray-500 dark:text-gray-400 sm:text-lg">
-                <h2 class="mb-2 text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">Cindy Petshop
+                <h2 class="mb-2 text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">CindyPetshop
                 </h2>
                 <p class="mb-2 font-light lg:text-xl">Petshop kami adalah rumah bagi kucing dan anjing. Dengan produk
                     terbaik dan layanan lengkap, kami memastikan hewan peliharaan Anda selalu sehat, bahagia, dan

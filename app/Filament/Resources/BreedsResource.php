@@ -234,8 +234,8 @@ class BreedsResource extends Resource
                     Tables\Actions\DeleteBulkAction::make()
                         ->label('Delete selected')
                         ->icon('heroicon-o-trash')
-                        ->modalHeading('Delete selected categories')
-                        ->modalDescription('Are you sure you want to delete these categories? This action cannot be undone.'),
+                        ->modalHeading('Delete selected category')
+                        ->modalDescription('Are you sure you want to delete these category? This action cannot be undone.'),
 
                     Tables\Actions\RestoreBulkAction::make()
                         ->label('Restore Selected')

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('animals', function (Blueprint $table) {
             $table->id();
             $table->string('name', 50);
-            $table->string('slug', 100)->unique();
+            $table->string('slug', 55)->unique();
             $table->string('barcode', 20)->nullable()->unique();
             $table->foreignId('category_animals_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('breeds_id')->nullable()->constrained('breeds')->nullOnDelete();

@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('hotels', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 50);
-            $table->string('slug', 100)->unique();
+            $table->string('name', 30);
+            $table->string('slug', 35)->unique();
             $table->foreignId('category_animals_id')->nullable()->constrained()->nullOnDelete();
             $table->text('description')->nullable();
             $table->decimal('price_per_day', 8);

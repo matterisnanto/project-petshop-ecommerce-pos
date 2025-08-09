@@ -115,7 +115,7 @@ class GroomingResource extends Resource
                             ->collapsible(),
                     ]),
 
-                Forms\Components\Section::make('Categories')
+                Forms\Components\Section::make('category')
                     ->description('Service classification')
                     ->icon('heroicon-o-tag')
                     ->collapsible()

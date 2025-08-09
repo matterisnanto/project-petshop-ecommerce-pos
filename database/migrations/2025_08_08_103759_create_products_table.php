@@ -25,7 +25,7 @@ return new class extends Migration
             $table->boolean('is_popular')->default(false);
             $table->integer('stock')->default(0);
             $table->foreignId('categories_id')->nullable()->constrained()->nullOnDelete();
-            $table->foreignId('brand_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignId('brands_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('category_animals_id')->nullable()->constrained()->nullOnDelete();
             $table->timestamps();
             $table->softDeletes();

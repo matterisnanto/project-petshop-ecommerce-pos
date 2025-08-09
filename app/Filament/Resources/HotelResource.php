@@ -116,7 +116,7 @@ class HotelResource extends Resource
                             ->maxItems(10),
                     ]),
 
-                Forms\Components\Section::make('Categories')
+                Forms\Components\Section::make('category')
                     ->description('Service classification')
                     ->icon('heroicon-o-tag')
                     ->collapsible()

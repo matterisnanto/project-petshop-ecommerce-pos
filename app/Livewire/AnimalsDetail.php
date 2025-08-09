@@ -6,7 +6,7 @@ use App\Models\Animals;
 use Livewire\Component;
 use Livewire\Attributes\Title;
 
-#[Title('Animals - Cindy Petshop')]
+#[Title('Animals - CindyPetshop')]
 class AnimalsDetail extends Component
 {
     public Animals $animals;

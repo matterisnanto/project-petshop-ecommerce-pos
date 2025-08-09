@@ -6,7 +6,7 @@ use Livewire\Component;
 use App\Models\Breeding;
 use Livewire\Attributes\Title;
 
-#[Title('Breeding - Cindy Petshop')]
+#[Title('Breeding - CindyPetshop')]
 class Breedings extends Component
 {
     public function render()

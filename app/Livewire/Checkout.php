@@ -2,7 +2,7 @@
 
 namespace App\Livewire;
 
-use App\Models\Order;
+use App\Models\DetailOrder;
 use App\Models\Product;
 use Livewire\Component;
 use App\Models\PaymentMethod;
@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Session;
 
-#[Title('Checkout - Cindy Petshop')]
+#[Title('Checkout - CindyPetshop')]
 class Checkout extends Component
 {
     use WithFileUploads;
@@ -532,7 +532,7 @@ class Checkout extends Component
 
             // Create order items
             foreach ($cartItems as $item) {
-                Order::create([
+                DetailOrder::create([
                     'olshop_transaction_id' => $transaction->id,
                     'type' => 'product',
                     'product_id' => $item['id'],

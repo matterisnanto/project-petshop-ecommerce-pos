@@ -116,7 +116,7 @@ class BreedingResource extends Resource
                             ->collapsible(),
                     ]),
 
-                Forms\Components\Section::make('Animal Categories')
+                Forms\Components\Section::make('Animal category')
                     ->description('Animal classification')
                     ->icon('heroicon-o-tag')
                     ->collapsible()

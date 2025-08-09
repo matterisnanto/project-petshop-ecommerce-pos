@@ -144,7 +144,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach ($transaction->detail_order as $detail_order)
+            @foreach ($transaction->detailOrder as $detail_order)
                 <tr>
                     <td>
                         @if ($detail_order->product)
@@ -178,7 +178,8 @@
                     </td>
                     <td class="text-center">{{ $detail_order->quantity }}</td>
                     <td class="text-right">{{ number_format($detail_order->unit_price, 0, ',', '.') }}</td>
-                    <td class="text-right">{{ number_format($detail_order->quantity * $detail_order->unit_price, 0, ',', '.') }}</td>
+                    <td class="text-right">
+                        {{ number_format($detail_order->quantity * $detail_order->unit_price, 0, ',', '.') }}</td>
                 </tr>
             @endforeach
         </tbody>

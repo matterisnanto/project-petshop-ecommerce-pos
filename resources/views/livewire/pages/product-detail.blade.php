@@ -6,11 +6,11 @@
                     <livewire:navigation.bread-crumb :links="[
                         ['text' => 'Home', 'url' => route('products')],
                         [
-                            'text' => $product->category->name,
+                            'text' => $product->categories->name,
                             'url' =>
                                 url('products') .
                                 '?' .
-                                http_build_query(['categories' => [0 => $product->category_id]]),
+                                http_build_query(['categories' => [0 => $product->categories_id]]),
                         ],
                     ]" :currentPage="$product->name" />
                 </div>
@@ -56,8 +56,8 @@
                         {{ $product->name }}
                     </h1>
                     <p class="font-semibold text-gray-500 dark:text-gray-400">{{ $product->barcode }}</p>
-                    <p class="text-gray-500 dark:text-gray-400"> {{ $product->category->name }} -
-                        {{ $product->brand->name }}</p>
+                    <p class="text-gray-500 dark:text-gray-400"> {{ $product->categories->name }} -
+                        {{ $product->brands->name }}</p>
                     <div class="mt-2 sm:items-center sm:gap-4 sm:flex">
                         <p class="text-2xl font-extrabold text-gray-900 sm:text-3xl dark:text-white">
                             {{ format_currency($product->selling_price) }}

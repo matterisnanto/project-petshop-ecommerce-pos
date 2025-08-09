@@ -86,7 +86,7 @@ class PosTransactionResource extends Resource
                             ->columnSpanFull(),
                         Forms\Components\Section::make('Ordered Items')
                             ->schema([
-                                Forms\Components\Repeater::make('detail_order')
+                                Forms\Components\Repeater::make('detailOrder')
                                     ->relationship()
                                     ->live()
                                     ->statePath('orderItems')

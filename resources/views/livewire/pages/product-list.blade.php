@@ -296,7 +296,7 @@
                                         @foreach ($categoryGroup as $category)
                                             <div class="flex items-center">
                                                 <input id="category-{{ $category->id }}" type="checkbox"
-                                                    wire:model="selectedCategories" value="{{ $category->id }}"
+                                                    wire:model="selectedcategory" value="{{ $category->id }}"
                                                     class="h-4 w-4 rounded border-gray-300 bg-gray-100 text-primary-600 focus:ring-2 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-primary-600" />
                                                 <label for="category-{{ $category->id }}"
                                                     class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
@@ -310,7 +310,7 @@
 
                             <div class="hidden grid-cols-2 gap-4 md:grid-cols-3 p-4 rounded-lg bg-gray-50 dark:bg-gray-800"
                                 id="animal-category" role="tabpanel" aria-labelledby="animal-category-tab">
-                                @foreach ($animalCategories->groupBy(function ($item) {
+                                @foreach ($animalcategory->groupBy(function ($item) {
         return strtoupper(substr($item->name, 0, 1));
     }) as $initial => $animalCategoryGroup)
                                     <div class="space-y-2">
@@ -319,7 +319,7 @@
                                         @foreach ($animalCategoryGroup as $animalCategory)
                                             <div class="flex items-center">
                                                 <input id="animal-category-{{ $animalCategory->id }}" type="checkbox"
-                                                    wire:model="selectedAnimalCategories"
+                                                    wire:model="selectedAnimalcategory"
                                                     value="{{ $animalCategory->id }}"
                                                     class="h-4 w-4 rounded border-gray-300 bg-gray-100 text-primary-600 focus:ring-2 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-primary-600" />
                                                 <label for="animal-category-{{ $animalCategory->id }}"

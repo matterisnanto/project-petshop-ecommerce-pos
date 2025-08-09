@@ -6,7 +6,7 @@ use Livewire\Component;
 use Livewire\Attributes\Title;
 use Illuminate\Support\Facades\Session;
 
-#[Title('Contact Us - Cindy Petshop')]
+#[Title('Contact Us - CindyPetshop')]
 class ContactUs extends Component
 {
     // public function mount()

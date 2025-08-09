@@ -4,7 +4,7 @@ namespace App\Models;
 
 use App\Models\Brands;
 use App\Models\Supplier;
-use App\Models\Categories;
+use App\Models\category;
 use App\Models\DetailOrder;
 use Illuminate\Support\Str;
 use App\Models\ProductPhoto;
@@ -22,16 +22,16 @@ class Product extends Model
     use SoftDeletes;
     protected $table = 'products';
     //
-    protected $fillable = ['name', 'slug', 'barcode', 'thumbnail', 'description', 'weight', 'purchase_price', 'selling_price', 'is_active', 'is_popular', 'stock', 'category_id', 'brand_id', 'category_animals_id'];
+    protected $fillable = ['name', 'slug', 'barcode', 'thumbnail', 'description', 'weight', 'purchase_price', 'selling_price', 'is_active', 'is_popular', 'stock', 'categories_id', 'brands_id', 'category_animals_id'];
 
-    public function category(): BelongsTo
+    public function categories(): BelongsTo
     {
-        return $this->belongsTo(Categories::class, 'category_id');
+        return $this->belongsTo(Categories::class, 'categories_id');
     }
 
-    public function brand(): BelongsTo
+    public function brands(): BelongsTo
     {
-        return $this->belongsTo(Brands::class, 'brand_id');
+        return $this->belongsTo(Brands::class, 'brands_id');
     }
 
     public function categoryAnimals()

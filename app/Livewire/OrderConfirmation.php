@@ -7,7 +7,7 @@ use Livewire\Component;
 use Livewire\Attributes\Title;
 use App\Models\OlshopTransaction;
 
-#[Title('Order Confirmation - Cindy Petshop')]
+#[Title('Order Confirmation - CindyPetshop')]
 class OrderConfirmation extends Component
 {
     public $transactionId;

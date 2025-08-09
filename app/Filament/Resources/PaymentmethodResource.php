@@ -78,7 +78,6 @@ class PaymentMethodResource extends Resource
                                     ->imagePreviewHeight('120')
                                     ->panelAspectRatio('1:1')
                                     ->panelLayout('integrated')
-                                    ->required()
                                     ->columnSpanFull()
                                     ->helperText('Upload a square logo (1:1 ratio) for this payment method'),
                             ])
